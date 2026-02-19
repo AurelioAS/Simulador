@@ -1,0 +1,86 @@
+package com.simulador.controller;
+
+import com.simulador.config.SimulatorProperties;
+import com.simulador.service.MqSimulatorService;
+import com.simulador.utils.Utils;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/simulator")
+public class SimulatorController {
+
+  private final MqSimulatorService service;
+  // 1. Declaramos la variable final para la configuración
+  private final SimulatorProperties props;
+  private String                    role;
+  private Utils                     utils = new Utils();
+
+  public SimulatorController(MqSimulatorService service, SimulatorProperties props) {
+    this.service = service;
+    this.props = props;
+    this.role = props.getRole();
+  }
+
+  @GetMapping("/fire")
+  public Map<String, String> fire(@RequestParam String queue, @RequestParam String payload,
+      @RequestParam(required = false) byte[] correlationId,
+      @RequestParam(required = false) boolean copyCorrel,
+      @RequestParam(required = false) String replyTo,
+      @RequestParam(required = false) String replyToQMgr,
+      @RequestParam(defaultValue = "1") int iterations)
+      throws Exception {
+    byte[] originalCorrelation = correlationId; // Guardamos el valor original para usarlo en cada
+    // iteración
+    for (int i = 0; i < iterations; i++) {
+      correlationId = originalCorrelation; // Reiniciamos el valor de correlationId para cada
+      if (correlationId == null || correlationId.length == 0) {
+        correlationId = utils.generateRandomId();
+      }
+      if (queue.equals("master-in") && role.equals("SOH_START")) {
+        // Enviar respuesta automática si aplica
+        service.send(queue, payload, correlationId, new byte[24], copyCorrel, replyTo, replyToQMgr,
+            false, java.util.Optional.empty());
+        TimeUnit.MILLISECONDS.sleep(200); // Simular tiempo de procesamiento
+        service.send("secondary-in", payload, correlationId, new byte[24], copyCorrel, replyTo,
+            replyToQMgr, false, java.util.Optional.empty());
+      }
+      // else if (role.equals("T3270_START")) {
+      // String mgr = MessagesMgr.createStrPayload("msgT3270-1");
+      // service.send("master-in", mgr, correlationId, copyCorrel, false);
+      // }
+      else {
+        service.send(queue, payload, correlationId, new byte[24], copyCorrel, replyTo, replyToQMgr,
+            false, java.util.Optional.empty());
+      }
+    }
+    String msgSuccess = (iterations > 1)
+        ? String.format("Se han enviado %d mensajes a %s", iterations, queue)
+        : "Mensaje enviado con éxito a " + queue;
+    return Map.of("status", msgSuccess, "queue", queue, "payload", payload);
+    // return Map.of("status", "Mensaje enviado", "queue", queue, "payload", payload);
+  }
+
+  @GetMapping("/config")
+  public ResponseEntity<Map<String, Object>> getConfig() {
+
+    Map<String, Object> data = new HashMap<>();
+    data.put("role", props.getRole());
+    data.put("queues", props.getQueues());
+    data.put("payloads", props.getPayloads());
+    data.put("autoResponses", props.getAutoResponses());
+    data.put("consume", props.getConsumers());
+    return ResponseEntity.ok().header("X-Simulator-Version", "3.0")
+        .header("Cache-Control", "no-cache")
+        .header("Pragma", "no-cache")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(data);
+  }
+}
