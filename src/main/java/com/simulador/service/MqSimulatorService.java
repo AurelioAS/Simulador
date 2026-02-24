@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,6 @@ public class MqSimulatorService extends Utils {
 
   private final SimulatorProperties      props;
 
-  @Autowired
   private Map<String, MQConnectionBundle> connections;
 
   private ConcurrentMap<String, MQQueue> queues = new ConcurrentHashMap<>();
@@ -43,7 +41,9 @@ public class MqSimulatorService extends Utils {
 
   private JsonService jsonService;
 
-  public MqSimulatorService(SimulatorProperties props) {
+  public MqSimulatorService(Map<String, MQConnectionBundle> connections,
+      SimulatorProperties props) {
+    this.connections = connections;
     this.props = props;
     try {
       Map json = jsonService.decode(props.toString(), Map.class);
@@ -233,7 +233,7 @@ public class MqSimulatorService extends Utils {
 
     msg.seek(0);
     queue.put(msg, new MQPutMessageOptions());
-    if (processed) {
+    if (false) {
       log.debug(
           ">>> [SENT] " + qConfig.getName() + " -> "
               + pay

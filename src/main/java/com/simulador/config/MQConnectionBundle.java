@@ -17,5 +17,4 @@ public class MQConnectionBundle {
     this.qm = qm;
     this.queue = queue;
   }
-  // Getters...
 }

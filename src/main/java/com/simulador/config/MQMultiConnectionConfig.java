@@ -8,9 +8,8 @@ import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
 import com.simulador.config.SimulatorProperties.QueueConfig;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +20,11 @@ public class MQMultiConnectionConfig {
 
 
   @Bean(name = "mqConnections")
-  public Map<String, MQConnectionBundle> mqConnections(SimulatorProperties props, // Lista de 1 a 6
-                                                                                  // colas
-      MQNativeConfig config) { // Tu clase de props
+  public ConcurrentMap<String, MQConnectionBundle> mqConnections(SimulatorProperties props,
+      MQNativeConfig config) {
 
-    Map<String, MQConnectionBundle> connectionMap = new HashMap<>();
-    Set<String> queueNames = props.getQueues().keySet();
+    ConcurrentMap<String, MQConnectionBundle> connectionMap = new ConcurrentHashMap<>();
+    // Set<String> queueNames = props.getQueues().keySet();
     props.getQueues().entrySet().forEach((entry) -> {
       QueueConfig qConfig = entry.getValue();
       String queueName = qConfig.getName();
@@ -39,12 +37,12 @@ public class MQMultiConnectionConfig {
         MQQueue queue = qm.accessQueue(queueName, options);
 
         connectionMap.put(queueName, new MQConnectionBundle(qm, queue));
-        log.info("Conexión independiente establecida para la cola: {}", queueName);
+        // log.info("Conexión independiente establecida para la cola: {}", queueName);
       } catch (MQException e) {
         log.error("Error conectando a la cola {}", queueName, e);
       }
     });
-
+    log.info("Conexión independiente establecida para las colas: {}", connectionMap.keySet());
     return connectionMap;
   }
 }

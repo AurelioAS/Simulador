@@ -105,7 +105,7 @@ simulador:
 spring.config.activate.on-profile: external-driven
 
 simulador:
-  numThreads: 2
+  numThreads: 3
   role: DR_START
   # Definición de colas con su respectivo CCSID
   queues:
