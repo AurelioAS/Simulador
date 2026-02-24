@@ -14,14 +14,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-@Component
+// @Component
 @Slf4j
 public class MqPoolManager {
 
-  @Autowired
   private MQQueueManager qMgr;
+
+  private MQQueueManager qMgrPut;
+
+  public MqPoolManager(@Qualifier("mqConsumer") MQQueueManager qMgr,
+      @Qualifier("mqProducer") MQQueueManager qMgrPut) {
+    super();
+    this.qMgr = qMgr;
+    this.qMgrPut = qMgrPut;
+  }
 
   @Autowired
   private SimulatorProperties props;
@@ -31,24 +39,27 @@ public class MqPoolManager {
   private final List<MQQueue>              getAnsPool = new ArrayList<>();
   private int                              POOL_SIZE  = 1;
   public AtomicInteger                     putIndex   = new AtomicInteger(0);
+  private final List<String>               queues     = new ArrayList<>();
 
   @PostConstruct
   public void init() throws MQException {
     // Configuración para PUT (Salida)
     int putOpts = MQConstants.MQOO_OUTPUT | MQConstants.MQOO_INQUIRE;
     // Configuración para GET (Entrada Compartida)
-    int getOpts = MQConstants.MQOO_INPUT_SHARED
-        | MQConstants.MQOO_INQUIRE
-        | MQConstants.MQOO_FAIL_IF_QUIESCING;
+    int getOpts =
+        MQConstants.MQOO_INPUT_AS_Q_DEF | MQConstants.MQOO_FAIL_IF_QUIESCING;
 
     POOL_SIZE = props.getNumThreads() > 0 ? props.getNumThreads() : POOL_SIZE;
     if (props.getConsumers() != null) {
       for (int i = 0; i < POOL_SIZE; i++) {
+        final int x = i;
         props.getConsumers().entrySet().forEach((entry) -> {
           SimulatorProperties.QueueConfig qConfig = props.getQueues().get(entry.getValue());
-          log.info("Queue to pool Consumers: " + qConfig.getName());
           try {
+            String name = qMgr.getName();
+            log.info("Queue to pool Consumers-" + x + ": {} - {}", qConfig.getName(), name);
             getPool.add(qMgr.accessQueue(qConfig.getName(), getOpts));
+            queues.add(qConfig.getName());
           } catch (MQException e) {
             e.printStackTrace();
           }
@@ -61,12 +72,12 @@ public class MqPoolManager {
         // putPool.add(qmgr.accessQueue("COLA.SALIDA", putOpts));
         final int x = i;
         props.getAutoResponses().entrySet().forEach((entry) -> {
-          SimulatorProperties.AutoResponse qConfig =
-              props.getAutoResponses().get(entry.getValue());
-          String queue = props.getQueues().get(entry.getValue().getTargetQueue()).getName();
-          log.info("Queue to pool AutoResponses-" + x + ": " + queue);
           try {
-            getAnsPool.add(qMgr.accessQueue(queue, getOpts));
+            String name = qMgr.getName();
+            QueueConfig queue = props.getQueues().get(entry.getKey());
+            log.info("Queue to pool AutoResponses-" + x + ": {} - {}", queue.getName(), name);
+            getAnsPool.add(qMgr.accessQueue(queue.getName(), getOpts));
+            queues.add(queue.getName());
           } catch (MQException e) {
             e.printStackTrace();
           }
@@ -74,22 +85,22 @@ public class MqPoolManager {
       }
     }
 
-    // Definimos los permisos: Entrada (leer) + Salida (escribir)
-    int openOptions = MQConstants.MQOO_INPUT_AS_Q_DEF  // Abrir para leer
-        | MQConstants.MQOO_OUTPUT          // Abrir para escribir
+    // Definimos los permisos: Salida (escribir)
+    int openOptions = MQConstants.MQOO_OUTPUT          // Abrir para escribir
         | MQConstants.MQOO_FAIL_IF_QUIESCING; // Fallar si el gestor se está parando
 
     for (int i = 0; i < POOL_SIZE; i++) {
-      // putPool.add(qmgr.accessQueue("COLA.SALIDA", putOpts));
       final int x = i;
       props.getQueues().entrySet().forEach((entry) -> {
         QueueConfig qConfig = entry.getValue();
         String queue = qConfig.getName();
-        log.info("Queue to pool of Puts amd Get-" + x + ": " + queue);
         try {
-          putPool.computeIfAbsent(queue, k -> new ArrayList<>())
-              .add(qMgr.accessQueue(queue, openOptions));
-
+          if (!queues.contains(queue)) {
+            String name = qMgrPut.getName();
+            log.info("Queue to pool of Puts-" + x + ": {} - {}", queue, name);
+            putPool.computeIfAbsent(queue, k -> new ArrayList<>())
+                .add(qMgrPut.accessQueue(queue, openOptions));
+          }
         } catch (MQException e) {
           e.printStackTrace();
         }

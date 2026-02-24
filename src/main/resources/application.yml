@@ -1,4 +1,4 @@
-spring.profiles.active: dualrun-ger, mq-dev2 # dualrun-ger, external-driven, master-driven
+spring.profiles.active: external-driven, mq-dev # dualrun-ger, external-driven, master-driven
 
 server:
   port: 8089
@@ -8,6 +8,7 @@ server:
 
 simu-mq.path: "c:/temp"
 simu-mq.expiry: 120     #in seconds
+simu-mq.ttl: 60
 
 spring.thymeleaf.cache: true
 
@@ -15,7 +16,7 @@ logging.config: classpath:log4j2.xml
 logging.level.org.springframework.boot.context.properties: DEBUG
 ---
 # Profile to activate to connect to cert client mq
-spring.config.activate.on-profile: mq-dev2
+spring.config.activate.on-profile: mq-dev-ger
 
 ibm:
   mq:
@@ -104,7 +105,7 @@ simulador:
 spring.config.activate.on-profile: external-driven
 
 simulador:
-  numThreads: 3
+  numThreads: 2
   role: DR_START
   # Definición de colas con su respectivo CCSID
   queues:
@@ -112,7 +113,7 @@ simulador:
         name: "QNAME08"
         ccsid: 284 # UTF-8
       master-res:
-        name: "ALIAS_QNAME08"
+        name: "QNAME10"
         ccsid: 284
       external-req:
         name: "QNAME07"
@@ -124,7 +125,7 @@ simulador:
         name: "QNAME09"
         ccsid: 284
       secondary-res:
-        name: "ALIAS_QNAME09"
+        name: "QNAME11"
         ccsid: 284
         tResp: 25
 
@@ -138,16 +139,16 @@ simulador:
 
     # MATRIZ DE RESPUESTAS AUTOMÁTICAS:
     # "Si el simulador recibe un mensaje en la llave X, responde en la llave Y con el payload Z"
-#  auto-responses:
-#      master-in:
-#        target-queue: "master-res"
-#        payload-key: "MENSAJE_MASTER"
-#        copy-correl: false
-#    
-#      secondary-in:
-#        target-queue: "secondary-res"
-#        payload-key: "MENSAJE_SECUNDARIO"
-#        copy-correl: false
+  auto-responses:
+      master-in:
+        target-queue: "master-res"
+        payload-key: "MENSAJE_MASTER"
+        copy-correl: false
+    
+      secondary-in:
+        target-queue: "secondary-res"
+        payload-key: "MENSAJE_SECUNDARIO"
+        copy-correl: false
   
   consumers:
     - external-res
@@ -283,9 +284,6 @@ simulador:
           secondary-in:
             payload-key: 'MENSAJE_SECUNDARIO'
             copy-correl: true
-#          external-in:
-#            payload-key: 'KEEP_ALIVE'
-#            copy-correl: true              
     secondary-in:
       name: "QNAME08"
       ccsid: 284
