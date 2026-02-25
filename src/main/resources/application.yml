@@ -127,7 +127,7 @@ simulador:
       secondary-res:
         name: "QNAME11"
         ccsid: 284
-        tResp: 25
+        #tResp: 25
 
     # Biblioteca de mensajes (Strings configurables)
   payloads:

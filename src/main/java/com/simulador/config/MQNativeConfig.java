@@ -5,25 +5,16 @@ import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
 import java.util.Hashtable;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
 public class MQNativeConfig {
 
-  @Value("${ibm.mq.host}")
-  private String host;
-  @Value("${ibm.mq.port}")
-  private int    port;
-  @Value("${ibm.mq.queue-manager}")
-  private String qm;
-  @Value("${ibm.mq.channel}")
-  private String channel;
-  @Value("${ibm.mq.user}")
-  private String user;
-  @Value("${ibm.mq.password}")
-  private String pass;
+  @Autowired
+  MQProperties mqProperties;
+
   static {
     System.setProperty("com.ibm.mq.pooling.isPoolingEnabled", "false");
   }
@@ -32,15 +23,15 @@ public class MQNativeConfig {
     Hashtable<String, Object> props = new Hashtable<>();
 
     // Configuración básica de red
-    props.put(MQConstants.HOST_NAME_PROPERTY, host);
-    props.put(MQConstants.PORT_PROPERTY, port);
-    props.put(MQConstants.CHANNEL_PROPERTY, channel);
+    props.put(MQConstants.HOST_NAME_PROPERTY, mqProperties.getHost());
+    props.put(MQConstants.PORT_PROPERTY, mqProperties.getPort());
+    props.put(MQConstants.CHANNEL_PROPERTY, mqProperties.getChannel());
     props.put(MQConstants.TRANSPORT_PROPERTY, MQConstants.TRANSPORT_MQSERIES_CLIENT);
 
     // Autenticación
     props.put(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, false);
-    props.put(MQConstants.USER_ID_PROPERTY, user);
-    props.put(MQConstants.PASSWORD_PROPERTY, pass);
+    props.put(MQConstants.USER_ID_PROPERTY, mqProperties.getUser());
+    props.put(MQConstants.PASSWORD_PROPERTY, mqProperties.getPassword());
 
     // --- EL ARREGLO PARA EL BLOQUEO ---
     // 1. Identificador de aplicación único (forzamos a MQ a no agrupar)
@@ -53,7 +44,7 @@ public class MQNativeConfig {
         MQConstants.MQCNO_RECONNECT | MQConstants.MQCNO_HANDLE_SHARE_BLOCK);
 
     try {
-      return new MQQueueManager(qm, props);
+      return new MQQueueManager(mqProperties.getQueueManager(), props);
     } catch (MQException e) {
       log.error("Error conectando a MQ con AppName {}: [CC:{} RC:{}]",
           appName, e.completionCode, e.reasonCode);

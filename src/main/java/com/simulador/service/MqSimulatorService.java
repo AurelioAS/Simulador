@@ -13,24 +13,26 @@ import com.simulador.config.SimulatorProperties;
 import com.simulador.config.SimulatorProperties.AutoResponse;
 import com.simulador.config.SimulatorProperties.QueueConfig;
 import com.simulador.utils.Utils;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 @Slf4j
 @DependsOn("mqConnections")
 public class MqSimulatorService extends Utils {
 
-  private final SimulatorProperties      props;
+  private final SimulatorProperties props;
 
   private Map<String, MQConnectionBundle> connections;
 
@@ -45,94 +47,67 @@ public class MqSimulatorService extends Utils {
       SimulatorProperties props) {
     this.connections = connections;
     this.props = props;
+  }
+
+  @PostConstruct
+  private void construct() {
     try {
       Map json = jsonService.decode(props.toString(), Map.class);
       log.debug(jsonService.encode(json));
     } catch (Exception e) {
-    } finally {
     }
+
     log.info("Iniciando autorespuestas en modo " + props.getRole());
-    autoResponses();
-
-    log.info("Iniciando consumidor en modo " + props.getRole());
-    consume();
-  }
-
-  // @Override
-  // public void run(String... args) throws Exception {
-  // log.info("Iniciando autorespuestas en modo " + props.getRole());
-  // autoResponses();
-  //
-  // log.info("Iniciando consumidor en modo " + props.getRole());
-  // consume();
-  // }
-
-  public void processAndReply() {
-    Map<String, AutoResponse> autoResponses = props.getAutoResponses();
-
-    if (autoResponses == null || autoResponses.isEmpty()) {
-      log.info("No hay colas configuradas para autoRespuesta. Ignorando autoRespuestas.");
-      return;
-    }
-    autoResponses.forEach((sourceKey, rule) -> {
-      try {
-        log.info(
-            "Configurada respuesta automática para " + sourceKey + " -> " + rule.getTargetQueue()
-                + " | Payload: " + rule.getPayloadKey() + " | CopyCorrel: " + rule.isCopyCorrel());
-        pool.execute(() -> processAndReply(sourceKey, rule));
-      } catch (Exception ignored) {
-        ignored.printStackTrace();
-      }
-    });
-  }
-
-  private void consume() {
-    Map<String, String> consumerQueue = props.getConsumers();
-    if (consumerQueue == null || consumerQueue.isEmpty()) {
-      log.info("No hay colas configuradas para consumo. Ignorando consumidor.");
-      return;
-    }
-    AtomicInteger threadID = new AtomicInteger(0); // Creamos una copia local e inmutable para
-    // la lambda
-    consumerQueue.forEach((key, consumeRule) -> {
-      log.info(
-          "Configurada escucha y purgado para " + consumeRule + " (definida en " + key + ")");
-      // pool.execute(() -> consumeAndLog(consumeRule, poolManager.getNextIndex()));
-      int poolSize = props.getNumThreads() > 0 ? props.getNumThreads() : 1;
-      for (int i = 0; i < poolSize; i++) {
-        new Thread(() -> {
-          try {
-            consumeAndLog(consumeRule, threadID.get());
-          } catch (MQException e) {
-            e.printStackTrace();
-          }
-        }, "Thread-" + threadID.getAndIncrement() + "-Consumidor").start();
-      }
-    });
-  }
-
-  // @Scheduled(fixedDelay = 100)
-  public void autoResponses() {
-    // 1. Lógica de Respuestas Automáticas (Simular Sistema Externo)
-    if (props.getAutoResponses() == null || props.getAutoResponses().isEmpty()) {
-      log.info("No hay colas configuradas para autoRespuesta. Ignorando autoRespuestas.");
-      return;
-    }
-    AtomicInteger threadID = new AtomicInteger(0); // Creamos una copia local e inmutable para
-    // la lambda
     props.getAutoResponses().forEach((sourceKey, rule) -> {
       try {
         int poolSize = props.getNumThreads() > 0 ? props.getNumThreads() : 1;
+        SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
         for (int i = 0; i < poolSize; i++) {
-          new Thread(() -> {
-            processAndReply(sourceKey, rule);
-          }, "Thread-" + threadID.getAndIncrement() + "-AutoResponse").start();
+          createFlux(sourceQ.getName(), processAndReply(sourceKey, rule)).subscribe();
         }
       } catch (Exception ignored) {
         ignored.printStackTrace();
       }
     });
+
+    log.info("Iniciando consumidor en modo " + props.getRole());
+    Map<String, String> consumerQueue = props.getConsumers();
+    consumerQueue.forEach((key, consumeRule) -> {
+      SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(consumeRule);
+      log.info(
+          "Configurada escucha y purgado para " + sourceQ.getName() + " (definida en " + key + ")");
+      int poolSize = props.getNumThreads() > 0 ? props.getNumThreads() : 1;
+      for (int i = 0; i < poolSize; i++) {
+        try {
+          int index = i % poolSize;
+          createFlux(sourceQ.getName(), consumeAndLog2(sourceQ.getName(), index)).subscribe();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    });
   }
+
+  /**
+   * @param consumeRule
+   * @param i
+   * @return
+   */
+  private Consumer<MQMessage> consumeAndLog2(String consumeRule, int i) {
+    return (msg) -> {
+      try {
+        // Leemos el contenido del mensaje
+        // String data = msg.readStringOfByteLength(msg.getMessageLength());
+
+        log.debug("<<< [PRG] {}-{} - HEX: {}",
+            consumeRule, i, bytesToHex(msg.correlationId));
+
+      } catch (Exception e) {
+        log.error("Error procesando mensaje en cola {}: {}", consumeRule, e.getMessage());
+      }
+    };
+  }
+
 
   public void send(String queueKey, String payloadKey, byte[] correlationId, byte[] messageId,
       boolean isCopyCorrel,
@@ -149,18 +124,6 @@ public class MqSimulatorService extends Utils {
 
     int options = MQConstants.MQOO_OUTPUT | MQConstants.MQOO_FAIL_IF_QUIESCING;
     MQQueue queue = getQueue(qConfig.getName());
-    // log.debug("Creating PUT queue to cache..." + qConfig.getName());
-    // queues.computeIfAbsent(qConfig.getName(), key -> {
-    // try {
-    // log.info("Abriendo cola por primera vez: {}", key);
-    // return qmProducer.accessQueue(key, options);
-    // } catch (MQException e) {
-    // throw new RuntimeException("Error al acceder a la cola MQ: " + key, e);
-    // }
-    // });
-    // queue = queues.get(qConfig.getName());
-    // MQQueue queue = poolManager.getNextPutQueue(qConfig.getName()); // Solo para avanzar el
-    // // índice del pool a
 
     MQMessage msg = new MQMessage();
     msg.characterSet = qConfig.getCcsid();
@@ -224,8 +187,6 @@ public class MqSimulatorService extends Utils {
     } else {
       msg.writeString(content);
     }
-    int nTh = props.getNumThreads() > 0 ? props.getNumThreads() : 1;
-    String pay = overrideConfig.map(QueueConfig::getPayloadKey).orElse(oldPayloadKey);
     log.debug(">>> [PUT] " + qConfig.getName()
         + " | CCSID: "
         + qConfig.getCcsid() + " | HEX: "
@@ -233,14 +194,7 @@ public class MqSimulatorService extends Utils {
 
     msg.seek(0);
     queue.put(msg, new MQPutMessageOptions());
-    if (false) {
-      log.debug(
-          ">>> [SENT] " + qConfig.getName() + " -> "
-              + pay
-              + " | CCSID: "
-              + qConfig.getCcsid() + " | HEX: "
-              + bytesToHex(msg.correlationId));
-    }
+
     if (qConfig.getFire() == null || qConfig.getFire().getQueues() == null
         || qConfig.getFire().getQueues().isEmpty()) {
       return;
@@ -308,31 +262,16 @@ public class MqSimulatorService extends Utils {
       return bundle.getQueue();
     });
   }
+
   /**
    * @param sourceKey
    * @param rule
    */
-  private void processAndReply(String sourceKey, AutoResponse rule) {
-    int i = 0;
-    int poolSize = props.getNumThreads() > 0 ? props.getNumThreads() : 1;
-    SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
-    log.info(
-        "Hilo {} iniciando procesamiento de respuestas automáticas para {} (usando pool size {})",
-        Thread.currentThread().getName(), sourceQ.getName(), poolSize);
-    MQQueue queue = getQueueGets(sourceQ.getName());
-    while (!Thread.currentThread().isInterrupted()) {
+  private Consumer<MQMessage> processAndReply(String sourceKey, AutoResponse rule) {
+    return (incoming) -> {
+      SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
       try {
-        int index = i % poolSize;
-        i++;
-        MQGetMessageOptions gmo = new MQGetMessageOptions();
-        gmo.options = MQConstants.MQGMO_WAIT | MQConstants.MQGMO_FAIL_IF_QUIESCING;
-        gmo.waitInterval = 10_000; // Un poco más de margen para no saturar el CPU
-
-        MQMessage incoming = new MQMessage();
-
-        queue.get(incoming, gmo);
-
-        log.debug("<<< [GET] " + queue.getName().trim() + " -> " + sourceKey
+        log.debug("<<< [GET] " + sourceQ.getName() + " -> " + sourceKey
             + " | CCSID: "
             + incoming.characterSet + " | HEX: "
             + bytesToHex(incoming.correlationId));
@@ -349,19 +288,10 @@ public class MqSimulatorService extends Utils {
           lSend(rule.getTargetQueue(), rule.getPayloadKey(), incoming.correlationId,
               incoming.messageId, isCopyCorrel, "", "", true, java.util.Optional.empty(), true);
         }
-      } catch (MQException e) {
-        if (e.reasonCode != 2033) {
-          System.err.println("Error MQ RC: " + e.reasonCode);
-        }
-        if (e.reasonCode == MQConstants.MQRC_CONNECTION_BROKEN ||
-            e.reasonCode == MQConstants.MQRC_Q_MGR_NOT_AVAILABLE) {
-
-          System.out.println("Conexión perdida. Intentando reconectar...");
-        }
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }
+    };
   }
 
   /**
@@ -390,65 +320,38 @@ public class MqSimulatorService extends Utils {
 
   }
 
-  /**
-   * Escucha una cola, consume el mensaje y lo imprime. Esto mantiene la cola vacía permanentemente.
-   * 
-   * @throws MQException
-   */
+  public Flux<MQMessage> createFlux(String queueName, Consumer<MQMessage> action) {
+    MQConnectionBundle bundle = connections.get(queueName);
 
-  private void consumeAndLog(String queueKey, int threadIndex) throws MQException {
-    int poolSize = props.getNumThreads() > 0 ? props.getNumThreads() : 1;
-    SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(queueKey);
-    log.info("Hilo {} iniciando escucha y purgado en {} (usando pool size {})", threadIndex,
-        queueKey, poolSize);
-    int i = 0;
-    MQQueue queue = getQueueGets(sourceQ.getName());
-    while (!Thread.currentThread().isInterrupted()) {
-      try {
-        int index = i % poolSize;
-        i++;
-        // int options = MQConstants.MQOO_INPUT_AS_Q_DEF;
-        // if (queues != null && queues.containsKey(sourceQ.getName())) {
-        // queue = queues.get(sourceQ.getName());
-        // } else {
-        // queues.put(sourceQ.getName(), qmConsumer2.accessQueue(sourceQ.getName(), options));
-        // queue = queues.get(sourceQ.getName());
-        // }
-        MQGetMessageOptions gmo = new MQGetMessageOptions();
-        gmo.options = MQConstants.MQGMO_WAIT | MQConstants.MQGMO_FAIL_IF_QUIESCING;
-        gmo.waitInterval = 10_000; // Un poco más de margen para no saturar el CPU
-
-        MQMessage incoming = new MQMessage();
-
-        queue.get(incoming, gmo);
-        if (incoming.getMessageLength() == 0) {
-          continue; // Si el mensaje está vacío, lo ignoramos y seguimos esperando
-        }
-        log.debug("<<< [PRG] {}-{} - HEX: {}",
-            queue.getName().trim(), index, bytesToHex(incoming.correlationId));
-        TimeUnit.MILLISECONDS.sleep(50); // Simular un pequeño tiempo de procesamiento antes de
-                                         // purgar
-      } catch (MQException e) {
-        // 2033 = MQRC_NO_MSG_AVAILABLE (Es normal si la cola está vacía)
-        if (e.reasonCode != MQConstants.MQRC_NO_MSG_AVAILABLE) {
-
-          // Si la conexión se rompe (2009, 2059)
-          if (e.reasonCode == MQConstants.MQRC_CONNECTION_BROKEN ||
-              e.reasonCode == MQConstants.MQRC_Q_MGR_NOT_AVAILABLE) {
-
-            log.error("Conexión perdida en hilo {}. Reconectando...", threadIndex);
-            break; // Salimos del loop para que el hilo se reinicie con conexión nueva
-          }
-          throw e; // Otros errores
-        }
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+    if (bundle == null) {
+      return Flux
+          .error(new IllegalArgumentException("La cola " + queueName + " no está configurada."));
     }
-  }
 
+    return Flux.<MQMessage>create(sink -> {
+      log.info("Creando Flux dedicado para la cola: {}", queueName);
+
+      // Hilo de lectura para esta cola específica
+      while (!sink.isCancelled()) {
+        try {
+          MQMessage msg = new MQMessage();
+          MQGetMessageOptions gmo = new MQGetMessageOptions();
+          gmo.options = MQConstants.MQGMO_WAIT | MQConstants.MQGMO_FAIL_IF_QUIESCING;
+          gmo.waitInterval = 2000;
+
+          bundle.getQueue().get(msg, gmo);
+
+          // Emitimos el mensaje
+          sink.next(msg);
+
+        } catch (MQException e) {
+          if (e.reasonCode != MQConstants.MQRC_NO_MSG_AVAILABLE) {
+            log.error("Error MQ en {}: {}", queueName, e.reasonCode);
+          }
+        }
+      }
+    })
+        .subscribeOn(Schedulers.newSingle("Thread-" + queueName)) // Hilo físico dedicado
+        .doOnNext(action); // Aquí se ejecuta tu "doMethod()" cada vez que llega un mensaje
+  }
 }
