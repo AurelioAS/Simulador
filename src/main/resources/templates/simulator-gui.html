@@ -2,332 +2,212 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>MQ Simulator | Dashboard con Auto-Cierre</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<title>MQ Simulator | Dashboard AJAX</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <style>
-/* BASE AL 80% (12.8px) */
-html {
-	font-size: 12.8px;
-	transition: font-size 0.2s ease;
-}
+    /* BASE AL 80% */
+    html { font-size: 12.8px; transition: font-size 0.2s ease; }
+    body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; font-size: 1rem; }
+    .dest-card { border: none; border-radius: 12px; margin-bottom: 1.5rem; transition: all 0.3s; }
+    .payload-area { font-family: 'Fira Code', monospace; font-size: 0.9rem; resize: vertical; border-radius: 8px; min-height: 200px; background-color: #ffffff; }
+    .sidebar-payloads { background: white; border-radius: 12px; position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; }
+    .badge-queue { font-size: 0.8rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bg-externo { border-top: 5px solid #fd7e14 !important; }
+    .text-externo { color: #fd7e14 !important; }
+    .label-payload { font-size: 0.9rem; color: #495057; margin-bottom: 6px; display: block; }
+    .zoom-controls .btn { padding: 0.2rem 0.6rem; font-size: 0.9rem; }
 
-body {
-	background-color: #f0f2f5;
-	font-family: 'Segoe UI', sans-serif;
-	font-size: 1rem;
-}
+    #notification-area {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        width: 90%;
+        max-width: 600px;
+    }
 
-.dest-card {
-	border: none;
-	border-radius: 12px;
-	margin-bottom: 1.5rem;
-	transition: all 0.3s;
-}
+    .alert {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: none;
+        border-left: 5px solid;
+        animation: slideIn 0.3s ease-out;
+    }
 
-.payload-area {
-	font-family: 'Fira Code', monospace;
-	font-size: 0.9rem;
-	resize: vertical;
-	border-radius: 8px;
-	min-height: 200px;
-	background-color: #ffffff;
-}
+    @keyframes slideIn {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
 
-.sidebar-payloads {
-	background: white;
-	border-radius: 12px;
-	position: sticky;
-	top: 20px;
-	max-height: 90vh;
-	overflow-y: auto;
-}
-
-.badge-queue {
-	font-size: 0.8rem;
-	max-width: 250px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.bg-externo {
-	border-top: 5px solid #fd7e14 !important;
-}
-
-.text-externo {
-	color: #fd7e14 !important;
-}
-
-.label-payload {
-	font-size: 0.9rem;
-	color: #495057;
-	margin-bottom: 6px;
-	display: block;
-}
-
-.zoom-controls .btn {
-	padding: 0.2rem 0.6rem;
-	font-size: 0.9rem;
-}
-
-.alert {
-	border: none;
-	border-left: 5px solid;
-}
-
-#notification-area {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999; /* Asegura que esté por encima de todo */
-    width: 90%;
-    max-width: 600px;
-}
-
-/* Animación de entrada suave */
-.alert {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border: none;
-    border-left: 5px solid;
-    animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-    from { transform: translateY(-100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
+    /* Spinner para el botón */
+    .spinner-border-sm { display: none; margin-right: 5px; }
+    .loading .spinner-border-sm { display: inline-block; }
+    .loading span { opacity: 0.7; }
 </style>
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-		<div class="container-fluid px-4">
-			<a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-				<i class="bi bi-layers-half me-2"></i> <span>MQ SIMULATOR</span> <span
-				class="badge bg-secondary ms-2 fw-normal"
-				style="font-size: 0.65rem;" th:text="${@simulatorProperties.role}">ROLE</span>
-			</a>
-			<div class="navbar-nav ms-auto align-items-center">
-				<div
-					class="zoom-controls btn-group me-4 border border-secondary rounded overflow-hidden">
-					<button onclick="changeFontSize(-1)" class="btn btn-dark">
-						<i class="bi bi-dash-lg"></i>
-					</button>
-					<button onclick="resetFontSize()" class="btn btn-dark">
-						<i class="bi bi-type"></i>
-					</button>
-					<button onclick="changeFontSize(1)" class="btn btn-dark">
-						<i class="bi bi-plus-lg"></i>
-					</button>
-				</div>
-				<a class="nav-link active" href="/gui"><i
-					class="bi bi-cpu-fill me-1"></i> Dashboard</a>
-			</div>
-		</div>
-	</nav>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+                <i class="bi bi-layers-half me-2"></i> <span>MQ SIMULATOR</span> 
+                <span class="badge bg-secondary ms-2 fw-normal" style="font-size: 0.65rem;" th:text="${@simulatorProperties.role}">ROLE</span>
+            </a>
+            <div class="navbar-nav ms-auto align-items-center">
+                <div class="zoom-controls btn-group me-4 border border-secondary rounded overflow-hidden">
+                    <button onclick="changeFontSize(-1)" class="btn btn-dark"><i class="bi bi-dash-lg"></i></button>
+                    <button onclick="resetFontSize()" class="btn btn-dark"><i class="bi bi-type"></i></button>
+                    <button onclick="changeFontSize(1)" class="btn btn-dark"><i class="bi bi-plus-lg"></i></button>
+                </div>
+                <a class="nav-link active" href="/gui"><i class="bi bi-cpu-fill me-1"></i> Dashboard</a>
+            </div>
+        </div>
+    </nav>
 
-	<div id="notification-area">
-		<div th:if="${success}"
-			class="alert alert-success alert-dismissible fade show d-flex align-items-center"
-			role="alert">
-			<i class="bi bi-check-circle-fill fs-5 me-3"></i>
-			<div th:text="${success}"></div>
-			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-		</div>
+    <div id="notification-area"></div>
 
-		<div th:if="${error}"
-			class="alert alert-danger alert-dismissible fade show d-flex align-items-center"
-			role="alert">
-			<i class="bi bi-exclamation-triangle-fill fs-5 me-3"></i>
-			<div th:text="${error}"></div>
-			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-		</div>
-	</div>
+    <div class="container-fluid px-4 mt-2">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card dest-card shadow-sm border-top border-4"
+                    th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'bg-externo' : 'border-primary'">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold" th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'text-externo' : 'text-primary'">
+                            <i class="bi me-2" th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'bi-box-arrow-in-right' : 'bi-mainboard'"></i>
+                            <span th:text="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'Externo' : 'Master'">Panel</span>
+                        </h5>
+                        <span class="badge bg-info-subtle text-info border border-info badge-queue" id="titleA">...</span>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/gui/send}" method="post" id="formA">
+                            <input type="hidden" name="source" value="A">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-uppercase">Cola Destino</label> 
+                                    <select name="queue" id="queueA" class="form-select" onchange="updateTitles()">
+                                        <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-uppercase">Correlation ID</label> 
+                                    <input type="text" name="correlationId" id="correlA" class="form-control" placeholder="Hex ID">
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end justify-content-center pb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="copyCorrel" id="copyCheckA" onchange="toggleCorrel('A')"> 
+                                        <label class="form-check-label small fw-bold" for="copyCheckA">Copy</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-uppercase">ReplyTo Queue</label> 
+                                    <input type="text" name="replyTo" id="replyToA" class="form-control" placeholder="REPLY.TO.Q">
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label small fw-bold text-uppercase">Cant.</label>
+                                    <input type="number" name="iterations" id="iterA" class="form-control" value="1" min="1">
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4 offset-md-8">
+                                    <label class="form-label small fw-bold text-uppercase">ReplyTo QMGR</label> 
+                                    <input type="text" name="replyToQMgr" id="replyToQMgrA" class="form-control" placeholder="QMGR.NAME">
+                                </div>
+                            </div>
+                            <label for="payloadA" class="label-payload fw-bold"><i class="bi bi-file-earmark-code me-1"></i> Payload</label>
+                            <textarea name="payload" id="payloadA" class="form-control payload-area" rows="3"></textarea>
+                            <div class="d-grid mt-3">
+                                <button type="submit" class="btn fw-bold shadow-sm py-2" id="btnA" th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'btn-warning' : 'btn-primary'">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span>ENVIAR</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-	<div class="container-fluid px-4 mt-2">
-		<div class="row g-4">
-			<div class="col-lg-8">
-				<div class="card dest-card shadow-sm border-top border-4"
-					th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'bg-externo' : 'border-primary'">
-					<div
-						class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-						<h5 class="mb-0 fw-bold"
-							th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'text-externo' : 'text-primary'">
-							<i class="bi me-2"
-								th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'bi-box-arrow-in-right' : 'bi-mainboard'"></i>
-							<span
-								th:text="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'Externo' : 'Master'">Panel</span>
-						</h5>
-						<span
-							class="badge bg-info-subtle text-info border border-info badge-queue"
-							id="titleA">...</span>
-					</div>
-					<div class="card-body">
-						<form th:action="@{/gui/send}" method="post" id="formA">
-							<input type="hidden" name="source" value="A">
-							<div class="row g-2 mb-2">
-								<div class="col-md-4">
-									<label class="form-label small fw-bold text-uppercase">Cola
-										Destino</label> <select name="queue" id="queueA" class="form-select"
-										onchange="updateTitles()">
-										<option th:each="q : ${queues.entrySet()}" th:value="${q.key}"
-											th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
-									</select>
-								</div>
-								<div class="col-md-3">
-									<label class="form-label small fw-bold text-uppercase">Correlation
-										ID</label> <input type="text" name="correlationId" id="correlA"
-										class="form-control" placeholder="Hex ID">
-								</div>
-								<div
-									class="col-md-1 d-flex align-items-end justify-content-center pb-2">
-									<div class="form-check">
-										<input class="form-check-input" type="checkbox"
-											name="copyCorrel" id="copyCheckA"
-											onchange="toggleCorrel('A')"> <label
-											class="form-check-label small fw-bold" for="copyCheckA">Copy</label>
-									</div>
-								</div>
-								<div class="col-md-3">
-									<label class="form-label small fw-bold text-uppercase">ReplyTo
-										Queue</label> <input type="text" name="replyTo" id="replyToA"
-										class="form-control" placeholder="REPLY.TO.Q">
-								</div>
-								<div class="col-md-1">
-									<label class="form-label small fw-bold text-uppercase">Cant.</label>
-									<input type="number" name="iterations" id="iterA"
-										class="form-control" value="1" min="1">
-								</div>
-							</div>
-							<div class="row g-2 mb-3">
-								<div class="col-md-4 offset-md-8">
-									<label class="form-label small fw-bold text-uppercase">ReplyTo
-										QMGR</label> <input type="text" name="replyToQMgr" id="replyToQMgrA"
-										class="form-control" placeholder="QMGR.NAME">
-								</div>
-							</div>
-							<label for="payloadA" class="label-payload fw-bold"><i
-								class="bi bi-file-earmark-code me-1"></i> Payload</label>
-							<textarea name="payload" id="payloadA"
-								class="form-control payload-area" rows="3"></textarea>
-							<div class="d-grid mt-3">
-								<button type="submit" class="btn fw-bold shadow-sm"
-									th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'btn-warning' : 'btn-primary'">ENVIAR</button>
-							</div>
-						</form>
-					</div>
-				</div>
+                <div class="card dest-card shadow-sm border-top border-info border-4" th:if="${@simulatorProperties.role != 'DR_START'}">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-info fw-bold"><i class="bi bi-hdd-network me-2"></i>Secundario</h5>
+                        <span class="badge bg-info-subtle text-info border border-info badge-queue" id="titleB">...</span>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/gui/send}" method="post" id="formB">
+                            <input type="hidden" name="source" value="B">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-uppercase">Cola</label>
+                                    <select name="queue" id="queueB" class="form-select" onchange="updateTitles()">
+                                        <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-uppercase">Correlation ID</label> 
+                                    <input type="text" name="correlationId" id="correlB" class="form-control border-info" placeholder="Hex ID">
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end justify-content-center pb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="copyCorrel" id="copyCheckB" onchange="toggleCorrel('B')"> 
+                                        <label class="form-check-label small fw-bold" for="copyCheckB">Copy</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-uppercase">ReplyTo QUEUE</label> 
+                                    <input type="text" name="replyTo" id="replyToB" class="form-control">
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label small fw-bold text-uppercase">Cant.</label>
+                                    <input type="number" name="iterations" id="iterB" class="form-control" value="1" min="1">
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4 offset-md-8">
+                                    <label class="form-label small fw-bold text-uppercase">ReplyTo QMGR</label> 
+                                    <input type="text" name="replyToQMgr" id="replyToQMgrB" class="form-control">
+                                </div>
+                            </div>
+                            <label for="payloadB" class="label-payload fw-bold"><i class="bi bi-file-earmark-code me-1"></i> Payload</label>
+                            <textarea name="payload" id="payloadB" class="form-control payload-area" rows="3"></textarea>
+                            <div class="d-grid mt-3">
+                                <button type="submit" class="btn btn-info text-white fw-bold py-2" id="btnB">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span>ENVIAR SECUNDARIO</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-				<div
-					class="card dest-card shadow-sm border-top border-info border-4"
-					th:if="${@simulatorProperties.role != 'DR_START'}">
-					<div
-						class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-						<h5 class="mb-0 text-info fw-bold">
-							<i class="bi bi-hdd-network me-2"></i>Secundario
-						</h5>
-						<span
-							class="badge bg-info-subtle text-info border border-info badge-queue"
-							id="titleB">...</span>
-					</div>
-					<div class="card-body">
-						<form th:action="@{/gui/send}" method="post" id="formB">
-							<input type="hidden" name="source" value="B">
-							<div class="row g-2 mb-2">
-								<div class="col-md-4">
-									<label class="form-label small fw-bold text-uppercase">Cola</label>
-									<select name="queue" id="queueB" class="form-select"
-										onchange="updateTitles()">
-										<option th:each="q : ${queues.entrySet()}" th:value="${q.key}"
-											th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
-									</select>
+            <div class="col-lg-4">
+                <div class="sidebar-payloads shadow-sm p-3 border">
+                    <h6 class="fw-bold mb-3 text-secondary border-bottom pb-2">LIBRERÍA DE PAYLOADS</h6>
+                    <div class="list-group list-group-flush">
+                        <button th:each="entry : ${payloads}" type="button"
+                            class="list-group-item list-group-item-action border-0 rounded mb-2 shadow-sm py-2"
+                            th:data-key="${entry.key}" onclick="insertKey(this.getAttribute('data-key'))">
+                            <div class="fw-bold text-primary small" th:text="${entry.key}">KEY</div>
+                            <div class="text-muted small text-truncate" th:text="${entry.value}"></div>
+                        </button>
+                    </div>
+                    <div class="d-grid gap-2 mt-4 pt-3 border-top">
+                        <button onclick="beautify()" class="btn btn-sm btn-outline-secondary">Beautify JSON</button>
+                        <button onclick="clearAll()" class="btn btn-sm btn-outline-danger">Reset Total</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-								</div>
-								<div class="col-md-3">
-									<label class="form-label small fw-bold text-uppercase">Correlation
-										ID</label> <input type="text" name="correlationId" id="correlB"
-										class="form-control border-info" placeholder="Hex ID">
-								</div>
-								<div
-									class="col-md-1 d-flex align-items-end justify-content-center pb-2">
-									<div class="form-check">
-										<input class="form-check-input" type="checkbox"
-											name="copyCorrel" id="copyCheckB"
-											onchange="toggleCorrel('B')"> <label
-											class="form-check-label small fw-bold" for="copyCheckB">Copy</label>
-									</div>
-								</div>
-								<div class="col-md-3">
-									<label class="form-label small fw-bold text-uppercaseo">ReplyTo
-										QUEUE</label> <input type="text" name="replyTo" id="replyToB"
-										class="form-controlo">
-								</div>
-								<div class="col-md-1">
-									<label class="form-label small fw-bold text-uppercase">Cant.</label>
-									<input type="number" name="iterations" id="iterB"
-										class="form-control" value="1" min="1">
-								</div>
-							</div>
-							<div class="row g-2 mb-3">
-								<div class="col-md-4 offset-md-8">
-									<label class="form-label small fw-bold text-uppercaseo">ReplyTo
-										QMGR</label> <input type="text" name="replyToQMgr" id="replyToQMgrB"
-										class="form-contro">
-								</div>
-							</div>
-							<label for="payloadB" class="label-payload fw-bold"><i
-								class="bi bi-file-earmark-code me-1"></i> Payload</label>
-							<textarea name="payload" id="payloadB"
-								class="form-control payload-area" rows="3"></textarea>
-							<div class="d-grid mt-3">
-								<button type="submit" class="btn btn-info text-white fw-bold">ENVIAR
-									SECUNDARIO</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-
-			<div class="col-lg-4">
-				<div class="sidebar-payloads shadow-sm p-3 border">
-					<h6 class="fw-bold mb-3 text-secondary border-bottom pb-2">LIBRERÍA
-						DE PAYLOADS</h6>
-					<div class="list-group list-group-flush">
-						<button th:each="entry : ${payloads}" type="button"
-							class="list-group-item list-group-item-action border-0 rounded mb-2 shadow-sm py-2"
-							th:data-key="${entry.key}"
-							onclick="insertKey(this.getAttribute('data-key'))">
-							<div class="fw-bold text-primary small" th:text="${entry.key}">KEY</div>
-							<div class="text-muted small text-truncate"
-								th:text="${entry.value}"></div>
-						</button>
-					</div>
-					<div class="d-grid gap-2 mt-4 pt-3 border-top">
-						<button onclick="beautify()"
-							class="btn btn-sm btn-outline-secondary">Beautify JSON</button>
-						<button onclick="clearAll()" class="btn btn-sm btn-outline-danger">Reset
-							Total</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<script th:inline="javascript">
+<script th:inline="javascript">
     const fields = ['queueA', 'correlA', 'iterA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'queueB', 'correlB', 'iterB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB'];
     let lastActiveTextarea = "payloadA";
 
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. Cargar Zoom
+        // Cargar Zoom y LocalStorage
         const savedSize = localStorage.getItem('mq_fontSize');
         if (savedSize) document.documentElement.style.fontSize = savedSize + 'px';
 
-        // 2. Cargar LocalStorage
         fields.forEach(f => {
             const el = document.getElementById(f);
             if (el) {
@@ -339,33 +219,10 @@ body {
             }
         });
 
-        // 3. Foco Textareas
+        // Foco Textareas
         ['payloadA', 'payloadB'].forEach(id => {
             const el = document.getElementById(id);
             if(el) el.addEventListener('focus', () => lastActiveTextarea = id);
-        });
-
-        // 4. Lógica de guardado al enviar
-        const saveAll = () => {
-            fields.forEach(f => {
-                const el = document.getElementById(f);
-                if (el) {
-                    const val = el.type === 'checkbox' ? el.checked : el.value;
-                    localStorage.setItem('mq_' + f, val);
-                }
-            });
-        };
-        document.getElementById('formA')?.addEventListener('submit', saveAll);
-        document.getElementById('formB')?.addEventListener('submit', saveAll);
-
-        // 5. AUTO-CIERRE DEL BANNER (5 SEGUNDOS)
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alertEl => {
-            setTimeout(() => {
-                // Usamos la API nativa de Bootstrap para cerrar con animación
-                const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
-                if (bsAlert) bsAlert.close();
-            3}, 3000);
         });
 
         toggleCorrel('A');
@@ -373,6 +230,75 @@ body {
         updateTitles();
     });
 
+    // --- LÓGICA AJAX ---
+    async function sendFormAjax(formId) {
+        const form = document.getElementById(formId);
+        const btn = form.querySelector('button[type="submit"]');
+        const formData = new FormData(form);
+
+        // UI: Loading State
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        // Guardar estado actual
+        fields.forEach(f => {
+            const el = document.getElementById(f);
+            if (el) {
+                const val = el.type === 'checkbox' ? el.checked : el.value;
+                localStorage.setItem('mq_' + f, val);
+            }
+        });
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            });
+
+            // Leemos el contenido de la respuesta (el String que mandas desde el Controller)
+            const responseText = await response.text();
+
+            if (response.ok) {
+                // Si el status es 200-299, mostramos el texto que viene de Java
+                // Por ejemplo: "Mensaje enviado con ID: ABC123..."
+                showNotification(responseText, "success");
+            } else {
+                // Si hay error (400, 500...), mostramos el error que capturó el Controller
+                showNotification("Error: " + responseText, "danger");
+            }
+        } catch (error) {
+            // Este catch es solo para errores de RED (servidor caído, sin internet)
+            showNotification("No se pudo conectar con el servidor: " + error.message, "danger");
+        }finally {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+    }
+
+    // Interceptar Submits
+    document.getElementById('formA').addEventListener('submit', (e) => { e.preventDefault(); sendFormAjax('formA'); });
+    document.getElementById('formB')?.addEventListener('submit', (e) => { e.preventDefault(); sendFormAjax('formB'); });
+
+    function showNotification(msg, type) {
+        const area = document.getElementById('notification-area');
+        const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+        area.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show d-flex align-items-center" role="alert">
+                <i class="bi ${icon} fs-5 me-3"></i>
+                <div>${msg}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
+        
+        setTimeout(() => {
+            const el = area.querySelector('.alert');
+            if(el) {
+                const bs = bootstrap.Alert.getOrCreateInstance(el);
+                bs.close();
+            }
+        }, 4000);
+    }
+
+    // --- FUNCIONES AUXILIARES ---
     function toggleCorrel(src) {
         const ck = document.getElementById('copyCheck' + src);
         const inp = document.getElementById('correl' + src);
@@ -410,13 +336,36 @@ body {
 
     function beautify() {
         const t = document.getElementById(lastActiveTextarea);
-        try { t.value = JSON.stringify(JSON.parse(t.value), null, 4); } catch(e) { alert("JSON no válido."); }
+        try { t.value = JSON.stringify(JSON.parse(t.value), null, 4); } catch(e) { showNotification("JSON no válido.", "danger"); }
     }
 
     function clearAll() { if(confirm("¿Borrar todo?")) { localStorage.clear(); location.reload(); } }
+    let isAppDown = false;
+
+    function checkServerStatus() {
+        // Hacemos una petición ligera al servidor
+        fetch('/gui', { method: 'HEAD', cache: 'no-store' })
+            .then(response => {
+                if (response.ok && isAppDown) {
+                    // Si estaba caído y ahora responde, recargamos
+                    console.log("Servidor recuperado. Recargando...");
+                    location.reload();
+                }
+                isAppDown = false;
+            })
+            .catch(error => {
+                // Si entra aquí, es que la conexión fue rechazada (app reiniciando)
+                if (!isAppDown) {
+                    console.warn("Servidor no responde. Esperando reinicio...");
+                }
+                isAppDown = true;
+            });
+    }
+
+    // Ejecutar cada 3 segundos
+    setInterval(checkServerStatus, 10000);
 </script>
 
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

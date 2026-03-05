@@ -7,13 +7,11 @@ import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
-import com.simulador.config.SimulatorProperties.AutoResponse;
 import com.simulador.config.SimulatorProperties.QueueConfig;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,20 +34,24 @@ public class MQMultiConnectionConfig {
     } catch (MQException e) {
       e.printStackTrace();
     }
-    Map<String, AutoResponse> responses = props.getAutoResponses();
-    List<String> res = new ArrayList<>();
-    responses.forEach((key, value) -> {
-      SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(key);
-      log.info("key res: " + sourceQ.getName());
-      res.add(sourceQ.getName());
-    });
-
-    Map<String, String> consumerQueue = props.getConsumers();
-    consumerQueue.forEach((key, consumeRule) -> {
-      SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(consumeRule);
-      log.info("key con: " + sourceQ.getName());
-      res.add(sourceQ.getName());
-    });
+    List<String> res = props.getGetQueues();
+    // Map<String, AutoResponse> responses = props.getAutoResponses();
+    // if (responses != null) {
+    // responses.forEach((key, value) -> {
+    // SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(key);
+    // log.info("key res: " + sourceQ.getName());
+    // res.add(sourceQ.getName());
+    // });
+    // }
+    //
+    // Map<String, String> consumerQueue = props.getConsumers();
+    // if (consumerQueue != null) {
+    // consumerQueue.forEach((key, consumeRule) -> {
+    // SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(consumeRule);
+    // log.info("key con: " + sourceQ.getName());
+    // res.add(sourceQ.getName());
+    // });
+    // }
 
     props.getQueues().entrySet().forEach((entry) -> {
       QueueConfig qConfig = entry.getValue();
@@ -58,22 +60,29 @@ public class MQMultiConnectionConfig {
         // Forzamos la creación de una conexión física NUEVA por cada iteración
         MQQueueManager qm = config.createConnection(queueName);
         int options = 0;
-        if (res.contains(queueName)) {
-          options = MQConstants.MQOO_INPUT_AS_Q_DEF | MQConstants.MQOO_INQUIRE
-              | MQConstants.MQOO_FAIL_IF_QUIESCING;
+        if (res.size() > 0 && res.contains(queueName)) {
+          log.info("Cola a conectar get/put : '{}'", queueName);
+          options = MQConstants.MQOO_OUTPUT | MQConstants.MQOO_INPUT_AS_Q_DEF
+              | MQConstants.MQOO_INQUIRE | MQConstants.MQOO_FAIL_IF_QUIESCING
+              | MQConstants.MQPMO_SET_ALL_CONTEXT | MQConstants.MQOO_SET_ALL_CONTEXT;
         } else {
           options = MQConstants.MQOO_OUTPUT | MQConstants.MQOO_INQUIRE
-              | MQConstants.MQOO_FAIL_IF_QUIESCING;
+              | MQConstants.MQOO_FAIL_IF_QUIESCING | MQConstants.MQPMO_SET_ALL_CONTEXT;
         }
         MQQueue queue = qm.accessQueue(queueName, options);
-
         connectionMap.put(queueName, new MQConnectionBundle(qm, queue));
-        // log.info("Conexión independiente establecida para la cola: {}", queueName);
       } catch (MQException e) {
-        log.error("Error conectando a la cola {}", queueName, e);
+        if (e.getReason() == 2538) {
+          throw new RuntimeException("Error al conectar al servidor MQ.");
+        } else {
+          log.error("Error conectando a la cola {}", queueName, e);
+        }
       }
     });
-    log.info("Conexión independiente establecida para las colas: {}", connectionMap.keySet());
+    List<String> listaConComillas = connectionMap.keySet().stream()
+        .map(key -> "'" + key + "'")
+        .collect(Collectors.toList());
+    log.info("Conexión independiente establecida para las colas: {}", listaConComillas);
     return connectionMap;
   }
 }

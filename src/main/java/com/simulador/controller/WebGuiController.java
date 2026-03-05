@@ -7,13 +7,14 @@ import com.simulador.config.SimulatorProperties;
 import com.simulador.service.MqSimulatorService;
 import com.simulador.service.RoundRobinExecutorPool;
 import com.simulador.utils.Utils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/gui")
@@ -21,7 +22,7 @@ public class WebGuiController extends Utils {
 
   private final MqSimulatorService  mqService;
   private final SimulatorProperties props;
-  private RoundRobinExecutorPool    pool = new RoundRobinExecutorPool("SEND", 100);
+  private RoundRobinExecutorPool    pool = new RoundRobinExecutorPool("SEND", 25);
 
   public WebGuiController(MqSimulatorService mqService, SimulatorProperties props) {
     this.mqService = mqService;
@@ -36,35 +37,31 @@ public class WebGuiController extends Utils {
   }
 
   @PostMapping("/send")
-  public String sendMessage(@RequestParam String queue,
-      @RequestParam String payload,
-      @RequestParam(required = false) byte[] correlationId,
-      @RequestParam(required = false) boolean copyCorrel,
-      @RequestParam(defaultValue = "1") int iterations,
-      @RequestParam(required = false) String replyTo,
-      @RequestParam(required = false) String replyToQMgr,
-      RedirectAttributes ra) {
+  @ResponseBody
+  public ResponseEntity<String> handleSend(@ModelAttribute MqRequestDTO request) {
 
-    byte[] originalCorrelation = correlationId; // Guardamos el valor original para usarlo en cada
+    byte[] originalCorrelation = request.getCorrelationId(); // Guardamos el valor original para usarlo en cada
                                                 // iteración
 
     final byte[][] corr = new byte[1][];
     final byte[][] mess = new byte[1][];
 
-    for (int i = 0; i < iterations; i++) {
+    for (int i = 0; i < request.getIterations(); i++) {
       try {
         pool.execute(() -> {
           corr[0] = originalCorrelation;        // correlationId = originalCorrelation; //
                                                 // Reiniciamos
                                                 // el valor de correlationId para cada iteración
-          if (correlationId == null || correlationId.length == 0) {
+          if (request.getCorrelationId() == null || request.getCorrelationId().length == 0) {
             corr[0] = generateRandomId();          // correlationId = utils.generateRandomId();
           }
-          if (copyCorrel) {
-            mess[0] = correlationId.clone();          // messageId = correlationId.clone();
+          if (request.isCopyCorrel()) {
+            mess[0] = request.getCorrelationId().clone();          // messageId =
+                                                                   // correlationId.clone();
           }
           try {
-            mqService.send(queue, payload, corr[0], mess[0], copyCorrel, replyTo, replyToQMgr,
+            mqService.send(request.getQueue(), request.getPayload(), corr[0], mess[0],
+                request.isCopyCorrel(), request.getReplyTo(), request.getReplyToQMgr(),
                 false, java.util.Optional.empty());
           } catch (Exception e) {
             e.printStackTrace();
@@ -72,15 +69,15 @@ public class WebGuiController extends Utils {
         });
 
       } catch (Exception e) {
-        ra.addFlashAttribute("error", "Error en el envío: " + e.getMessage());
+        return ResponseEntity.status(500).body("Error en el envío: " + e.getMessage());
       }
     }
-    String msgSuccess = (iterations > 1)
-        ? String.format("Se han enviado %d mensajes a %s", iterations, queue)
-        : "Mensaje enviado con éxito a " + queue;
+    String msgSuccess = (request.getIterations() > 1)
+        ? String.format("Se han enviado %d mensajes a %s", request.getIterations(),
+            request.getQueue())
+        : "Mensaje enviado con éxito a " + request.getQueue();
 
-    ra.addFlashAttribute("success", msgSuccess);
-    return "redirect:/gui";
+    return ResponseEntity.ok(msgSuccess);
   }
 
   private byte[] hexStringToByteArray(String s) {
@@ -92,4 +89,6 @@ public class WebGuiController extends Utils {
     }
     return data;
   }
+
+
 }

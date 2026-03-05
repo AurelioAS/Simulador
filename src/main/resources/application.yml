@@ -1,10 +1,12 @@
-spring.profiles.active: external-driven, mq-dev # dualrun-ger, external-driven, master-driven
+# spring.profiles.active: dualrun-ger, mq-dev-ger # dualrun-ger, external-driven, master-driven
 
 server:
   port: 8089
   error:
     include-message: always
-
+  servlet:
+    session:
+      tracking-modes: cookie # Evita generación innecesaria de IDs de sesión si no usas sesiones
 
 simu-mq.path: "c:/temp"
 simu-mq.expiry: 120     #in seconds
@@ -14,6 +16,7 @@ spring.thymeleaf.cache: true
 
 logging.config: classpath:log4j2.xml
 logging.level.org.springframework.boot.context.properties: DEBUG
+logging.level.org.apache.catalina.util.SessionIdGeneratorBase: ERROR
 ---
 # Profile to activate to connect to cert client mq
 spring.config.activate.on-profile: mq-dev-ger
@@ -29,7 +32,7 @@ ibm:
     
 ---
 # Profile to activate to connect to cert client mq
-spring.config.activate.on-profile: mq-dev
+spring.config.activate.on-profile: mq-dev,default
       
 ibm:
   mq:
@@ -102,10 +105,10 @@ simulador:
 # -------------------------------------------------------------------
 # PERFIL: EXTERNAL-DRIVEN (El simulador actúa como sistema externo inicial)
 # -------------------------------------------------------------------
-spring.config.activate.on-profile: external-driven
+spring.config.activate.on-profile: external-driven, default
 
 simulador:
-  numThreads: 3
+  numThreads: 5
   role: DR_START
   # Definición de colas con su respectivo CCSID
   queues:
@@ -115,12 +118,17 @@ simulador:
       master-res:
         name: "QNAME10"
         ccsid: 284
-      external-req:
+      external-request:
         name: "QNAME07"
         ccsid: 1208
       external-res:
         name: "QNAME12"
         ccsid: 819  # Ejemplo: ISO-8859-1 para el sistema externo
+        fire:
+          queues:
+            secondary-in:
+              payload-key: 'MENSAJE_SECUNDARIO'
+              copy-correl: true
       secondary-in:
         name: "QNAME09"
         ccsid: 284
@@ -131,10 +139,10 @@ simulador:
 
     # Biblioteca de mensajes (Strings configurables)
   payloads:
-     MENSAJE_EXTERNO: '00870X230256900077002100520810000049A22B33XA001002003004005000001100000120000013'
-     MENSAJE_MASTER: '008700410840000077002100520810000049XA01TODO BIEN   ..................'
+     MENSAJE_EXTERNO: '00870X230256900077002100520810000049A22B33XA00100200300400500000110000012000001300870X230256900077002100520810000049A22B33XA00100200300400500000110000012000001300870X230256900077002100520810000049A22B33XA00100200300400500000110000012000001300870X230256900077002100520810000049A22B33XA001002003004005000001100000120000013'
+     MENSAJE_MASTER: '008700410840000077002100520810000049XA01TODO BIEN   ..................008700410840000077002100520810000049XA01TODO BIEN   ..................008700410840000077002100520810000049XA01TODO BIEN   ..................008700410840000077002100520810000049XA01TODO BIEN   ..................'
      RESPUESTA_EXITOSA: '{"resultado": "PROCESADO_OK", "codigo_autorizacion": "MQ-9988"}'
-     MENSAJE_SECUNDARIO: '008700410840000077002100520810000049XA02FUE MAL     ..................'
+     MENSAJE_SECUNDARIO: '008700410840000077002100520810000049XA02FUE MAL     ..................008700410840000077002100520810000049XA02FUE MAL     ..................008700410840000077002100520810000049XA02FUE MAL     ..................008700410840000077002100520810000049XA02FUE MAL     ..................'
      KEEP_ALIVE: '{"status": "UP"}'
 
     # MATRIZ DE RESPUESTAS AUTOMÁTICAS:
@@ -247,16 +255,16 @@ simulador:
 
 #    # MATRIZ DE RESPUESTAS AUTOMÁTICAS:
 #    # "Si el simulador recibe un mensaje en la llave X, responde en la llave Y con el payload Z"
-#  auto-responses:
-#      master-in:
-#        target-queue: "master-res"
-#        payload-key: "MENSAJE_MASTER"
-#        copy-correl: true
-#    
-#      secondary-in:
-#        target-queue: "secondary-res"
-#        payload-key: "MENSAJE_SECUNDARIO"
-#        copy-correl: true
+  auto-responses:
+      master-in:
+        target-queue: "master-res"
+        payload-key: "MENSAJE_MASTER"
+        copy-correl: true
+    
+      secondary-in:
+        target-queue: "secondary-res"
+        payload-key: "MENSAJE_SECUNDARIO"
+        copy-correl: true
   
   consumers:
     - external-res
@@ -279,13 +287,13 @@ simulador:
     master-in:
       name: "QNAME08"
       ccsid: 284 # UTF-8
-      fire:
-        queues:
-          secondary-in:
-            payload-key: 'MENSAJE_SECUNDARIO'
-            copy-correl: true
+#      fire:
+#        queues:
+#          secondary-in:
+#            payload-key: 'MENSAJE_SECUNDARIO'
+#            copy-correl: true
     secondary-in:
-      name: "QNAME08"
+      name: "QNAME09"
       ccsid: 284
       tresp: 50
     external-in:
