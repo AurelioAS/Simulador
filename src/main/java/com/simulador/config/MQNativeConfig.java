@@ -1,9 +1,11 @@
 package com.simulador.config;
 
+import com.ibm.mq.MQEnvironment;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
 import java.util.Hashtable;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -15,12 +17,15 @@ public class MQNativeConfig {
   @Autowired
   MQProperties mqProperties;
 
+  @Getter
+  Hashtable<String, Object> props = new Hashtable<>();
+
   static {
     System.setProperty("com.ibm.mq.pooling.isPoolingEnabled", "false");
+    MQEnvironment.addConnectionPoolToken();
   }
 
   public MQQueueManager createConnection(String appName) throws MQException {
-    Hashtable<String, Object> props = new Hashtable<>();
 
     // Configuración básica de red
     props.put(MQConstants.HOST_NAME_PROPERTY, mqProperties.getHost());
@@ -40,8 +45,8 @@ public class MQNativeConfig {
     // 2. Opciones de conexión: Reconnect + No compartir handles
     // Usamos SHARE_BLOCK si vas a usar varios hilos para el mismo manager,
     // pero SHARE_NONE es el más agresivo para separar GET de PUT.
-    props.put(MQConstants.CONNECT_OPTIONS_PROPERTY,
-        MQConstants.MQCNO_RECONNECT | MQConstants.MQCNO_HANDLE_SHARE_BLOCK);
+    // props.put(MQConstants.CONNECT_OPTIONS_PROPERTY,
+    // MQConstants.MQCNO_RECONNECT | MQConstants.MQCNO_HANDLE_SHARE_BLOCK);
 
     try {
       return new MQQueueManager(mqProperties.getQueueManager(), props);

@@ -42,13 +42,13 @@ public class SimulatorController {
     for (int i = 0; i < iterations; i++) {
       correlationId = originalCorrelation; // Reiniciamos el valor de correlationId para cada
       if (correlationId == null || correlationId.length == 0) {
-        correlationId = utils.generateRandomId();
+        correlationId = utils.generateRandomId(24);
       }
       if (queue.equals("master-in") && role.equals("SOH_START")) {
         // Enviar respuesta automática si aplica
         service.send(queue, payload, correlationId, new byte[24], copyCorrel, replyTo, replyToQMgr,
             false, java.util.Optional.empty());
-        TimeUnit.MILLISECONDS.sleep(200); // Simular tiempo de procesamiento
+        TimeUnit.MILLISECONDS.sleep(50); // Simular tiempo de procesamiento
         service.send("secondary-in", payload, correlationId, new byte[24], copyCorrel, replyTo,
             replyToQMgr, false, java.util.Optional.empty());
       }

@@ -16,4 +16,5 @@ public class MqRequestDTO {
   private String  replyToQMgr;    // Manager de respuesta
   private int     iterations;        // Cantidad de mensajes a enviar
   private String  payload;        // El contenido del mensaje (JSON, XML, etc.)
+  private int     threads = 1;         // Cantidad de hilos para la prueba (opcional, default 10)
 }

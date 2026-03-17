@@ -5,7 +5,9 @@ import com.ibm.mq.MQGetMessageOptions;
 import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQPutMessageOptions;
 import com.ibm.mq.MQQueue;
+import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
+import com.simulador.aspect.LogFullDetails;
 import com.simulador.components.JsonService;
 import com.simulador.config.MQConnectionBundle;
 import com.simulador.config.SimulatorProperties;
@@ -17,14 +19,13 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -39,10 +40,11 @@ public class MqSimulatorService extends Utils {
 
   private Map<String, MQConnectionBundle> connections;
 
-  private ConcurrentMap<String, MQQueue> queues = new ConcurrentHashMap<>();
   private RoundRobinExecutorPool         pool   = new RoundRobinExecutorPool("pool", 25);
 
   private final Utils utils = new Utils();
+  private MQConnectionBundle qmName;
+  private MQQueueManager     qm;
 
   public MqSimulatorService(Map<String, MQConnectionBundle> connections,
       SimulatorProperties props,
@@ -52,9 +54,11 @@ public class MqSimulatorService extends Utils {
     this.jsonService = jsonService;
   }
 
-  @PostConstruct
-  private void construct() {
+  @EventListener(ApplicationReadyEvent.class)
+  public void run() {
     log.info("Iniciando autorespuestas y consumidor en modo " + props.getRole());
+    this.qmName = connections.get(props.getGetQueues().get(0));
+    this.qm = qmName.getQm();
     Map<String, AutoResponse> responses = props.getAutoResponses();
     if (responses != null) {
       responses.forEach((sourceKey, rule) -> {
@@ -63,8 +67,10 @@ public class MqSimulatorService extends Utils {
           SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
           log.info("Configurada Autorespuesta y Flux para '{}' ({})", sourceQ.getName(), poolSize);
           MQConnectionBundle bundle = connections.get(sourceQ.getName());
+          queues.put(sourceQ.getName(), bundle.getQueue()); // Asegura que la cola esté en el mapa
           for (int i = 0; i < poolSize; i++) {
-            createFlux(sourceQ.getName(), processAndReply(sourceKey, rule, bundle)).subscribe();
+            createFlux(sourceQ.getName(), (msg) -> processAndReply(msg, sourceKey, rule, bundle), 1)
+                .subscribe();
           }
         } catch (Exception ignored) {
           log.error("Error configurando autorespuesta para {}: {}", sourceKey,
@@ -81,11 +87,12 @@ public class MqSimulatorService extends Utils {
         log.info("Configurada escucha y purgado y Flux para '{}' ({})", sourceQ.getName(),
             poolSize);
         MQConnectionBundle bundle = connections.get(sourceQ.getName());
+        queues.put(sourceQ.getName(), bundle.getQueue()); // Asegura que la cola esté en el mapa
         for (int i = 0; i < poolSize; i++) {
           try {
             int index = i % poolSize;
             createFlux(sourceQ.getName(),
-                consumeAndLog(consumeRule, sourceQ.getName(), index, bundle))
+                (msg) -> consumeAndLog(msg, consumeRule, sourceQ.getName(), index, bundle), 2)
                     .subscribe();
           } catch (Exception e) {
             log.error("Error configurando escucha para {}: {}", sourceQ.getName(), e.getMessage());
@@ -96,17 +103,17 @@ public class MqSimulatorService extends Utils {
   }
 
   /**
+   * @param msg2
    * @param consumeRule
    * @param i
    * @param bundle
    * @return
    */
-  private Consumer<MQMessage> consumeAndLog(String key, String consumeRule, int i,
+  private Consumer<MQMessage> consumeAndLog(MQMessage msg2, String key, String consumeRule, int i,
       MQConnectionBundle bundle) {
     return (msg) -> {
       try {
-        String qmName = bundle.getQueue().getConnectionReference().getName();
-        traceGet("<<< [PRG]", qmName, consumeRule, key, msg.characterSet,
+        traceGet("<<< [PRG]", consumeRule, key, msg.characterSet,
             bytesToHex(msg.correlationId));
         // log.debug("<<< [PRG] {} <-- {}| CCSID: {} | HEX: {} ",
         // qmName + "|" + consumeRule, String.format("%-15s", key), msg.characterSet,
@@ -127,12 +134,12 @@ public class MqSimulatorService extends Utils {
    * @param characterSet
    * @param bytesToHex
    */
-  private void traceGet(String string, String qmName, String consumeRule, String key,
+  private void traceGet(String string, String consumeRule, String key,
       int characterSet, String correlationId) {
     if (log.isDebugEnabled()) {
       key = key.length() > 15 ? key.substring(0, 15) + "..." : key;
       log.debug(string + " {} <-- {} | CCSID: {} | HEX: {} ",
-          qmName + "|" + consumeRule, String.format("%-18s", key), characterSet,
+          consumeRule, String.format("%-18s", key), characterSet,
         correlationId);
     }
   }
@@ -162,9 +169,9 @@ public class MqSimulatorService extends Utils {
     }
     SimulatorProperties.QueueConfig qConfig = props.getQueues().get(queueKey);
 
-    int options = MQConstants.MQOO_OUTPUT | MQConstants.MQOO_FAIL_IF_QUIESCING;
     MQQueue queue = getQueue(qConfig.getName());
-    String qmName = queue.getConnectionReference().getName();
+    log.debug("Preparando mensaje para enviar a " + queueKey + " con payloadKey: " + oldPayloadKey
+        + " y contenido: " + content);
     MQMessage msg = new MQMessage();
     msg.characterSet = qConfig.getCcsid();
     msg.format = MQConstants.MQFMT_STRING;
@@ -190,11 +197,15 @@ public class MqSimulatorService extends Utils {
         copied.set(true);
       }
     });
+    log.debug("Configuración de correlación para " + queueKey + ": " + correlation
+        + " | CopyCorrel: " + isCopyCorrel + " | Override aplicado: " + overrideConfig.isPresent());
     if (!copied.get()) {
       if (correlation.equals("msg-correl") && !props.getRole().equals("SOH_START")) {
         msg.messageId = msg.correlationId;
       } else if (correlation.equals("msg-correl") && props.getRole().equals("SOH_START")) {
-        msg.correlationId = messageId;
+        if (messageId != null) {
+          msg.correlationId = messageId;
+        }
       } else if (correlation.equals("correl-correl")) {
         msg.messageId = msg.correlationId;
       } else if (correlation.equals("msg-msg")) {
@@ -206,13 +217,14 @@ public class MqSimulatorService extends Utils {
       }
     }
     if (msg.messageId == null || utils.isNullOrEmpty(msg.messageId)) {
-      msg.messageId = Utils.generateRandomId();
+      msg.messageId = Utils.generateRandomId(24);
     }
     if (qConfig.getTresp() > 0) {
       log.debug(
           "Simulando tiempo de procesamiento de " + qConfig.getTresp() + " ms para " + queueKey);
       TimeUnit.MILLISECONDS.sleep(qConfig.getTresp()); // Simular tiempo de procesamiento
     }
+    log.debug("Payload original para " + queueKey + ": " + content);
     MessagesMgr messagesMgr = new MessagesMgr();
     if (!processed) {
       if (payloadKey.startsWith("payload:")) {
@@ -232,10 +244,11 @@ public class MqSimulatorService extends Utils {
     GregorianCalendar cal = new GregorianCalendar(utc);
     msg.putDateTime = cal;
     // msg.seek(0);
+    log.debug("Enviando mensaje a " + queueKey);
     queue.put(msg, new MQPutMessageOptions());
     String key = queueKey.length() > 15 ? queueKey.substring(0, 15) + "..." : queueKey;
     log.debug(
-        ">>> [PUT] " + qmName + "|" + qConfig.getName() + " --> " + String.format("%-18s", key)
+        ">>> [PUT] " + qConfig.getName() + " --> " + String.format("%-18s", key)
             + " | CCSID: "
             + qConfig.getCcsid() + " | HEX: "
             + bytesToHex(msg.correlationId));
@@ -286,44 +299,27 @@ public class MqSimulatorService extends Utils {
   public MQQueue getQueue(String name) {
     MQConnectionBundle bundle = connections.get(name);
     return queues.compute(name, (key, existingQueue) -> {
-      int options = MQConstants.MQOO_OUTPUT | MQConstants.MQOO_FAIL_IF_QUIESCING;
-      // Si no existe o está cerrada, creamos una nueva
-      MQQueue q = bundle.getQueue();
       if (existingQueue == null || !existingQueue.isOpen()) {
         log.info("Abriendo nueva instancia de cola: {}", key);
-        return q;
-        // return qmProducer.accessQueue(key, options);
+        return bundle.getQueue();
       }
-      return bundle.getQueue();
-    });
-  }
-
-  public MQQueue getQueueGets(String name) {
-    MQConnectionBundle bundle = connections.get(name);
-    return queues.compute(name, (key, existingQueue) -> {
-      int options = MQConstants.MQOO_INPUT_AS_Q_DEF;
-      MQQueue q = bundle.getQueue();
-      // Si no existe o está cerrada, creamos una nueva
-      if (existingQueue == null || !existingQueue.isOpen()) {
-        log.info("Abriendo nueva instancia de cola: {}", key);
-        return q;
-      }
-      return bundle.getQueue();
+      log.debug("Reutilizando instancia existente de cola: {}", key);
+      return existingQueue;
     });
   }
 
   /**
+   * @param msg
    * @param sourceKey
    * @param rule
    * @param bundle
    */
-  private Consumer<MQMessage> processAndReply(String sourceKey, AutoResponse rule,
+  private Consumer<MQMessage> processAndReply(MQMessage msg, String sourceKey, AutoResponse rule,
       MQConnectionBundle bundle) {
     return (incoming) -> {
       SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
       try {
-        String qmName = bundle.getQueue().getConnectionReference().getName();
-        traceGet("<<< [GET]", qmName, sourceQ.getName(), sourceKey, incoming.characterSet,
+        traceGet("<<< [GET]", sourceQ.getName(), sourceKey, incoming.characterSet,
             bytesToHex(incoming.correlationId));
         // log.debug("<<< [GET] " + qmName + "|" + sourceQ.getName() + " <-- "
         // + String.format("%-15s", sourceKey) + " | CCSID: "
@@ -359,6 +355,7 @@ public class MqSimulatorService extends Utils {
    * @param empty
    * @param c
    */
+  @LogFullDetails(logResult = true)
   private void lSend(String targetQueue, String payloadKey, byte[] correlationId, byte[] messageId,
       boolean isCopyCorrel, String string, String string2, boolean b, Optional<QueueConfig> empty,
       boolean c) {
@@ -373,13 +370,15 @@ public class MqSimulatorService extends Utils {
 
   }
 
-  public Flux<MQMessage> createFlux(String queueName, Consumer<MQMessage> action) {
-    MQConnectionBundle bundle = connections.get(queueName);
-
-    if (bundle == null) {
+  public Flux<MQMessage> createFlux(String queueName, Consumer<MQMessage> action, int actionType) {
+    // MQConnectionBundle bundle = connections.get(queueName);
+    MQQueue queue = getQueue(queueName); // Asegura que la cola esté inicializada y abierta
+    if (queue == null) {
       return Flux
           .error(new IllegalArgumentException("La cola " + queueName + " no está configurada."));
     }
+
+    log.info("Creando Flux para autorespuesta en cola '{}'", queueName);
 
     return Flux.<MQMessage>create(sink -> {
 
@@ -389,9 +388,9 @@ public class MqSimulatorService extends Utils {
           MQMessage msg = new MQMessage();
           MQGetMessageOptions gmo = new MQGetMessageOptions();
           gmo.options = MQConstants.MQGMO_WAIT | MQConstants.MQGMO_FAIL_IF_QUIESCING;
-          gmo.waitInterval = 20_000;
+          gmo.waitInterval = 5_000;
 
-          bundle.getQueue().get(msg, gmo);
+          queue.get(msg, gmo);
 
           // Emitimos el mensaje
           sink.next(msg);

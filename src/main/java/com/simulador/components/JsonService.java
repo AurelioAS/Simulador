@@ -3,12 +3,14 @@ package com.simulador.components;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
  * Provides functionality to read and write JSON, from basic POJOs.
  */
 @Service
+@Slf4j
 public class JsonService {
 
   /** The object mapper. */
@@ -18,6 +20,7 @@ public class JsonService {
    * It does not allow the serialization of dates as timestamps, only textual format.
    */
   public JsonService() {
+    log.info("Initializing JsonService with ObjectMapper: " + objectMapper);
     objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
   }
 

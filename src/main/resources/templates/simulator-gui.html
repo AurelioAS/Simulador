@@ -1,52 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>MQ Simulator | Dashboard AJAX</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<style>
-    /* BASE AL 80% */
-    html { font-size: 12.8px; transition: font-size 0.2s ease; }
-    body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; font-size: 1rem; }
-    .dest-card { border: none; border-radius: 12px; margin-bottom: 1.5rem; transition: all 0.3s; }
-    .payload-area { font-family: 'Fira Code', monospace; font-size: 0.9rem; resize: vertical; border-radius: 8px; min-height: 200px; background-color: #ffffff; }
-    .sidebar-payloads { background: white; border-radius: 12px; position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; }
-    .badge-queue { font-size: 0.8rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .bg-externo { border-top: 5px solid #fd7e14 !important; }
-    .text-externo { color: #fd7e14 !important; }
-    .label-payload { font-size: 0.9rem; color: #495057; margin-bottom: 6px; display: block; }
-    .zoom-controls .btn { padding: 0.2rem 0.6rem; font-size: 0.9rem; }
+    <meta charset="UTF-8">
+    <title>MQ Simulator | Dashboard AJAX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        /* BASE AL 80% */
+        html { font-size: 12.8px; transition: font-size 0.2s ease; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; font-size: 1rem; }
+        .dest-card { border: none; border-radius: 12px; margin-bottom: 1.5rem; transition: all 0.3s; }
+        .payload-area { font-family: 'Fira Code', monospace; font-size: 0.9rem; resize: vertical; border-radius: 8px; min-height: 200px; background-color: #ffffff; }
+        .sidebar-payloads { background: white; border-radius: 12px; position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; }
+        .badge-queue { font-size: 0.8rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .bg-externo { border-top: 5px solid #fd7e14 !important; }
+        .text-externo { color: #fd7e14 !important; }
+        .label-payload { font-size: 0.9rem; color: #495057; margin-bottom: 6px; display: block; }
+        .zoom-controls .btn { padding: 0.2rem 0.6rem; font-size: 0.9rem; }
 
-    #notification-area {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
-        width: 90%;
-        max-width: 600px;
-    }
+        /* BANNER DESCONEXIÓN */
+        #offline-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #dc3545;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10000;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: none;
+            animation: pulseRed 2s infinite;
+        }
 
-    .alert {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        border: none;
-        border-left: 5px solid;
-        animation: slideIn 0.3s ease-out;
-    }
+        @keyframes pulseRed {
+            0% { background-color: #dc3545; }
+            50% { background-color: #a71d2a; }
+            100% { background-color: #dc3545; }
+        }
 
-    @keyframes slideIn {
-        from { transform: translateY(-100%); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
+        #notification-area {
+            position: fixed;
+            top: 50px; /* Debajo del banner */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 600px;
+        }
 
-    /* Spinner para el botón */
-    .spinner-border-sm { display: none; margin-right: 5px; }
-    .loading .spinner-border-sm { display: inline-block; }
-    .loading span { opacity: 0.7; }
-</style>
+        .alert {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: none;
+            border-left: 5px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .spinner-border-sm { display: none; margin-right: 5px; }
+        .loading .spinner-border-sm { display: inline-block; }
+        .loading span { opacity: 0.7; }
+    </style>
 </head>
 <body>
+
+    <div id="offline-banner">
+        <i class="bi bi-wifi-off me-2"></i> CONEXIÓN PERDIDA - El servidor se está reiniciando...
+    </div>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container-fluid px-4">
@@ -83,38 +109,42 @@
                         <form th:action="@{/gui/send}" method="post" id="formA">
                             <input type="hidden" name="source" value="A">
                             <div class="row g-2 mb-2">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label class="form-label small fw-bold text-uppercase">Cola Destino</label> 
                                     <select name="queue" id="queueA" class="form-select" onchange="updateTitles()">
                                         <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase">Correlation ID</label> 
-                                    <input type="text" name="correlationId" id="correlA" class="form-control" placeholder="Hex ID">
-                                </div>
-                                <div class="col-md-1 d-flex align-items-end justify-content-center pb-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="copyCorrel" id="copyCheckA" onchange="toggleCorrel('A')"> 
-                                        <label class="form-check-label small fw-bold" for="copyCheckA">Copy</label>
-                                    </div>
+                                    <label class="form-label small fw-bold text-uppercase text-primary">Threads</label>
+                                    <input type="number" name="threads" id="threadsA" class="form-control" value="1" min="1">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase">ReplyTo Queue</label> 
-                                    <input type="text" name="replyTo" id="replyToA" class="form-control" placeholder="REPLY.TO.Q">
-                                </div>
-                                <div class="col-md-1">
-                                    <label class="form-label small fw-bold text-uppercase">Cant.</label>
+                                    <label class="form-label small fw-bold text-uppercase text-primary">Items</label>
                                     <input type="number" name="iterations" id="iterA" class="form-control" value="1" min="1">
                                 </div>
                             </div>
                             <div class="row g-2 mb-3">
-                                <div class="col-md-4 offset-md-8">
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-bold text-uppercase">Correlation ID</label> 
+                                    <div class="input-group">
+                                        <input type="text" name="correlationId" id="correlA" class="form-control" placeholder="Hex ID">
+                                        <div class="input-group-text bg-white">
+                                            <input class="form-check-input mt-0 me-1" type="checkbox" name="copyCorrel" id="copyCheckA" onchange="toggleCorrel('A')"> 
+                                            <label class="form-check-label small fw-bold" for="copyCheckA">Copy</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-uppercase">ReplyTo Queue</label> 
+                                    <input type="text" name="replyTo" id="replyToA" class="form-control">
+                                </div>
+                                <div class="col-md-3">
                                     <label class="form-label small fw-bold text-uppercase">ReplyTo QMGR</label> 
-                                    <input type="text" name="replyToQMgr" id="replyToQMgrA" class="form-control" placeholder="QMGR.NAME">
+                                    <input type="text" name="replyToQMgr" id="replyToQMgrA" class="form-control">
                                 </div>
                             </div>
-                            <label for="payloadA" class="label-payload fw-bold"><i class="bi bi-file-earmark-code me-1"></i> Payload</label>
+                            <label for="payloadA" class="label-payload fw-bold">Payload</label>
                             <textarea name="payload" id="payloadA" class="form-control payload-area" rows="3"></textarea>
                             <div class="d-grid mt-3">
                                 <button type="submit" class="btn fw-bold shadow-sm py-2" id="btnA" th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'btn-warning' : 'btn-primary'">
@@ -128,45 +158,29 @@
 
                 <div class="card dest-card shadow-sm border-top border-info border-4" th:if="${@simulatorProperties.role != 'DR_START'}">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 text-info fw-bold"><i class="bi bi-hdd-network me-2"></i>Secundario</h5>
+                        <h5 class="mb-0 text-info fw-bold">Secundario</h5>
                         <span class="badge bg-info-subtle text-info border border-info badge-queue" id="titleB">...</span>
                     </div>
                     <div class="card-body">
                         <form th:action="@{/gui/send}" method="post" id="formB">
                             <input type="hidden" name="source" value="B">
                             <div class="row g-2 mb-2">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label class="form-label small fw-bold text-uppercase">Cola</label>
                                     <select name="queue" id="queueB" class="form-select" onchange="updateTitles()">
                                         <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase">Correlation ID</label> 
-                                    <input type="text" name="correlationId" id="correlB" class="form-control border-info" placeholder="Hex ID">
-                                </div>
-                                <div class="col-md-1 d-flex align-items-end justify-content-center pb-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="copyCorrel" id="copyCheckB" onchange="toggleCorrel('B')"> 
-                                        <label class="form-check-label small fw-bold" for="copyCheckB">Copy</label>
-                                    </div>
+                                    <label class="form-label small fw-bold text-uppercase text-info">Threads</label>
+                                    <input type="number" name="threads" id="threadsB" class="form-control" value="1" min="1">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase">ReplyTo QUEUE</label> 
-                                    <input type="text" name="replyTo" id="replyToB" class="form-control">
-                                </div>
-                                <div class="col-md-1">
-                                    <label class="form-label small fw-bold text-uppercase">Cant.</label>
+                                    <label class="form-label small fw-bold text-uppercase text-info">Items</label>
                                     <input type="number" name="iterations" id="iterB" class="form-control" value="1" min="1">
                                 </div>
                             </div>
-                            <div class="row g-2 mb-3">
-                                <div class="col-md-4 offset-md-8">
-                                    <label class="form-label small fw-bold text-uppercase">ReplyTo QMGR</label> 
-                                    <input type="text" name="replyToQMgr" id="replyToQMgrB" class="form-control">
-                                </div>
-                            </div>
-                            <label for="payloadB" class="label-payload fw-bold"><i class="bi bi-file-earmark-code me-1"></i> Payload</label>
+                            <label for="payloadB" class="label-payload fw-bold">Payload</label>
                             <textarea name="payload" id="payloadB" class="form-control payload-area" rows="3"></textarea>
                             <div class="d-grid mt-3">
                                 <button type="submit" class="btn btn-info text-white fw-bold py-2" id="btnB">
@@ -200,11 +214,13 @@
     </div>
 
 <script th:inline="javascript">
-    const fields = ['queueA', 'correlA', 'iterA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'queueB', 'correlB', 'iterB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB'];
+    const fields = ['queueA', 'correlA', 'iterA', 'threadsA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'queueB', 'correlB', 'iterB', 'threadsB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB'];
     let lastActiveTextarea = "payloadA";
+    let isAppDown = false;
+    const banner = document.getElementById('offline-banner');
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Cargar Zoom y LocalStorage
+        // Cargar Zoom y Configuración
         const savedSize = localStorage.getItem('mq_fontSize');
         if (savedSize) document.documentElement.style.fontSize = savedSize + 'px';
 
@@ -219,7 +235,6 @@
             }
         });
 
-        // Foco Textareas
         ['payloadA', 'payloadB'].forEach(id => {
             const el = document.getElementById(id);
             if(el) el.addEventListener('focus', () => lastActiveTextarea = id);
@@ -230,17 +245,29 @@
         updateTitles();
     });
 
-    // --- LÓGICA AJAX ---
+    // --- LÓGICA ENVÍO AJAX + VALIDACIÓN ---
     async function sendFormAjax(formId) {
         const form = document.getElementById(formId);
+        
+        // Validación Threads <= Items
+        const threadInput = form.querySelector('input[name="threads"]');
+        const iterInput = form.querySelector('input[name="iterations"]');
+        let threads = parseInt(threadInput.value) || 1;
+        const items = parseInt(iterInput.value) || 1;
+
+        if (threads > items) {
+            showNotification(`Ajuste: Los hilos (${threads}) no pueden superar los ítems (${items}). Ajustado a ${items}.`, "warning");
+            threadInput.value = items;
+            threads = items;
+        }
+
         const btn = form.querySelector('button[type="submit"]');
         const formData = new FormData(form);
 
-        // UI: Loading State
         btn.classList.add('loading');
         btn.disabled = true;
 
-        // Guardar estado actual
+        // Guardar en LocalStorage
         fields.forEach(f => {
             const el = document.getElementById(f);
             if (el) {
@@ -254,63 +281,63 @@
                 method: 'POST',
                 body: new URLSearchParams(formData)
             });
-
-            // Leemos el contenido de la respuesta (el String que mandas desde el Controller)
-            const responseText = await response.text();
+            const data = await response.json();
 
             if (response.ok) {
-                // Si el status es 200-299, mostramos el texto que viene de Java
-                // Por ejemplo: "Mensaje enviado con ID: ABC123..."
-                showNotification(responseText, "success");
+                let msg = `Completado. Éxitos: ${data.successes}, Errores: ${data.errors}.`;
+                showNotification(msg, data.errors > 0 ? "warning" : "success");
             } else {
-                // Si hay error (400, 500...), mostramos el error que capturó el Controller
-                showNotification("Error: " + responseText, "danger");
+                showNotification("Error en la respuesta del servidor", "danger");
             }
         } catch (error) {
-            // Este catch es solo para errores de RED (servidor caído, sin internet)
-            showNotification("No se pudo conectar con el servidor: " + error.message, "danger");
-        }finally {
+            showNotification("Error de red o servidor caído", "danger");
+        } finally {
             btn.classList.remove('loading');
             btn.disabled = false;
         }
     }
 
-    // Interceptar Submits
+    // --- MONITOR DE CONEXIÓN (BANNER) ---
+    function checkServerStatus() {
+        fetch('/gui', { method: 'HEAD', cache: 'no-store' })
+            .then(response => {
+                if (response.ok && isAppDown) location.reload();
+                isAppDown = false;
+                banner.style.display = 'none';
+            })
+            .catch(() => {
+                if (!isAppDown) console.warn("Conexión perdida");
+                isAppDown = true;
+                banner.style.display = 'block';
+            });
+    }
+    setInterval(checkServerStatus, 3000);
+
+    // --- FUNCIONES AUXILIARES ---
     document.getElementById('formA').addEventListener('submit', (e) => { e.preventDefault(); sendFormAjax('formA'); });
     document.getElementById('formB')?.addEventListener('submit', (e) => { e.preventDefault(); sendFormAjax('formB'); });
 
     function showNotification(msg, type) {
         const area = document.getElementById('notification-area');
-        const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
         area.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show d-flex align-items-center" role="alert">
-                <i class="bi ${icon} fs-5 me-3"></i>
-                <div>${msg}</div>
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${msg}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>`;
-        
-        setTimeout(() => {
+        if(type === 'success') setTimeout(() => {
             const el = area.querySelector('.alert');
-            if(el) {
-                const bs = bootstrap.Alert.getOrCreateInstance(el);
-                bs.close();
-            }
+            if(el) bootstrap.Alert.getOrCreateInstance(el).close();
         }, 4000);
     }
 
-    // --- FUNCIONES AUXILIARES ---
     function toggleCorrel(src) {
         const ck = document.getElementById('copyCheck' + src);
         const inp = document.getElementById('correl' + src);
-        if (ck && inp) {
-            inp.disabled = ck.checked;
-            inp.classList.toggle('bg-light', ck.checked);
-            inp.placeholder = ck.checked ? "Auto-generado" : "Hex ID";
-        }
+        if (ck && inp) { inp.disabled = ck.checked; inp.placeholder = ck.checked ? "Auto" : "Hex"; }
     }
 
     function changeFontSize(d) {
-        const h = document.documentElement;
+        let h = document.documentElement;
         let s = Math.min(Math.max(parseFloat(window.getComputedStyle(h).fontSize) + d, 8), 24);
         h.style.fontSize = s + 'px';
         localStorage.setItem('mq_fontSize', s);
@@ -331,39 +358,15 @@
 
     function insertKey(k) {
         const t = document.getElementById(lastActiveTextarea);
-        if(t) { t.value = k; t.focus(); localStorage.setItem('mq_' + lastActiveTextarea, k); }
+        if(t) { t.value = k; t.focus(); }
     }
 
     function beautify() {
         const t = document.getElementById(lastActiveTextarea);
-        try { t.value = JSON.stringify(JSON.parse(t.value), null, 4); } catch(e) { showNotification("JSON no válido.", "danger"); }
+        try { t.value = JSON.stringify(JSON.parse(t.value), null, 4); } catch(e) { showNotification("JSON no válido", "danger"); }
     }
 
-    function clearAll() { if(confirm("¿Borrar todo?")) { localStorage.clear(); location.reload(); } }
-    let isAppDown = false;
-
-    function checkServerStatus() {
-        // Hacemos una petición ligera al servidor
-        fetch('/gui', { method: 'HEAD', cache: 'no-store' })
-            .then(response => {
-                if (response.ok && isAppDown) {
-                    // Si estaba caído y ahora responde, recargamos
-                    console.log("Servidor recuperado. Recargando...");
-                    location.reload();
-                }
-                isAppDown = false;
-            })
-            .catch(error => {
-                // Si entra aquí, es que la conexión fue rechazada (app reiniciando)
-                if (!isAppDown) {
-                    console.warn("Servidor no responde. Esperando reinicio...");
-                }
-                isAppDown = true;
-            });
-    }
-
-    // Ejecutar cada 3 segundos
-    setInterval(checkServerStatus, 10000);
+    function clearAll() { if(confirm("¿Reset total?")) { localStorage.clear(); location.reload(); } }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -11,6 +11,7 @@ server:
 simu-mq.path: "c:/temp"
 simu-mq.expiry: 120     #in seconds
 simu-mq.ttl: 60
+simu-mq.debug: true
 
 spring.thymeleaf.cache: true
 
@@ -108,7 +109,7 @@ simulador:
 spring.config.activate.on-profile: external-driven, default
 
 simulador:
-  numThreads: 5
+  numThreads: 1
   role: DR_START
   # Definición de colas con su respectivo CCSID
   queues:

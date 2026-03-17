@@ -3,12 +3,15 @@ package com.simulador;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
 @ComponentScan("com.simulador.*")
+@EnableCaching
+
 public class MqSimApp {
   public static void main(String[] args) {
     System.setProperty("com.ibm.mq.cfg.jmqi.libpath", "true"); // Acelera carga nativa

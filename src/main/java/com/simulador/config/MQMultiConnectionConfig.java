@@ -15,44 +15,33 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 @Configuration
 @Slf4j
+@DependsOn("cacheManager")
 public class MQMultiConnectionConfig {
 
   SimulatorProperties props;
+
+  public MQQueueManager qMan;
 
   @Bean(name = "mqConnections")
   public ConcurrentMap<String, MQConnectionBundle> mqConnections(SimulatorProperties props,
       MQNativeConfig config) {
 
     ConcurrentMap<String, MQConnectionBundle> connectionMap = new ConcurrentHashMap<>();
-    final MQQueueManager[] qMan = new MQQueueManager[1];
     try {
       MQQueueManager qmTemp = config.createConnection("SIMU");
-      qMan[0] = qmTemp;
+      log.info(
+          "Probando conexión del canal..." + config.getProps().get(MQConstants.CHANNEL_PROPERTY));
+      qMan = qmTemp;
+      qmTemp.disconnect();
+      qmTemp.close();
     } catch (MQException e) {
       e.printStackTrace();
     }
     List<String> res = props.getGetQueues();
-    // Map<String, AutoResponse> responses = props.getAutoResponses();
-    // if (responses != null) {
-    // responses.forEach((key, value) -> {
-    // SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(key);
-    // log.info("key res: " + sourceQ.getName());
-    // res.add(sourceQ.getName());
-    // });
-    // }
-    //
-    // Map<String, String> consumerQueue = props.getConsumers();
-    // if (consumerQueue != null) {
-    // consumerQueue.forEach((key, consumeRule) -> {
-    // SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(consumeRule);
-    // log.info("key con: " + sourceQ.getName());
-    // res.add(sourceQ.getName());
-    // });
-    // }
-
     props.getQueues().entrySet().forEach((entry) -> {
       QueueConfig qConfig = entry.getValue();
       String queueName = qConfig.getName();
@@ -64,7 +53,7 @@ public class MQMultiConnectionConfig {
           log.info("Cola a conectar get/put : '{}'", queueName);
           options = MQConstants.MQOO_OUTPUT | MQConstants.MQOO_INPUT_AS_Q_DEF
               | MQConstants.MQOO_INQUIRE | MQConstants.MQOO_FAIL_IF_QUIESCING
-              | MQConstants.MQPMO_SET_ALL_CONTEXT | MQConstants.MQOO_SET_ALL_CONTEXT;
+              | MQConstants.MQPMO_SET_ALL_CONTEXT;
         } else {
           options = MQConstants.MQOO_OUTPUT | MQConstants.MQOO_INQUIRE
               | MQConstants.MQOO_FAIL_IF_QUIESCING | MQConstants.MQPMO_SET_ALL_CONTEXT;
@@ -85,4 +74,5 @@ public class MQMultiConnectionConfig {
     log.info("Conexión independiente establecida para las colas: {}", listaConComillas);
     return connectionMap;
   }
+
 }

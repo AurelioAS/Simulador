@@ -15,6 +15,7 @@ public class RoundRobinExecutorPool {
   private final List<ExecutorService> executors = new ArrayList<>();
     private final AtomicInteger index = new AtomicInteger(0);
 
+    public RoundRobinExecutorPool() {}
   // 🔹 Constructor que crea N ejecutores
   public RoundRobinExecutorPool(String name, int numExecutors) {
 
