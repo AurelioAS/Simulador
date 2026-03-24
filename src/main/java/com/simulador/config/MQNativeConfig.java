@@ -4,7 +4,9 @@ import com.ibm.mq.MQEnvironment;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ public class MQNativeConfig {
     MQEnvironment.addConnectionPoolToken();
   }
 
-  public MQQueueManager createConnection(String appName) throws MQException {
+  public Map<String, Object> createConnection(String appName) throws MQException {
 
     // Configuración básica de red
     props.put(MQConstants.HOST_NAME_PROPERTY, mqProperties.getHost());
@@ -49,7 +51,10 @@ public class MQNativeConfig {
     // MQConstants.MQCNO_RECONNECT | MQConstants.MQCNO_HANDLE_SHARE_BLOCK);
 
     try {
-      return new MQQueueManager(mqProperties.getQueueManager(), props);
+      Map<String,Object> debugProps =  new HashMap<>();
+      debugProps.put("props", props);
+      debugProps.put("mq", new MQQueueManager(mqProperties.getQueueManager(), props));
+      return debugProps;
     } catch (MQException e) {
       log.error("Error conectando a MQ con AppName {}: [CC:{} RC:{}]",
           appName, e.completionCode, e.reasonCode);

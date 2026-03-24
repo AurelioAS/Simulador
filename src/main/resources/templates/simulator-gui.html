@@ -2,86 +2,149 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>MQ Simulator | Dashboard AJAX</title>
+    <title>MQ Simulator | Dashboard SSE Professional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        /* BASE AL 80% */
-        html { font-size: 12.8px; transition: font-size 0.2s ease; }
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; font-size: 1rem; }
-        .dest-card { border: none; border-radius: 12px; margin-bottom: 1.5rem; transition: all 0.3s; }
-        .payload-area { font-family: 'Fira Code', monospace; font-size: 0.9rem; resize: vertical; border-radius: 8px; min-height: 200px; background-color: #ffffff; }
-        .sidebar-payloads { background: white; border-radius: 12px; position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; }
-        .badge-queue { font-size: 0.8rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .bg-externo { border-top: 5px solid #fd7e14 !important; }
-        .text-externo { color: #fd7e14 !important; }
-        .label-payload { font-size: 0.9rem; color: #495057; margin-bottom: 6px; display: block; }
-        .zoom-controls .btn { padding: 0.2rem 0.6rem; font-size: 0.9rem; }
+        /* SISTEMA DE DISEÑO - ESTILO CONSULTORÍA */
+        :root {
+            --primary-blue: #0d6efd;
+            --secondary-cian: #0dcaf0;
+            --terminal-green: #00ff41;
+            --bg-gray: #f8fafc;
+        }
 
-        /* BANNER DESCONEXIÓN */
+        html { font-size: 13px; transition: font-size 0.2s ease; }
+        body { 
+            background-color: var(--bg-gray); 
+            font-family: 'Urbanist', sans-serif; 
+            color: #1e293b;
+        }
+
+        .dest-card { 
+            border: none; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background: white;
+            transition: transform 0.2s;
+            border-top: 5px solid;
+        }
+
+        /* COLORES POR PANEL */
+        #formA .form-label, #formA .label-payload { color: var(--primary-blue) !important; font-weight: 700; }
+        #formB .form-label, #formB .label-payload { color: var(--secondary-cian) !important; font-weight: 700; }
+
+        .payload-area { 
+            font-family: 'Fira Code', 'Consolas', monospace; 
+            font-size: 0.9rem; 
+            border-radius: 10px; 
+            border: 1px solid #e2e8f0;
+            background-color: #ffffff;
+        }
+
+        /* ESTILO TERMINAL PARA LA CONSOLA */
+        #modalStatusContent, #modalEmittersContent {
+            font-family: 'Fira Code', monospace;
+            background-color: #0f172a;
+            color: var(--terminal-green);
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            border-radius: 0 0 12px 12px;
+        }
+        .status-entry { border-bottom: 1px solid #1e293b; padding: 6px 0; display: flex; align-items: flex-start; }
+        .status-entry .time { color: #64748b; font-size: 0.75rem; margin-right: 12px; min-width: 65px; }
+
+        /* NOTIFICACIONES Y BANNERS */
         #offline-banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #dc3545;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            z-index: 10000;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            display: none;
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: #ef4444; color: white; text-align: center;
+            padding: 12px; z-index: 10000; font-weight: 700;
+            display: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             animation: pulseRed 2s infinite;
         }
+        @keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+        
+        #notification-area { 
+            position: fixed; 
+            top: 100px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 10050; 
+            width: 90%; 
+            max-height: 300px; 
+            max-width: 750px; 
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scroll-behavior: smooth; /* Para un scroll más fluido */
+         }
+        
+        .spinner-border-sm { display: none; margin-right: 8px; }
+        .btn.loading .spinner-border-sm { display: inline-block; }
 
-        @keyframes pulseRed {
-            0% { background-color: #dc3545; }
-            50% { background-color: #a71d2a; }
-            100% { background-color: #dc3545; }
-        }
-
-        #notification-area {
-            position: fixed;
-            top: 50px; /* Debajo del banner */
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            width: 90%;
-            max-width: 600px;
-        }
-
-        .alert {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border: none;
-            border-left: 5px solid;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .spinner-border-sm { display: none; margin-right: 5px; }
-        .loading .spinner-border-sm { display: inline-block; }
-        .loading span { opacity: 0.7; }
+        /* Estilo para las líneas acumuladas en la notificación */
+        .notification-line { border-top: 1px solid rgba(0,0,0,0.1); padding-top: 4px; margin-top: 4px; display: block; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
     <div id="offline-banner">
-        <i class="bi bi-wifi-off me-2"></i> CONEXIÓN PERDIDA - El servidor se está reiniciando...
+        <span id="offline-msg"><i class="bi bi-wifi-off me-2"></i> CONEXIÓN PERDIDA - REINTENTANDO RECONEXIÓN...</span>
+        <button class="btn btn-sm btn-light ms-3 py-0 fw-bold" onclick="window.location.href='/gui'" id="btn-refresh" style="display:none">RESTAURAR AHORA</button>
     </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <!-- MODAL DE CONSOLA (CON SCROLL INTERNO) -->
+    <div class="modal fade" id="sseModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-2xl">
+                <div class="modal-header bg-dark text-white border-0 py-3">
+                    <h5 class="modal-title fs-6 fw-bold"><i class="bi bi-terminal-fill me-2 text-success"></i>MQ CONSOLE OUTPUT</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="btnCloseModal" disabled></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="modalStatusContent"></div>
+                </div>
+                <div class="modal-footer bg-dark border-0 py-2">
+                    <div class="flex-grow-1 small text-secondary" id="modalFooterStatus">Listo para recibir flujos...</div>
+                    <div class="spinner-border spinner-border-sm text-info" id="modalSpinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE EMISORES (CON SCROLL INTERNO) -->
+    <div class="modal fade" id="emittersModal" tabindex="-1">
+        <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-2xl">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title fs-6 fw-bold"><i class="bi bi-broadcast-pin me-2"></i>ACTIVE EMITTERS REGISTRY</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="modalEmittersContent" class="bg-dark text-info p-3">
+                        <div class="text-center py-4">
+                            <div class="spinner-grow spinner-grow-sm text-info mb-2"></div>
+                            <div class="small">Sincronizando emisores del servidor...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg mb-4">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
                 <i class="bi bi-layers-half me-2"></i> <span>MQ SIMULATOR</span> 
-                <span class="badge bg-secondary ms-2 fw-normal" style="font-size: 0.65rem;" th:text="${@simulatorProperties.role}">ROLE</span>
+                <span class="badge bg-secondary ms-2 fw-normal" style="font-size: 0.7rem;" th:text="${@simulatorProperties.role}">ROLE</span>
             </a>
             <div class="navbar-nav ms-auto align-items-center">
-                <div class="zoom-controls btn-group me-4 border border-secondary rounded overflow-hidden">
+                <div class="btn-group me-4 border border-secondary rounded overflow-hidden">
                     <button onclick="changeFontSize(-1)" class="btn btn-dark"><i class="bi bi-dash-lg"></i></button>
                     <button onclick="resetFontSize()" class="btn btn-dark"><i class="bi bi-type"></i></button>
                     <button onclick="changeFontSize(1)" class="btn btn-dark"><i class="bi bi-plus-lg"></i></button>
@@ -93,99 +156,142 @@
 
     <div id="notification-area"></div>
 
-    <div class="container-fluid px-4 mt-2">
+    <div class="container-fluid px-4">
         <div class="row g-4">
             <div class="col-lg-8">
-                <div class="card dest-card shadow-sm border-top border-4"
-                    th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'bg-externo' : 'border-primary'">
+                
+                <!-- PANEL MASTER (A) -->
+                <div class="card dest-card border-primary mb-4">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold" th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'text-externo' : 'text-primary'">
-                            <i class="bi me-2" th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'bi-box-arrow-in-right' : 'bi-mainboard'"></i>
-                            <span th:text="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'Externo' : 'Master'">Panel</span>
-                        </h5>
-                        <span class="badge bg-info-subtle text-info border border-info badge-queue" id="titleA">...</span>
+                        <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-lightning-charge-fill me-2"></i>PANEL MASTER (A)</h5>
+                        <span class="badge bg-primary-subtle text-primary border" id="titleA">...</span>
                     </div>
-                    <div class="card-body">
-                        <form th:action="@{/gui/send}" method="post" id="formA">
+                    <div class="card-body p-4">
+                        <form th:action="@{/gui/send}" method="get" id="formA">
                             <input type="hidden" name="source" value="A">
-                            <div class="row g-2 mb-2">
+                            <div class="row g-3 mb-4">
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase">Cola Destino</label> 
-                                    <select name="queue" id="queueA" class="form-select" onchange="updateTitles()">
-                                        <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
+                                    <label class="form-label small text-uppercase">Cola de Destino</label>
+                                    <select name="queue" id="queueA" class="form-select shadow-sm" onchange="updateTitles()">
+                                        <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key}"></option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase text-primary">Threads</label>
-                                    <input type="number" name="threads" id="threadsA" class="form-control" value="1" min="1">
+                                    <label class="form-label small text-uppercase">Threads</label>
+                                    <input type="number" name="threads" id="threadsA" class="form-control shadow-sm" value="1">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase text-primary">Items</label>
-                                    <input type="number" name="iterations" id="iterA" class="form-control" value="1" min="1">
+                                    <label class="form-label small text-uppercase">Items</label>
+                                    <input type="number" name="iterations" id="iterA" class="form-control shadow-sm" value="1">
                                 </div>
                             </div>
-                            <div class="row g-2 mb-3">
-                                <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-uppercase">Correlation ID</label> 
-                                    <div class="input-group">
-                                        <input type="text" name="correlationId" id="correlA" class="form-control" placeholder="Hex ID">
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label small text-uppercase">Correlation ID</label>
+                                    <div class="input-group shadow-sm">
+                                        <input type="text" name="correlationId" id="correlA" class="form-control" placeholder="HEX ID">
                                         <div class="input-group-text bg-white">
-                                            <input class="form-check-input mt-0 me-1" type="checkbox" name="copyCorrel" id="copyCheckA" onchange="toggleCorrel('A')"> 
-                                            <label class="form-check-label small fw-bold" for="copyCheckA">Copy</label>
+                                            <input class="form-check-input mt-0" type="checkbox" name="copyCorrel" id="copyCheckA" onchange="toggleCorrel('A')">
+                                            <span class="ms-1 small fw-bold">Copy</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small fw-bold text-uppercase">ReplyTo Queue</label> 
-                                    <input type="text" name="replyTo" id="replyToA" class="form-control">
+                                <div class="col-md-3">
+                                    <label class="form-label small text-uppercase">ReplyTo Queue</label>
+                                    <input type="text" name="replyTo" id="replyToA" class="form-control shadow-sm">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase">ReplyTo QMGR</label> 
-                                    <input type="text" name="replyToQMgr" id="replyToQMgrA" class="form-control">
+                                    <label class="form-label small text-uppercase">ReplyTo QMgr</label>
+                                    <input type="text" name="replyToQMgr" id="replyToQMgrA" class="form-control shadow-sm">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end justify-content-end gap-3">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="showModalA">
+                                        <label class="form-check-label small fw-bold text-dark" for="showModalA">Show console</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="showEmittersA">
+                                        <label class="form-check-label small fw-bold text-dark" for="showEmittersA">Show emitters</label>
+                                    </div>
                                 </div>
                             </div>
-                            <label for="payloadA" class="label-payload fw-bold">Payload</label>
-                            <textarea name="payload" id="payloadA" class="form-control payload-area" rows="3"></textarea>
-                            <div class="d-grid mt-3">
-                                <button type="submit" class="btn fw-bold shadow-sm py-2" id="btnA" th:classappend="${@simulatorProperties.role == 'EXTERNAL_START'} ? 'btn-warning' : 'btn-primary'">
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span>ENVIAR</span>
+
+                            <label class="label-payload text-uppercase mb-2">Payload (JSON/XML/Text)</label>
+                            <textarea name="payload" id="payloadA" class="form-control payload-area shadow-sm" rows="4"></textarea>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary fw-bold py-3 shadow">
+                                    <span class="spinner-border spinner-border-sm"></span>EJECUTAR ACCIÓN MASTER
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="card dest-card shadow-sm border-top border-info border-4" th:if="${@simulatorProperties.role != 'DR_START'}">
+                <!-- PANEL SECUNDARIO (B) -->
+                <div class="card dest-card border-info" th:if="${@simulatorProperties.role != 'DR_START'}">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 text-info fw-bold">Secundario</h5>
-                        <span class="badge bg-info-subtle text-info border border-info badge-queue" id="titleB">...</span>
+                        <h5 class="mb-0 fw-bold text-info"><i class="bi bi-hdd-network-fill me-2"></i>PANEL SECUNDARIO (B)</h5>
+                        <span class="badge bg-info-subtle text-info border" id="titleB">...</span>
                     </div>
-                    <div class="card-body">
-                        <form th:action="@{/gui/send}" method="post" id="formB">
+                    <div class="card-body p-4">
+                        <form th:action="@{/gui/send}" method="get" id="formB">
                             <input type="hidden" name="source" value="B">
-                            <div class="row g-2 mb-2">
+                            <div class="row g-3 mb-4">
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-uppercase">Cola</label>
-                                    <select name="queue" id="queueB" class="form-select" onchange="updateTitles()">
-                                        <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
+                                    <label class="form-label small text-uppercase">Cola de Destino</label>
+                                    <select name="queue" id="queueB" class="form-select shadow-sm" onchange="updateTitles()">
+                                        <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key}"></option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase text-info">Threads</label>
-                                    <input type="number" name="threads" id="threadsB" class="form-control" value="1" min="1">
+                                    <label class="form-label small text-uppercase">Threads</label>
+                                    <input type="number" name="threads" id="threadsB" class="form-control shadow-sm" value="1">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-uppercase text-info">Items</label>
-                                    <input type="number" name="iterations" id="iterB" class="form-control" value="1" min="1">
+                                    <label class="form-label small text-uppercase">Items</label>
+                                    <input type="number" name="iterations" id="iterB" class="form-control shadow-sm" value="1">
                                 </div>
                             </div>
-                            <label for="payloadB" class="label-payload fw-bold">Payload</label>
-                            <textarea name="payload" id="payloadB" class="form-control payload-area" rows="3"></textarea>
-                            <div class="d-grid mt-3">
-                                <button type="submit" class="btn btn-info text-white fw-bold py-2" id="btnB">
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span>ENVIAR SECUNDARIO</span>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label small text-uppercase">Correlation ID</label>
+                                    <div class="input-group shadow-sm">
+                                        <input type="text" name="correlationId" id="correlB" class="form-control" placeholder="HEX ID">
+                                        <div class="input-group-text bg-white">
+                                            <input class="form-check-input mt-0" type="checkbox" name="copyCorrel" id="copyCheckB" onchange="toggleCorrel('B')">
+                                            <span class="ms-1 small fw-bold">Copy</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small text-uppercase">ReplyTo Queue</label>
+                                    <input type="text" name="replyTo" id="replyToB" class="form-control shadow-sm">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small text-uppercase">ReplyTo QMgr</label>
+                                    <input type="text" name="replyToQMgr" id="replyToQMgrB" class="form-control shadow-sm">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end justify-content-end gap-3">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="showModalB">
+                                        <label class="form-check-label small fw-bold text-dark" for="showModalB">Show console</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="showEmittersB" checked>
+                                        <label class="form-check-label small fw-bold text-dark" for="showEmittersB">Show emitters</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <label class="label-payload text-uppercase mb-2">Payload</label>
+                            <textarea name="payload" id="payloadB" class="form-control payload-area shadow-sm" rows="4"></textarea>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-info text-white fw-bold py-3 shadow">
+                                    <span class="spinner-border spinner-border-sm"></span>EJECUTAR ACCIÓN SECUNDARIA
                                 </button>
                             </div>
                         </form>
@@ -194,19 +300,17 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="sidebar-payloads shadow-sm p-3 border">
-                    <h6 class="fw-bold mb-3 text-secondary border-bottom pb-2">LIBRERÍA DE PAYLOADS</h6>
+                <div class="sidebar-payloads shadow-sm p-4 border-0">
+                    <h6 class="fw-bold mb-4 text-secondary border-bottom pb-3"><i class="bi bi-folder-fill me-2"></i>LIBRERÍA DE CARGAS</h6>
                     <div class="list-group list-group-flush">
-                        <button th:each="entry : ${payloads}" type="button"
-                            class="list-group-item list-group-item-action border-0 rounded mb-2 shadow-sm py-2"
-                            th:data-key="${entry.key}" onclick="insertKey(this.getAttribute('data-key'))">
-                            <div class="fw-bold text-primary small" th:text="${entry.key}">KEY</div>
-                            <div class="text-muted small text-truncate" th:text="${entry.value}"></div>
+                        <button th:each="entry : ${payloads}" type="button" class="list-group-item list-group-item-action border-0 rounded-3 mb-2 shadow-sm py-3" th:data-key="${entry.key}" onclick="insertKey(this.getAttribute('data-key'))">
+                            <div class="fw-bold text-primary small" th:text="${entry.key}"></div>
+                            <div class="text-muted extra-small text-truncate" style="font-size: 0.75rem;" th:text="${entry.value}"></div>
                         </button>
                     </div>
                     <div class="d-grid gap-2 mt-4 pt-3 border-top">
-                        <button onclick="beautify()" class="btn btn-sm btn-outline-secondary">Beautify JSON</button>
-                        <button onclick="clearAll()" class="btn btn-sm btn-outline-danger">Reset Total</button>
+                        <button onclick="beautify()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-code-slash me-1"></i>Beautify JSON</button>
+                        <button onclick="clearAll()" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3 me-1"></i>Reset System</button>
                     </div>
                 </div>
             </div>
@@ -214,138 +318,240 @@
     </div>
 
 <script th:inline="javascript">
-    const fields = ['queueA', 'correlA', 'iterA', 'threadsA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'queueB', 'correlB', 'iterB', 'threadsB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB'];
+    // REGISTRO DE CAMPOS PARA PERSISTENCIA (Sincronizado A y B)
+    const fields = [
+        'queueA', 'correlA', 'iterA', 'threadsA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'showModalA', 'showEmittersA',
+        'queueB', 'correlB', 'iterB', 'threadsB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB', 'showModalB', 'showEmittersB'
+    ];
     let lastActiveTextarea = "payloadA";
     let isAppDown = false;
-    const banner = document.getElementById('offline-banner');
+    let bsModal = null;
+    let bsEmittersModal = null;
+    let notificationTimeout = null;
+    let activeEventSource = null; // Referencia global para cerrar flujos
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Cargar Zoom y Configuración
-        const savedSize = localStorage.getItem('mq_fontSize');
-        if (savedSize) document.documentElement.style.fontSize = savedSize + 'px';
+        bsModal = new bootstrap.Modal(document.getElementById('sseModal'));
+        bsEmittersModal = new bootstrap.Modal(document.getElementById('emittersModal'));
+        
+        // --- CARGAR TAMAÑO DE FUENTE ---
+        const savedFontSize = localStorage.getItem('mq_fontSize');
+        if (savedFontSize) {
+            document.documentElement.style.fontSize = savedFontSize + 'px';
+        }
 
+        // Cargar Persistencia de campos
         fields.forEach(f => {
             const el = document.getElementById(f);
             if (el) {
-                const val = localStorage.getItem('mq_' + f);
-                if (val !== null) {
-                    if (el.type === 'checkbox') el.checked = (val === 'true');
-                    else el.value = val;
-                }
+                const val = localStorage.getItem('mq_v2_' + f);
+                if (val !== null) el.type === 'checkbox' ? el.checked = (val === 'true') : el.value = val;
             }
         });
 
+        // Track active textarea
         ['payloadA', 'payloadB'].forEach(id => {
             const el = document.getElementById(id);
             if(el) el.addEventListener('focus', () => lastActiveTextarea = id);
         });
 
+        updateTitles();
+        startHealthCheck();
         toggleCorrel('A');
         toggleCorrel('B');
-        updateTitles();
     });
 
-    // --- LÓGICA ENVÍO AJAX + VALIDACIÓN ---
-    async function sendFormAjax(formId) {
-        const form = document.getElementById(formId);
-        
-        // Validación Threads <= Items
-        const threadInput = form.querySelector('input[name="threads"]');
-        const iterInput = form.querySelector('input[name="iterations"]');
-        let threads = parseInt(threadInput.value) || 1;
-        const items = parseInt(iterInput.value) || 1;
+    // SISTEMA DE MONITOREO MEJORADO (DETECCIÓN DE PÉRDIDA DE SESIÓN)
+    function startHealthCheck() {
+        setInterval(() => {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
 
-        if (threads > items) {
-            showNotification(`Ajuste: Los hilos (${threads}) no pueden superar los ítems (${items}). Ajustado a ${items}.`, "warning");
-            threadInput.value = items;
-            threads = items;
+            // Intentamos llamar a un endpoint de "ping" para validar sesión
+            fetch('/gui/ping', { method: 'GET', cache: 'no-store', signal: controller.signal })
+            .then(res => {
+                clearTimeout(timeoutId);
+                const banner = document.getElementById('offline-banner');
+                const msg = document.getElementById('offline-msg');
+                const btn = document.getElementById('btn-refresh');
+
+                // Si hay redirección o error de autorización, la sesión ha muerto
+                if (res.redirected || res.status === 401 || res.status === 403) {
+                    isAppDown = true;
+                    // Forzamos el cierre de cualquier flujo activo para evitar re-envíos automáticos del navegador
+                    if (activeEventSource) {
+                        activeEventSource.close();
+                        activeEventSource = null;
+                    }
+                    banner.style.display = 'block';
+                    banner.style.backgroundColor = '#f59e0b'; 
+                    msg.innerHTML = '<i class="bi bi-person-exclamation me-2"></i> SESIÓN EXPIRADA - EL BACKEND ESTÁ ACTIVO PERO REQUIERE RE-IDENTIFICACIÓN';
+                    btn.style.display = 'inline-block';
+                    return;
+                }
+
+                if (res.ok) {
+                    // SI EL SERVIDOR VUELVE: Redirigimos a la raíz para evitar re-envíos automáticos de formularios
+                    if (isAppDown) {
+                        window.location.href = '/gui';
+                    } 
+                    isAppDown = false;
+                    banner.style.display = 'none';
+                    btn.style.display = 'none';
+                }
+            })
+            .catch(() => {
+                isAppDown = true;
+                const banner = document.getElementById('offline-banner');
+                const msg = document.getElementById('offline-msg');
+                banner.style.display = 'block';
+                banner.style.backgroundColor = '#ef4444'; 
+                msg.innerHTML = '<i class="bi bi-wifi-off me-2"></i> CONEXIÓN PERDIDA CON EL BACKEND - REINTENTANDO...';
+            });
+        }, 5000);
+    }
+
+    // ENVÍO SSE (STREAMING)
+    function sendFormAjax(formId) {
+        const form = document.getElementById(formId);
+        const btn = form.querySelector('button[type="submit"]');
+        const modalContent = document.getElementById('modalStatusContent');
+        const modalFooter = document.getElementById('modalFooterStatus');
+        const suffix = formId.replace('form', ''); 
+        
+        const queueVal = document.getElementById('queue' + suffix).value;
+        const payloadVal = document.getElementById('payload' + suffix).value.trim();
+
+        if (!queueVal || !payloadVal) {
+            showNotification("Faltan datos obligatorios.", "danger");
+            return;
         }
 
-        const btn = form.querySelector('button[type="submit"]');
-        const formData = new FormData(form);
+        // Si hay una conexión anterior, la cerramos
+        if (activeEventSource) {
+            activeEventSource.close();
+        }
 
+        modalContent.innerHTML = "";
+        modalFooter.innerText = "Sincronizando flujos...";
+        document.getElementById('btnCloseModal').disabled = true;
+        document.getElementById('modalSpinner').style.display = "block";
         btn.classList.add('loading');
         btn.disabled = true;
 
-        // Guardar en LocalStorage
         fields.forEach(f => {
             const el = document.getElementById(f);
-            if (el) {
-                const val = el.type === 'checkbox' ? el.checked : el.value;
-                localStorage.setItem('mq_' + f, val);
-            }
+            if (el) localStorage.setItem('mq_v2_' + f, el.type === 'checkbox' ? el.checked : el.value);
         });
 
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: new URLSearchParams(formData)
-            });
-            const data = await response.json();
+        const formData = new FormData(form);
+        const ckConsole = document.getElementById('showModal' + suffix);
+        const ckEmitters = document.getElementById('showEmitters' + suffix);
+        
+        formData.set('showModal', ckConsole.checked ? "true" : "false");
 
-            if (response.ok) {
-                let msg = `Completado. Éxitos: ${data.successes}, Errores: ${data.errors}.`;
-                showNotification(msg, data.errors > 0 ? "warning" : "success");
-            } else {
-                showNotification("Error en la respuesta del servidor", "danger");
+        const params = new URLSearchParams(formData).toString();
+        activeEventSource = new EventSource(`${form.action}?${params}`);
+
+        activeEventSource.onmessage = (event) => {
+            const rawData = event.data.trim();
+
+            if (rawData.startsWith("CONFIG:")) {
+                if (rawData.includes("showModal=true") && ckConsole.checked) bsModal.show();
+                //if (ckEmitters.checked) bsEmittersModal.show();
+                return;
             }
-        } catch (error) {
-            showNotification("Error de red o servidor caído", "danger");
-        } finally {
+
+            const line = document.createElement("div");
+            line.className = "status-entry";
+            line.innerHTML = `<span class="time">${new Date().toLocaleTimeString()}</span> <span>${rawData}</span>`;
+            modalContent.appendChild(line);
+            modalContent.scrollTop = modalContent.scrollHeight;
+
+            const lowMsg = rawData.toLowerCase();
+            
+            // --- CORRECCIÓN LÓGICA DE DETECCIÓN ---
+            const valoresABuscar = ["estableciendo", "enviando", "consumer:", "autorespuesta:"];
+            const isEmitterLog = valoresABuscar.some(val => lowMsg.includes(val));
+            
+            const isFinalMsg = lowMsg.includes("completado") || lowMsg.includes("error");
+
+            if (isEmitterLog) {
+                if (ckEmitters.checked) showNotification(rawData, "success");
+            } else if (isFinalMsg) {
+                showNotification(rawData, lowMsg.includes("error") ? "danger" : "success");
+                if (lowMsg.includes("completado")) finalizar(true);
+            }
+        };
+
+        activeEventSource.onerror = (e) => {
+            // Cerramos inmediatamente para evitar que EventSource reintente automáticamente
+            if (activeEventSource) {
+                activeEventSource.close();
+                activeEventSource = null;
+            }
+            showNotification("Error de flujo: Conexión cerrada o sesión interrumpida.", "danger");
+            finalizar(false);
+        };
+
+        function finalizar(exito) {
+            if (activeEventSource) {
+                /* activeEventSource.close();
+                activeEventSource = null; */
+            }
             btn.classList.remove('loading');
             btn.disabled = false;
+            document.getElementById('btnCloseModal').disabled = false;
+            document.getElementById('modalSpinner').style.display = "none";
+            //if (exito && ckConsole.checked) setTimeout(() => bsModal.hide(), 3500);
         }
     }
 
-    // --- MONITOR DE CONEXIÓN (BANNER) ---
-    function checkServerStatus() {
-        fetch('/gui', { method: 'HEAD', cache: 'no-store' })
-            .then(response => {
-                if (response.ok && isAppDown) location.reload();
-                isAppDown = false;
-                banner.style.display = 'none';
-            })
-            .catch(() => {
-                if (!isAppDown) console.warn("Conexión perdida");
-                isAppDown = true;
-                banner.style.display = 'block';
-            });
-    }
-    setInterval(checkServerStatus, 3000);
-
-    // --- FUNCIONES AUXILIARES ---
-    document.getElementById('formA').addEventListener('submit', (e) => { e.preventDefault(); sendFormAjax('formA'); });
-    document.getElementById('formB')?.addEventListener('submit', (e) => { e.preventDefault(); sendFormAjax('formB'); });
-
+    // NOTIFICACIÓN ACUMULATIVA
     function showNotification(msg, type) {
         const area = document.getElementById('notification-area');
-        area.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${msg}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>`;
-        if(type === 'success') setTimeout(() => {
+        const theme = type.includes('success') ? 'success' : (type.includes('warning') ? 'warning' : 'danger');
+        let existingAlert = area.querySelector(`.alert-${theme}`);
+        
+        if (existingAlert) {
+            const body = existingAlert.querySelector('.alert-msg-body');
+            const newLine = document.createElement('div');
+            newLine.className = 'notification-line';
+            newLine.innerText = msg;
+            body.appendChild(newLine);
+            if (notificationTimeout) clearTimeout(notificationTimeout);
+        } else {
+            area.innerHTML = '';
+            const icon = theme === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+            area.innerHTML = `
+                <div class="alert alert-${theme} alert-dismissible fade show shadow-lg border-0" role="alert" style="border-left: 6px solid rgba(0,0,0,0.2) !important;">
+                    <div class="d-flex" >
+                        <i class="bi ${icon} me-2 mt-1" style="position: sticky; top: 0; align-self: flex-start;"></i>
+                        <div style="position: sticky; top: 0; align-self: flex-start;">
+                            <strong class="text-uppercase">${theme}:</strong>
+                            <div class="alert-msg-body mt-1">${msg}</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+        }
+        area.scrollTop = area.scrollHeight;
+        notificationTimeout = setTimeout(() => {
             const el = area.querySelector('.alert');
             if(el) bootstrap.Alert.getOrCreateInstance(el).close();
-        }, 4000);
+            notificationTimeout = null;
+        }, 5000);
     }
 
-    function toggleCorrel(src) {
-        const ck = document.getElementById('copyCheck' + src);
-        const inp = document.getElementById('correl' + src);
-        if (ck && inp) { inp.disabled = ck.checked; inp.placeholder = ck.checked ? "Auto" : "Hex"; }
+    document.getElementById('formA').addEventListener('submit', (e) => { e.preventDefault(); sendFormAjax('formA'); });
+    if(document.getElementById('formB')) {
+        document.getElementById('formB').addEventListener('submit', (e) => { e.preventDefault(); sendFormAjax('formB'); });
     }
 
-    function changeFontSize(d) {
-        let h = document.documentElement;
-        let s = Math.min(Math.max(parseFloat(window.getComputedStyle(h).fontSize) + d, 8), 24);
-        h.style.fontSize = s + 'px';
-        localStorage.setItem('mq_fontSize', s);
-    }
-
-    function resetFontSize() {
-        document.documentElement.style.fontSize = '12.8px';
-        localStorage.setItem('mq_fontSize', 12.8);
+    function toggleCorrel(s) {
+        const ck = document.getElementById('copyCheck' + s);
+        const inp = document.getElementById('correl' + s);
+        if (ck && inp) { inp.disabled = ck.checked; inp.placeholder = ck.checked ? "GENERADO" : "HEX ID"; }
     }
 
     function updateTitles() {
@@ -363,12 +569,23 @@
 
     function beautify() {
         const t = document.getElementById(lastActiveTextarea);
-        try { t.value = JSON.stringify(JSON.parse(t.value), null, 4); } catch(e) { showNotification("JSON no válido", "danger"); }
+        try { t.value = JSON.stringify(JSON.parse(t.value), null, 4); } catch(e) { showNotification("Formato JSON inválido.", "danger"); }
     }
 
-    function clearAll() { if(confirm("¿Reset total?")) { localStorage.clear(); location.reload(); } }
-</script>
+    function changeFontSize(d) {
+        let h = document.documentElement;
+        let s = Math.min(Math.max(parseFloat(window.getComputedStyle(h).fontSize) + d, 9), 22);
+        h.style.fontSize = s + 'px';
+        localStorage.setItem('mq_fontSize', s);
+    }
 
+    function resetFontSize() { 
+        document.documentElement.style.fontSize = '13px'; 
+        localStorage.setItem('mq_fontSize', 13); 
+    }
+
+    function clearAll() { if(confirm("¿Desea limpiar toda la configuración local?")) { localStorage.clear(); location.reload(); } }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -282,21 +282,21 @@ spring.config.activate.on-profile: t3270-driven
 # CONFIGURACIÓN COMÚN DE COLAS Y PAYLOADS
 # -------------------------------------------------------------------
 simulador:
+  numThreads: 1
   role: T3270_START
   # Definición de colas con su respectivo CCSID
   queues:
     master-in:
       name: "QNAME08"
       ccsid: 284 # UTF-8
-#      fire:
-#        queues:
-#          secondary-in:
-#            payload-key: 'MENSAJE_SECUNDARIO'
-#            copy-correl: true
+      fire:    #Dispara respuesta automática al recibir mensaje en esta cola al secundario
+        queues:
+          secondary-in:
+            payload-key: 'MENSAJE_SECUNDARIO'
+            copy-correl: true
     secondary-in:
-      name: "QNAME09"
+      name: "QNAME08"
       ccsid: 284
-      tresp: 50
     external-in:
       name: "QNAME10"
       ccsid: 1208
@@ -310,11 +310,11 @@ simulador:
 
   # MATRIZ DE RESPUESTAS AUTOMÁTICAS:
   # "Si el simulador recibe un mensaje en la llave X, responde en la llave Y con el payload Z"
-  auto-responses:
-    secondary-in:
-      target-queue: "master-in"
-      payload-key: "payload:msgT3270-2"
-      copy-correl: true
+#  auto-responses:
+#    secondary-in:
+#      target-queue: "master-in"
+#      payload-key: "payload:msgT3270-2"
+#      copy-correl: true
 
   consumers:
    - external-in

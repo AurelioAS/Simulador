@@ -6,7 +6,7 @@ import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
 import com.simulador.config.MQConnectionBundle;
-import com.simulador.config.MQMultiConnectionConfig;
+import com.simulador.config.MQConnectionManager;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -26,7 +26,7 @@ public class Utils {
 
   protected ConcurrentMap<String, MQQueue> queues = new ConcurrentHashMap<>();
 
-  protected MQMultiConnectionConfig multiConfigs;
+  protected MQConnectionManager multiConfigs;
 
   protected long lastTraffic = System.currentTimeMillis();
 

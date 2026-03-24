@@ -47,10 +47,10 @@ public class SimulatorController {
       if (queue.equals("master-in") && role.equals("SOH_START")) {
         // Enviar respuesta automática si aplica
         service.send(queue, payload, correlationId, new byte[24], copyCorrel, replyTo, replyToQMgr,
-            false, java.util.Optional.empty());
+            false, java.util.Optional.empty(), null, null, null);
         TimeUnit.MILLISECONDS.sleep(50); // Simular tiempo de procesamiento
         service.send("secondary-in", payload, correlationId, new byte[24], copyCorrel, replyTo,
-            replyToQMgr, false, java.util.Optional.empty());
+            replyToQMgr, false, java.util.Optional.empty(), null, null, null);
       }
       // else if (role.equals("T3270_START")) {
       // String mgr = MessagesMgr.createStrPayload("msgT3270-1");
@@ -58,7 +58,7 @@ public class SimulatorController {
       // }
       else {
         service.send(queue, payload, correlationId, new byte[24], copyCorrel, replyTo, replyToQMgr,
-            false, java.util.Optional.empty());
+            false, java.util.Optional.empty(), null, null, null);
       }
     }
     String msgSuccess = (iterations > 1)

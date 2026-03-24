@@ -9,6 +9,7 @@ import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
 import com.simulador.config.SimulatorProperties.QueueConfig;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -32,7 +33,8 @@ public class MQMultiConnectionConfig {
 
     ConcurrentMap<String, MQConnectionBundle> connectionMap = new ConcurrentHashMap<>();
     try {
-      MQQueueManager qmTemp = config.createConnection("SIMU");
+      Map<String, Object> conn = config.createConnection("SIMU");
+      MQQueueManager qmTemp = (MQQueueManager) conn.get("mq");
       log.info(
           "Probando conexión del canal..." + config.getProps().get(MQConstants.CHANNEL_PROPERTY));
       qMan = qmTemp;
@@ -47,7 +49,8 @@ public class MQMultiConnectionConfig {
       String queueName = qConfig.getName();
       try {
         // Forzamos la creación de una conexión física NUEVA por cada iteración
-        MQQueueManager qm = config.createConnection(queueName);
+        Map<String, Object> conn = config.createConnection(queueName);
+        MQQueueManager qm = (MQQueueManager) conn.get("mq");
         int options = 0;
         if (res.size() > 0 && res.contains(queueName)) {
           log.info("Cola a conectar get/put : '{}'", queueName);
@@ -59,7 +62,7 @@ public class MQMultiConnectionConfig {
               | MQConstants.MQOO_FAIL_IF_QUIESCING | MQConstants.MQPMO_SET_ALL_CONTEXT;
         }
         MQQueue queue = qm.accessQueue(queueName, options);
-        connectionMap.put(queueName, new MQConnectionBundle(qm, queue));
+        connectionMap.put(queueName, new MQConnectionBundle(qm, queue, conn.get("props")));
       } catch (MQException e) {
         if (e.getReason() == 2538) {
           throw new RuntimeException("Error al conectar al servidor MQ.");
