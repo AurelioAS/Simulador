@@ -40,7 +40,7 @@ public class MQConnectionManager {
       JsonService jsonService) {
     this.props = props;
     this.nativeConfig = nativeConfig;
-    this.jsonService = new JsonService();
+    this.jsonService = jsonService;
 
     try {
       Map<String, Object> conn = nativeConfig.createConnection("SIMU");
@@ -83,7 +83,7 @@ public class MQConnectionManager {
       // Limpiar conexión vieja si existe
       closeQuietly(queueName);
 
-      log.info("Intentando conectar a la cola: {}", queueName);
+      log.trace("Intentando conectar a la cola: {}", queueName);
       var conn = nativeConfig.createConnection(queueName);
       MQQueueManager qm = (MQQueueManager) conn.get("mq");
 
@@ -91,7 +91,7 @@ public class MQConnectionManager {
       MQQueue queue = qm.accessQueue(queueName, options);
 
       connectionMap.put(queueName, new MQConnectionBundle(qm, queue, conn.get("props")));
-      log.info("✅ Conexión establecida con éxito: {}", queueName);
+      log.debug("✅ Conexión establecida con éxito: {}", queueName);
       return true;
 
     } catch (MQException e) {

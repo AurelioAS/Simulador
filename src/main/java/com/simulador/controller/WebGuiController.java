@@ -55,7 +55,7 @@ public class WebGuiController extends Utils {
   @ResponseBody
   public ResponseEntity<Map<String, Object>> ping(HttpSession session) {
     Map<String, Object> status = new HashMap<>();
-    status.put("status", "ok");
+    status.put("status", mqService.isRunning() ? "ok" : "ko");
     status.put("sessionId", session.getId());
     return ResponseEntity.ok(status);
   }
@@ -74,8 +74,7 @@ public class WebGuiController extends Utils {
   public SseEmitter handleSend(@ModelAttribute MqRequestDTO request,
       @RequestParam(defaultValue = "true") boolean showModal) {
 
-    SseEmitter emitter = new SseEmitter(0L);;
-
+    SseEmitter emitter = new SseEmitter(0L);
     // 1. Creamos el emisor (Timeout 0 = infinito para procesos largos)
     AtomicBoolean isCompleted = new AtomicBoolean(false);
     String emitterKey = request.getSource(); // Clave para el mapa (ej: "A" o "B")
@@ -107,13 +106,14 @@ public class WebGuiController extends Utils {
         MQConnectionBundle bundle = myconnections.get(qConfig.getName());
 
         int iters = threads > clones.size() ? threads - clones.size() : 0;
-        log.info("Clones a crear: {}", iters);
-        for (int i = 0; i < iters; i++) {
-          clones.add(bundle.cloneBundle(bundle));
-          log.info("Clon {}: Conexión a QM {} - Cola {}", (i + 1), qConfig.getName(),
-              qConfig.getName());
-          emitter.send("Conexión " + (i + 1) + " OK.");
-        }
+        log.info("*** Threads a crear: {} ***", iters);
+        // for (int i = 0; i < iters; i++) {
+        // clones.add(bundle.cloneBundle(bundle));
+        // String txt =
+        // "Clon " + (i + 1) + ": Conexión a la Cola " + qConfig.getName() + " establecida.";
+        // log.info(txt);
+        // emitter.send(txt);
+        // }
         // Configuración del Pool de ejecución
         executor = Executors.newFixedThreadPool(threads);
         CountDownLatch latch = new CountDownLatch(iterations);
@@ -125,6 +125,14 @@ public class WebGuiController extends Utils {
 
         for (int i = 0; i < iterations; i++) {
           final int currentIdx = i;
+          if (clones.size() < threads) {
+            clones.add(bundle.cloneBundle(bundle));
+            String txt =
+                "Thread " + (clones.size()) + ": Conexión a la Cola " + qConfig.getName()
+                    + " establecida.";
+            log.info(txt);
+            emitter.send(txt);
+          }
 
           executor.execute(() -> {
             try {
@@ -146,7 +154,13 @@ public class WebGuiController extends Utils {
                   request.isCopyCorrel(), request.getReplyTo(), request.getReplyToQMgr(),
                   false, java.util.Optional.empty(), request.getSource(),
                   clones.get(currentIdx % threads), emitter);
-
+              if (request.isFireEnabled()) {
+                mqService.send(request.getFireTarget(), request.getFireKey(), threadCorr,
+                    new byte[24],
+                    request.isFireCopyCorrel(), request.getReplyTo(), request.getReplyToQMgr(),
+                    false, java.util.Optional.empty(), request.getSource(),
+                    clones.get(currentIdx % threads), emitter);
+              }
               successCount.incrementAndGet();
             } catch (Exception e) {
               errorCount.incrementAndGet();

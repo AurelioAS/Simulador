@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -45,15 +46,18 @@ public class MqSimulatorService extends Utils {
 
   private RoundRobinExecutorPool pool = new RoundRobinExecutorPool("pool", 25);
 
+  @Getter
+  private boolean isRunning = true;
+
   private final Utils                   utils           = new Utils();
   private SseEmitter                    emitter;
   private final Map<String, SseEmitter> emittersActivos = new ConcurrentHashMap<>();
 
   @Autowired
-  public MqSimulatorService(Map<String, MQConnectionBundle> connections,
+  public MqSimulatorService(Map<String, MQConnectionBundle> connection,
       SimulatorProperties props,
       JsonService jsonService) {
-    this.connections = connections;
+    this.connections = connection;
     this.props = props;
     this.jsonService = jsonService;
   }
@@ -117,7 +121,9 @@ public class MqSimulatorService extends Utils {
   }
 
   public void runConsumers() {
+    queues.clear();
     run();
+    isRunning = true;
   }
 
   /**
@@ -134,10 +140,12 @@ public class MqSimulatorService extends Utils {
       traceGet("<<< [PRG]", consumeRule, key, msg.characterSet,
           bytesToHex(msg.correlationId));
       AtomicBoolean isCompleted = new AtomicBoolean(false);
-      enviarSafe(emittersActivos.get("A"),
-          "Consumer: " + consumeRule + " | CCSID: " + msg.characterSet + " | HEX: "
-              + bytesToHex(msg.correlationId),
-          isCompleted);
+      if (emittersActivos.get("A") != null) {
+        enviarSafe(emittersActivos.get("A"),
+            "Consumer: " + consumeRule + " | CCSID: " + msg.characterSet + " | HEX: "
+                + bytesToHex(msg.correlationId),
+            isCompleted);
+      }
     } catch (Exception e) {
       log.error("Error procesando mensaje en cola {}: {}", consumeRule, e.getMessage());
     }
@@ -251,7 +259,8 @@ public class MqSimulatorService extends Utils {
     }
     if (qConfig.getTresp() > 0) {
       log.debug(
-          "Simulando tiempo de procesamiento de " + qConfig.getTresp() + " ms para " + queueKey);
+          "*** Simulando tiempo de procesamiento de " + qConfig.getTresp() + " ms para " + queueKey
+              + " ***");
       TimeUnit.MILLISECONDS.sleep(qConfig.getTresp()); // Simular tiempo de procesamiento
     }
     MessagesMgr messagesMgr = new MessagesMgr();
@@ -273,7 +282,16 @@ public class MqSimulatorService extends Utils {
     GregorianCalendar cal = new GregorianCalendar(utc);
     msg.putDateTime = cal;
     // msg.seek(0);
-    queue.put(msg, new MQPutMessageOptions());
+    try {
+      queue.getConnectionReference().isOpen();
+      queue.put(msg, new MQPutMessageOptions());
+    } catch (MQException e) {
+      log.error("Error al enviar mensaje a {}: {}. Intentando reconectar...", qConfig.getName(),
+          e.getMessage(), e);
+      connections.remove(qConfig.getName()); // Limpia la conexión para forzar reconexión en el
+                                             // watchdog
+
+    }
     String key = queueKey.length() > 15 ? queueKey.substring(0, 15) + "..." : queueKey;
     log.debug(
         ">>> [PUT] " + qConfig.getName() + " --> " + String.format("%-18s", key)
@@ -281,10 +299,12 @@ public class MqSimulatorService extends Utils {
             + qConfig.getCcsid() + " | HEX: "
             + bytesToHex(msg.correlationId));
     AtomicBoolean isCompleted = new AtomicBoolean(false);
-    enviarSafe(emittersActivos.get("A"),
-        "Enviando a " + qConfig.getName() + " | CCSID: " + qConfig.getCcsid() + " | HEX: "
-            + bytesToHex(msg.correlationId),
-        isCompleted);
+    if (emittersActivos.get("A") != null) {
+      enviarSafe(emittersActivos.get("A"),
+          "Enviando a " + qConfig.getName() + " | CCSID: " + qConfig.getCcsid() + " | HEX: "
+              + bytesToHex(msg.correlationId),
+          isCompleted);
+    }
     if (qConfig.getFire() == null || qConfig.getFire().getQueues() == null
         || qConfig.getFire().getQueues().isEmpty()) {
       return;
@@ -356,14 +376,17 @@ public class MqSimulatorService extends Utils {
       MQConnectionBundle bundle, int actionType) {
     SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
 
+    bundle = connections.get(sourceQ.getName()); // Asegura que usamos la conexión actualizada
     try {
       traceGet("<<< [GET]", sourceQ.getName(), sourceKey, msg.characterSet,
           bytesToHex(msg.correlationId));
       AtomicBoolean isCompleted = new AtomicBoolean(false);
-      enviarSafe(emittersActivos.get("A"),
-          "Autorespuesta: " + sourceQ.getName() + " | CCSID: " + msg.characterSet + " | HEX: "
-              + bytesToHex(msg.correlationId),
-          isCompleted);
+      if (emittersActivos.get("A") != null) {
+        enviarSafe(emittersActivos.get("A"),
+            "Autorespuesta: " + sourceQ.getName() + " | CCSID: " + msg.characterSet + " | HEX: "
+                + bytesToHex(msg.correlationId),
+            isCompleted);
+      }
       MessagesMgr messagesMgr = new MessagesMgr();
       boolean isCopyCorrel = rule.isCopyCorrel();
       if (rule.getPayloadKey().startsWith("payload:")) {
@@ -399,6 +422,15 @@ public class MqSimulatorService extends Utils {
       boolean isCopyCorrel, String string, String string2, boolean b, Optional<QueueConfig> empty,
       MQConnectionBundle bundle, boolean c) {
     MQConnectionBundle bund = connections.get(targetQueue);
+    if (bund != null) {
+      try {
+        bund.getQueue().getOpenOutputCount();
+      } catch (MQException e) {
+        log.error("Error verificando conexión para {}: {}. Intentando reconectar...", targetQueue,
+            e.getMessage(), e);
+        e.printStackTrace();
+      }
+    }
     pool.execute(() -> {
       try {
         send(targetQueue, payloadKey, correlationId, messageId, isCopyCorrel, string, string2, b,
@@ -417,35 +449,41 @@ public class MqSimulatorService extends Utils {
       return Flux
           .error(new IllegalArgumentException("La cola " + queueName + " no está configurada."));
     }
-    log.info("Creando Flux para autorespuesta en cola '{}'", queueName);
+    log.trace("Creando Flux para autorespuesta en cola '{}'", queueName);
     return Flux.<MQMessage>create((sink) -> {
       // Hilo de lectura para esta cola específica
       MQConnectionBundle bundle = connections.get(queueName);
-      AtomicBoolean isRunning = new AtomicBoolean(true);
       while (!sink.isCancelled()) {
         try {
+          isRunning = true;
           MQMessage msg = new MQMessage();
           MQGetMessageOptions gmo = new MQGetMessageOptions();
           gmo.options = MQConstants.MQGMO_WAIT | MQConstants.MQGMO_FAIL_IF_QUIESCING;
           gmo.waitInterval = 30_000;
           queue.get(msg, gmo);
-
           sink.next(msg);
         } catch (MQException e) {
           if (e.reasonCode != MQConstants.MQRC_NO_MSG_AVAILABLE) {
             log.error("Error MQ en {}: {}", queueName, e.reasonCode);
+            try {
+              if (emittersActivos.get("A") != null) {
+                emittersActivos.get("A").send("Error: MQ en " + queueName + ": " + e.reasonCode);
+              }
+            } catch (IOException e1) {
+              e1.printStackTrace();
+            }
             if (queue.isOpen()) {
               log.info("Intentando continuar escuchando en {} tras error MQ...", queueName);
             } else {
               log.warn("La cola {} parece estar cerrada. Deteniendo Flux.", queueName);
             }
             connections.clear(); // Limpia conexiones para forzar reconexión en el watchdog
-            isRunning.set(false);
+            isRunning = false;
             break;
           }
         }
       }
-      if (!isRunning.get()) {
+      if (!isRunning) {
         sink.complete();
       }
     })

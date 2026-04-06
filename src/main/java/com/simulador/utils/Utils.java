@@ -24,7 +24,7 @@ public class Utils {
 
   public static final Random random = new Random();
 
-  protected ConcurrentMap<String, MQQueue> queues = new ConcurrentHashMap<>();
+  public ConcurrentMap<String, MQQueue> queues = new ConcurrentHashMap<>();
 
   protected MQConnectionManager multiConfigs;
 

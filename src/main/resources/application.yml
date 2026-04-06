@@ -1,5 +1,5 @@
 # spring.profiles.active: dualrun-ger, mq-dev-ger # dualrun-ger, external-driven, master-driven
-
+spring.profiles.include: dev
 server:
   port: 8089
   error:
@@ -109,7 +109,7 @@ simulador:
 spring.config.activate.on-profile: external-driven, default
 
 simulador:
-  numThreads: 1
+  numThreads: 2
   role: DR_START
   # Definición de colas con su respectivo CCSID
   queues:
@@ -289,14 +289,15 @@ simulador:
     master-in:
       name: "QNAME08"
       ccsid: 284 # UTF-8
-      fire:    #Dispara respuesta automática al recibir mensaje en esta cola al secundario
-        queues:
-          secondary-in:
-            payload-key: 'MENSAJE_SECUNDARIO'
-            copy-correl: true
+#      fire:    #Dispara respuesta automática al recibir mensaje en esta cola al secundario
+#        queues:
+#          secondary-in:
+#            payload-key: 'MENSAJE_SECUNDARIO'
+#            copy-correl: true
     secondary-in:
       name: "QNAME08"
       ccsid: 284
+      tresp: 50          #Millis
     external-in:
       name: "QNAME10"
       ccsid: 1208

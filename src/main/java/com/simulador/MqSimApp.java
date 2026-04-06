@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableAsync
-@ComponentScan("com.simulador.*")
+@ComponentScan(basePackages = "com.simulador")
 @EnableCaching
 @EnableScheduling
 public class MqSimApp {

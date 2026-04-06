@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN" monitorInterval="30">
+
+<Configuration strict="true" status="WARN" monitorInterval="30"
+           xmlns="http://logging.apache.org/log4j/2.0/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="https://logging.apache.org/log4j/2.0/config 
+           https://raw.githubusercontent.com/apache/logging-log4j2/log4j-2.8.2/log4j-core/src/main/resources/Log4j-config.xsd">
+
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout disableAnsi="false">
@@ -72,6 +78,9 @@
             <!-- <AppenderRef ref="MyLogFile"  /> --> 
         </Root>    
         <Logger name="com.simulador" level="debug" additivity="false">
+            <AppenderRef ref="Async" />
+        </Logger>    
+        <Logger name="com.github.codemonstur" level="debug" additivity="false">
             <AppenderRef ref="Async" />
         </Logger>    
     </Loggers>
