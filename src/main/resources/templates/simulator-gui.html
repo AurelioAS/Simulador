@@ -184,89 +184,95 @@
                     <div class="card-body p-4">
                         <form th:action="@{/gui/send}" method="get" id="formA">
                             <input type="hidden" name="source" value="A">
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label small text-uppercase">Cola de Destino</label>
-                                    <select name="queue" id="queueA" class="form-select shadow-sm" onchange="updateTitles()">
-                                        <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key}"></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small text-uppercase">Threads</label>
-                                    <input type="number" name="threads" id="threadsA" class="form-control shadow-sm" value="1">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small text-uppercase">Items</label>
-                                    <input type="number" name="iterations" id="iterA" class="form-control shadow-sm" value="1">
-                                </div>
-                            </div>
+							<div class="row g-3 mb-4 align-items-end">
+							    <div class="col-md-4">
+							        <label class="form-label small text-uppercase">Cola de Destino</label>
+							        <select name="queue" id="queueA" class="form-select shadow-sm" onchange="updateTitles()">
+							            <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
+							        </select>
+							    </div>
+							    
+							    <div class="col-md-2">
+							        <label class="form-label small text-uppercase">Threads</label>
+							        <input type="number" name="threads" id="threadsA" class="form-control shadow-sm" value="1">
+							    </div>
+							
+							    <div class="col-md-2">
+							        <label class="form-label small text-uppercase">Items</label>
+							        <input type="number" name="iterations" id="iterA" class="form-control shadow-sm" value="1">
+							    </div>
+							
+							    <div class="col-md-3">
+							        <label class="form-label small text-uppercase">Delay (ms)</label>
+							        <div class="input-group shadow-sm">
+							            <span class="input-group-text bg-light"><i class="bi bi-clock-history"></i></span>
+							            <input type="number" name="delay" id="delayA" class="form-control" value="0" placeholder="0">
+							            <span class="input-group-text bg-white small text-muted">ms</span>
+							        </div>
+							    </div>
+							</div>
 
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-4">
-                                    <label class="form-label small text-uppercase">Correlation ID</label>
-                                    <div class="input-group shadow-sm">
-                                        <input type="text" name="correlationId" id="correlA" class="form-control" placeholder="HEX ID">
-                                        <div class="input-group-text bg-white">
-                                            <input class="form-check-input mt-0" type="checkbox" name="copyCorrel" id="copyCheckA" onchange="toggleCorrel('A')">
-                                            <span class="ms-1 small fw-bold">Copy</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small text-uppercase">ReplyTo Queue</label>
-                                    <input type="text" name="replyTo" id="replyToA" class="form-control shadow-sm">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small text-uppercase">ReplyTo QMgr</label>
-                                    <input type="text" name="replyToQMgr" id="replyToQMgrA" class="form-control shadow-sm">
-                                </div>
-								 <div class="fire-box shadow-sm mb-4" style="background-color: #f0f9ff; border-color: #bae6fd;">
-								    <div class="row g-3 align-items-center">
-								        
-								        <div class="col-auto">
-								            <div class="form-check form-switch m-0">
-								                <input class="form-check-input" type="checkbox" name="fireEnabled" id="fireCheckA">
-								                <label class="form-check-label fw-bold text-info small" for="fireCheckA">
-								                    <i class="bi bi-fire"></i> FIRE
-								                </label>
-								            </div>
-								        </div>
-								
-								        <div class="col-md-3">
-								            <select name="fireTarget" id="fireTargetA" class="form-select form-select-sm border-info-subtle">
-								                <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="'Target: ' + ${q.key}"></option>
-								            </select>
-								        </div>
-								
-								        <div class="col">
-								            <input type="text" name="fireKey" id="fireKeyA" class="form-control form-control-sm" placeholder="Payload Key">
-								        </div>
-								
-								        <div class="col-auto">
-								            <div class="input-group input-group-sm">
-								                <div class="input-group-text bg-white border-info-subtle">
-								                    <input class="form-check-input mt-0" type="checkbox" name="fireCopyCorrel" id="fireCopyCorrelA">
-								                    <span class="ms-1 extra-small fw-bold text-info" style="font-size: 10px;">COPY CORREL</span>
-								                </div>
-								            </div>
-								        </div>
-								
-								        <div class="col-auto border-start ps-3">
-								            <div class="d-flex flex-column gap-1">
-								                <div class="form-check form-switch m-0">
-								                    <input class="form-check-input" type="checkbox" id="showModalA" style="transform: scale(0.85);">
-								                    <label class="form-check-label fw-bold text-dark" for="showModalA" style="font-size: 9px; line-height: 1.5;">Console</label>
-								                </div>
-								                <div class="form-check form-switch m-0">
-								                    <input class="form-check-input" type="checkbox" id="showEmittersA" style="transform: scale(0.85);">
-								                    <label class="form-check-label fw-bold text-dark" for="showEmittersA" style="font-size: 9px; line-height: 1.5;">Emitter</label>
-								                </div>
-								            </div>
-								        </div>
-								
-								    </div>
-								</div>
-                            </div>
+                            <div class="row g-3 mb-2 align-items-end">
+						    <div class="col-md-4">
+						        <label class="form-label small text-uppercase">Correlation ID</label>
+						        <div class="input-group shadow-sm">
+						            <input type="text" name="correlationId" id="correlA" class="form-control" placeholder="HEX ID">
+						            <div class="input-group-text bg-white">
+						                <input class="form-check-input mt-0" type="checkbox" name="copyCorrel" id="copyCheckA" onchange="toggleCorrel('A')">
+						                <span class="ms-1 small fw-bold">Copy</span>
+						            </div>
+						        </div>
+						    </div>
+						    <div class="col-md-2">
+						        <label class="form-label small text-uppercase">ReplyTo Queue</label>
+						        <input type="text" name="replyTo" id="replyToA" class="form-control shadow-sm">
+						    </div>
+						    <div class="col-md-2">
+						        <label class="form-label small text-uppercase">ReplyTo QMgr</label>
+						        <input type="text" name="replyToQMgr" id="replyToQMgrA" class="form-control shadow-sm">
+						    </div>
+						    <div class="col-md-2">
+						            <div class="form-check form-switch m-0">
+						                <input class="form-check-input" type="checkbox" id="showModalA" style="transform: scale(0.85);">
+						                <label class="form-check-label fw-bold text-dark" for="showModalA" style="font-size: 9px; line-height: 1.5;">Console</label>
+						            </div>
+						            <div class="form-check form-switch m-0">
+						                <input class="form-check-input" type="checkbox" id="showEmittersA" style="transform: scale(0.85);">
+						                <label class="form-check-label fw-bold text-dark" for="showEmittersA" style="font-size: 9px; line-height: 1.5;">Emitter</label>
+						            </div>
+						    </div>
+						    <div class="col-md-2" th:if="${fire}">
+						        <div class="form-check form-switch m-0">
+						            <input class="form-check-input" type="checkbox" name="fireEnabled" id="fireCheckA" onchange="toggleFirePanel('A')">
+						            <label class="form-check-label fw-bold text-info small" for="fireCheckA">
+						                <i class="bi bi-fire"></i> FIRE
+						            </label>
+						        </div>
+						    </div>
+						</div>
+						
+						<div id="firePanelA" style="display: none;" th:if="${fire}">
+						    <div class="fire-box shadow-sm mb-4 p-2 rounded" style="background-color: #f0f9ff; border: 1px solid #bae6fd;">
+						        <div class="row g-3 align-items-center">
+						            <div class="col-md-4">
+						                <select name="fireTarget" id="fireTargetA" class="form-select form-select-sm border-info-subtle">
+						                    <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="'Target: ' + ${q.key}"></option>
+						                </select>
+						            </div>
+						            <div class="col">
+						                <input type="text" name="fireKey" id="fireKeyA" class="form-control form-control-sm" placeholder="Payload Key">
+						            </div>
+						            <div class="col-auto">
+						                <div class="input-group input-group-sm">
+						                    <div class="input-group-text bg-white border-info-subtle">
+						                        <input class="form-check-input mt-0" type="checkbox" name="fireCopyCorrel" id="fireCopyCorrelA">
+						                        <span class="ms-1 fw-bold text-info" style="font-size: 10px;">COPY CORREL</span>
+						                    </div>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
 
                             <label class="label-payload text-uppercase mb-2">Payload (JSON/XML/Text)</label>
                             <textarea name="payload" id="payloadA" class="form-control payload-area shadow-sm" rows="4"></textarea>
@@ -289,89 +295,95 @@
                     <div class="card-body p-4">
                         <form th:action="@{/gui/send}" method="get" id="formB">
                             <input type="hidden" name="source" value="B">
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label small text-uppercase">Cola de Destino</label>
-                                    <select name="queue" id="queueB" class="form-select shadow-sm" onchange="updateTitles()">
-                                        <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key}"></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small text-uppercase">Threads</label>
-                                    <input type="number" name="threads" id="threadsB" class="form-control shadow-sm" value="1">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small text-uppercase">Items</label>
-                                    <input type="number" name="iterations" id="iterB" class="form-control shadow-sm" value="1">
-                                </div>
-                            </div>
+							<div class="row g-3 mb-4 align-items-end">
+							    <div class="col-md-4">
+							        <label class="form-label small text-uppercase">Cola de Destino</label>
+							        <select name="queue" id="queueB" class="form-select shadow-sm" onchange="updateTitles()">
+							            <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
+							        </select>
+							    </div>
+							    
+							    <div class="col-md-2">
+							        <label class="form-label small text-uppercase">Threads</label>
+							        <input type="number" name="threads" id="threadsB" class="form-control shadow-sm" value="1">
+							    </div>
+							
+							    <div class="col-md-2">
+							        <label class="form-label small text-uppercase">Items</label>
+							        <input type="number" name="iterations" id="iterB" class="form-control shadow-sm" value="1">
+							    </div>
+							
+							    <div class="col-md-3">
+							        <label class="form-label small text-uppercase">Delay (ms)</label>
+							        <div class="input-group shadow-sm">
+							            <span class="input-group-text bg-light"><i class="bi bi-clock-history"></i></span>
+							            <input type="number" name="delay" id="delayB" class="form-control" value="0" placeholder="0">
+							            <span class="input-group-text bg-white small text-muted">ms</span>
+							        </div>
+							    </div>
+							</div>
 
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-4">
-                                    <label class="form-label small text-uppercase">Correlation ID</label>
-                                    <div class="input-group shadow-sm">
-                                        <input type="text" name="correlationId" id="correlB" class="form-control" placeholder="HEX ID">
-                                        <div class="input-group-text bg-white">
-                                            <input class="form-check-input mt-0" type="checkbox" name="copyCorrel" id="copyCheckB" onchange="toggleCorrel('B')">
-                                            <span class="ms-1 small fw-bold">Copy</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small text-uppercase">ReplyTo Queue</label>
-                                    <input type="text" name="replyTo" id="replyToB" class="form-control shadow-sm">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small text-uppercase">ReplyTo QMgr</label>
-                                    <input type="text" name="replyToQMgr" id="replyToQMgrB" class="form-control shadow-sm">
-                                </div>
-								<div class="fire-box shadow-sm mb-4" style="background-color: #f0f9ff; border-color: #bae6fd;">
-								    <div class="row g-3 align-items-center">
-								        
-								        <div class="col-auto">
-								            <div class="form-check form-switch m-0">
-								                <input class="form-check-input" type="checkbox" name="fireEnabled" id="fireCheckB">
-								                <label class="form-check-label fw-bold text-info small" for="fireCheckB">
-								                    <i class="bi bi-fire"></i> FIRE
-								                </label>
-								            </div>
-								        </div>
-								
-								        <div class="col-md-3">
-								            <select name="fireTarget" id="fireTargetB" class="form-select form-select-sm border-info-subtle">
-								                <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="'Target: ' + ${q.key}"></option>
-								            </select>
-								        </div>
-								
-								        <div class="col">
-								            <input type="text" name="fireKey" id="fireKeyB" class="form-control form-control-sm" placeholder="Payload Key">
-								        </div>
-								
-								        <div class="col-auto">
-								            <div class="input-group input-group-sm">
-								                <div class="input-group-text bg-white border-info-subtle">
-								                    <input class="form-check-input mt-0" type="checkbox" name="fireCopyCorrel" id="fireCopyCorrelB">
-								                    <span class="ms-1 extra-small fw-bold text-info" style="font-size: 10px;">COPY CORREL</span>
-								                </div>
-								            </div>
-								        </div>
-								
-								        <div class="col-auto border-start ps-3">
-								            <div class="d-flex flex-column gap-1">
-								                <div class="form-check form-switch m-0">
-								                    <input class="form-check-input" type="checkbox" id="showModalB" style="transform: scale(0.85);">
-								                    <label class="form-check-label fw-bold text-dark" for="showModalB" style="font-size: 9px; line-height: 1.5;">Console</label>
-								                </div>
-								                <div class="form-check form-switch m-0">
-								                    <input class="form-check-input" type="checkbox" id="showEmittersB" style="transform: scale(0.85);">
-								                    <label class="form-check-label fw-bold text-dark" for="showEmittersB" style="font-size: 9px; line-height: 1.5;">Emitter</label>
-								                </div>
-								            </div>
-								        </div>
-								
-								    </div>
-								</div>
-                            </div>
+                            <div class="row g-3 mb-2 align-items-end">
+							    <div class="col-md-4">
+							        <label class="form-label small text-uppercase">Correlation ID</label>
+							        <div class="input-group shadow-sm">
+							            <input type="text" name="correlationId" id="correlA" class="form-control" placeholder="HEX ID">
+							            <div class="input-group-text bg-white">
+							                <input class="form-check-input mt-0" type="checkbox" name="copyCorrel" id="copyCheckB" onchange="toggleCorrel('B')">
+							                <span class="ms-1 small fw-bold">Copy</span>
+							            </div>
+							        </div>
+							    </div>
+							    <div class="col-md-2">
+							        <label class="form-label small text-uppercase">ReplyTo Queue</label>
+							        <input type="text" name="replyTo" id="replyToB" class="form-control shadow-sm">
+							    </div>
+							    <div class="col-md-2">
+							        <label class="form-label small text-uppercase">ReplyTo QMgr</label>
+							        <input type="text" name="replyToQMgr" id="replyToQMgrB" class="form-control shadow-sm">
+							    </div>
+							    <div class="col-md-2">
+							            <div class="form-check form-switch m-0">
+							                <input class="form-check-input" type="checkbox" id="showModalB" style="transform: scale(0.85);">
+							                <label class="form-check-label fw-bold text-dark" for="showModalB" style="font-size: 9px; line-height: 1.5;">Console</label>
+							            </div>
+							            <div class="form-check form-switch m-0">
+							                <input class="form-check-input" type="checkbox" id="showEmittersB" style="transform: scale(0.85);">
+							                <label class="form-check-label fw-bold text-dark" for="showEmittersB" style="font-size: 9px; line-height: 1.5;">Emitter</label>
+							            </div>
+							    </div>
+							    <div class="col-md-2" th:if="${fire}">
+							        <div class="form-check form-switch m-0">
+							            <input class="form-check-input" type="checkbox" name="fireEnabled" id="fireCheckB" onchange="toggleFirePanel('B')">
+							            <label class="form-check-label fw-bold text-info small" for="fireCheckB">
+							                <i class="bi bi-fire"></i> FIRE
+							            </label>
+							        </div>
+							    </div>
+							</div>
+							
+							<div id="firePanelB" style="display: none;" th:if="${fire}">
+							    <div class="fire-box shadow-sm mb-4 p-2 rounded" style="background-color: #f0f9ff; border: 1px solid #bae6fd;">
+							        <div class="row g-3 align-items-center">
+							            <div class="col-md-4">
+							                <select name="fireTarget" id="fireTargetB" class="form-select form-select-sm border-info-subtle">
+							                    <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="'Target: ' + ${q.key}"></option>
+							                </select>
+							            </div>
+							            <div class="col">
+							                <input type="text" name="fireKey" id="fireKeyB" class="form-control form-control-sm" placeholder="Payload Key">
+							            </div>
+							            <div class="col-auto">
+							                <div class="input-group input-group-sm">
+							                    <div class="input-group-text bg-white border-info-subtle">
+							                        <input class="form-check-input mt-0" type="checkbox" name="fireCopyCorrel" id="fireCopyCorrelB">
+							                        <span class="ms-1 fw-bold text-info" style="font-size: 10px;">COPY CORREL</span>
+							                    </div>
+							                </div>
+							            </div>
+							        </div>
+							    </div>
+							</div>
 
                             <label class="label-payload text-uppercase mb-2">Payload</label>
                             <textarea name="payload" id="payloadB" class="form-control payload-area shadow-sm" rows="4"></textarea>
@@ -407,8 +419,8 @@
 <script th:inline="javascript">
     // REGISTRO DE CAMPOS PARA PERSISTENCIA (Sincronizado A y B)
     const fields = [
-        'queueA', 'correlA', 'iterA', 'threadsA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'showModalA', 'showEmittersA','fireCheckA','fireTargetA','fireKeyA','fireCopyCorrelA',
-        'queueB', 'correlB', 'iterB', 'threadsB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB', 'showModalB', 'showEmittersB','fireCheckB','fireTargetB','fireKeyB','fireCopyCorrelB'
+        'queueA', 'correlA', 'iterA', 'threadsA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'showModalA', 'showEmittersA','fireCheckA','fireTargetA','fireKeyA','fireCopyCorrelA','delayA',
+        'queueB', 'correlB', 'iterB', 'threadsB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB', 'showModalB', 'showEmittersB','fireCheckB','fireTargetB','fireKeyB','fireCopyCorrelB','delayB'
     ];
     let lastActiveTextarea = "payloadA";
     let isAppDown = false;
@@ -446,6 +458,8 @@
         startHealthCheck();
         toggleCorrel('A');
         toggleCorrel('B');
+        toggleFirePanel('A');
+        toggleFirePanel('B');
     });
 
     // SISTEMA DE MONITOREO MEJORADO (DETECCIÓN DE PÉRDIDA DE SESIÓN)
@@ -602,6 +616,7 @@
                 }
                 if (lowMsg.includes("completado")) finalizar(true);
             }
+            //finalizar(lowMsg.includes("error"));
         };
 
         activeEventSource.onerror = (e) => {
@@ -703,7 +718,18 @@
         document.documentElement.style.fontSize = '13px'; 
         localStorage.setItem('mq_fontSize', 13); 
     }
-
+    
+    function toggleFirePanel(suffix) {
+        const isEnabled = document.getElementById('fireCheck' + suffix).checked;
+        const panel = document.getElementById('firePanel' + suffix);
+        
+        if (isEnabled) {
+            panel.style.display = 'block';
+            // Opcional: añadir una pequeña animación o scroll si quieres
+        } else {
+            panel.style.display = 'none';
+        }
+    }
     function clearAll() { if(confirm("¿Desea limpiar toda la configuración local?")) { localStorage.clear(); location.reload(); } }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

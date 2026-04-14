@@ -1,5 +1,5 @@
 # spring.profiles.active: dualrun-ger, mq-dev-ger # dualrun-ger, external-driven, master-driven
-spring.profiles.include: dev
+# spring.profiles.include: simu-cache # dev
 server:
   port: 8089
   error:
@@ -8,16 +8,18 @@ server:
     session:
       tracking-modes: cookie # Evita generación innecesaria de IDs de sesión si no usas sesiones
 
-simu-mq.path: "c:/temp"
-simu-mq.expiry: 120     #in seconds
-simu-mq.ttl: 60
-simu-mq.debug: true
+simu-mq:
+    path: "c:/temp"
+    expiry: 120     #in seconds
+    ttl: 60
+    debug: false
+    debugAll: false
 
 spring.thymeleaf.cache: true
 
 logging.config: classpath:log4j2.xml
 logging.level.org.springframework.boot.context.properties: DEBUG
-logging.level.org.apache.catalina.util.SessionIdGeneratorBase: ERROR
+logging.level.org.apache.catalina: ERROR
 ---
 # Profile to activate to connect to cert client mq
 spring.config.activate.on-profile: mq-dev-ger
@@ -53,17 +55,19 @@ spring.config.activate.on-profile: master-driven
 # CONFIGURACIÓN COMÚN DE COLAS Y PAYLOADS
 # -------------------------------------------------------------------
 simulador:
+  numThreads: 2
   role: SOH_START
+  fire: true
   # Definición de colas con su respectivo CCSID
   queues:
     master-in:
       name: "QNAME08"
       ccsid: 1208 # UTF-8
-      fire:
-        queues:
-          secondary-in:
-            payload-key: 'MENSAJE_SECUNDARIO'
-            copy-correl: false
+#      fire:
+#        queues:
+#          secondary-in:
+#            payload-key: 'MENSAJE_SECUNDARIO'
+#            copy-correl: false
     master-res:
       name: "QNAME10"
       ccsid: 1208
@@ -77,7 +81,7 @@ simulador:
     secondary-in:
       name: "QNAME09"
       ccsid: 1208
-      tresp: 500
+      tresp: 0
     secondary-res:
       name: "QNAME11"
       ccsid: 1208
@@ -110,6 +114,7 @@ spring.config.activate.on-profile: external-driven, default
 
 simulador:
   numThreads: 2
+  fire: true
   role: DR_START
   # Definición de colas con su respectivo CCSID
   queues:
@@ -125,11 +130,11 @@ simulador:
       external-res:
         name: "QNAME12"
         ccsid: 819  # Ejemplo: ISO-8859-1 para el sistema externo
-        fire:
-          queues:
-            secondary-in:
-              payload-key: 'MENSAJE_SECUNDARIO'
-              copy-correl: true
+#        fire:
+#          queues:
+#            secondary-res:
+#              payload-key: 'MENSAJE_SECUNDARIO'
+#              copy-correl: true
       secondary-in:
         name: "QNAME09"
         ccsid: 284

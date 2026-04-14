@@ -12,8 +12,11 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class MessagesMgr {
 
   private static final Charset CS_284 = Charset.forName("Cp284");
@@ -22,7 +25,9 @@ public class MessagesMgr {
 
   private Map<String, Supplier<String>> table = new HashMap<>();
 
+  @Cacheable(value = "msgs", key = "#idMsg")
   public String createStrPayload(String idMsg) {
+    log.debug("Creating payload for idMsg: {}", idMsg);
     if (idMsg.equals("msg1")) {
       return msg1();
     } else if (idMsg.equals("msg2")) {
@@ -176,7 +181,7 @@ public class MessagesMgr {
     } else if (table.containsKey(idMsg)) {
       return table.get(idMsg).get();
     } else {
-      throw new RuntimeException("Mensaje '" + idMsg + "' no encontrado");
+      return ("NOT_FOUND:Mensaje '" + idMsg + "' no encontrado");
     }
   }
   

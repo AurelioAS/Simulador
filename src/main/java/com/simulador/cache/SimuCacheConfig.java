@@ -13,11 +13,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
+import org.springframework.stereotype.Service;
 
+@Profile("simu-cache")
 @Slf4j
-// @Service
+@Service
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE) // 1. Máxima prioridad de orden
 @AutoConfigureBefore({ // 2. Ejecutar ANTES de que Spring intente configurar el cache real
     CacheAutoConfiguration.class,
@@ -26,7 +30,7 @@ import org.springframework.core.Ordered;
 @EnableCaching // Activa el soporte de @Cacheable
 public class SimuCacheConfig {
 
-  // @Bean
+  @Bean
   @ConditionalOnMissingBean(name = "cacheManager") // Solo se crea si no existe otro bean con este
   @DependsOn("hazelcastInstance") // Asegura que hazelcastInstance se cree antes
   public CacheManager cacheManager(HazelcastInstance hazelcastInstance) {

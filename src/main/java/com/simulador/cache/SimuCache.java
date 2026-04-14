@@ -5,6 +5,7 @@ package com.simulador.cache;
 
 import com.hazelcast.map.IMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 
@@ -33,18 +34,26 @@ public class SimuCache extends AbstractValueAdaptingCache {
   @Override
   protected Object lookup(Object key) {
     // Aquí se llama a tu método get() comprimido/binario
-    log.info("Obteniendo valor para clave: " + key);
+    if (log.isDebugEnabled()) {
+      log.debug("Cache:Buscando valor para clave: " + key);
+    }
     return store.get(key);
   }
 
   @Override
   public void put(Object key, Object value) {
-    // Aquí se llama a tu put() con compresión
-    store.put(key, value);
+    try {
+      store.put(key, value, 30, TimeUnit.SECONDS); // Ejemplo con TTL de 10 minutos
+    } catch (Exception e) {
+      log.error("Cache:Error al almacenar en cache: " + e.getMessage());
+    }
   }
 
   @Override
   public void evict(Object key) {
+    if (log.isDebugEnabled()) {
+      log.debug("Cache:Eliminando valor para clave (eviction): " + key);
+    }
     store.remove(key);
   }
 

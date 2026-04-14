@@ -3,6 +3,7 @@ package com.simulador.controller;
 import com.simulador.config.MQConnectionBundle;
 import com.simulador.config.SimulatorProperties;
 import com.simulador.service.MqSimulatorService;
+import com.simulador.service.SendService;
 import com.simulador.utils.Utils;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
@@ -43,12 +45,15 @@ public class WebGuiController extends Utils {
   // Importante: No dejar estos como variables de clase si hay varios usuarios,
   // pero los mantenemos aquí para seguir tu lógica actual.
   private byte[][]   correls = new byte[1][1];
+  private SendService sendService;
+  private boolean     error;
 
   public WebGuiController(MqSimulatorService mqService, SimulatorProperties props,
-      Map<String, MQConnectionBundle> connections) {
+      Map<String, MQConnectionBundle> connections, SendService sendService) {
     this.mqService = mqService;
     this.props = props;
     this.myconnections = connections;
+    this.sendService = sendService;
   }
 
   @GetMapping("/ping")
@@ -63,6 +68,7 @@ public class WebGuiController extends Utils {
   public String index(HttpSession session, Model model) {
     model.addAttribute("queues", props.getQueues());
     model.addAttribute("payloads", props.getPayloads());
+    model.addAttribute("fire", props.isFire());
     session.setAttribute("SPRING_SECURITY_LAST_EXCEPTION", null);
     // Podemos pasar un ID de sesión al modelo para depuración visual en el HTML
     model.addAttribute("sessionId", session.getId());
@@ -84,6 +90,7 @@ public class WebGuiController extends Utils {
     registerEmitterCallbacks(emitter, emitterKey, isCompleted);
 
     mqService.registrarEmitter(emitterKey, emitter);
+    sendService.registrarEmitter(emitterKey, emitter);
     // 2. Ejecutamos TODO en un hilo separado para liberar a Tomcat
     CompletableFuture.runAsync(() -> {
       ExecutorService executor = null;
@@ -133,7 +140,6 @@ public class WebGuiController extends Utils {
             log.info(txt);
             emitter.send(txt);
           }
-
           executor.execute(() -> {
             try {
               byte[] threadCorr = request.getCorrelationId();
@@ -150,22 +156,24 @@ public class WebGuiController extends Utils {
                 correls[currentIdx] = threadCorr;
 
               // Envío Real
-              mqService.send(request.getQueue(), request.getPayload(), threadCorr, threadMess,
+              sendService.send(request.getQueue(), request.getPayload(), threadCorr, threadMess,
                   request.isCopyCorrel(), request.getReplyTo(), request.getReplyToQMgr(),
                   false, java.util.Optional.empty(), request.getSource(),
                   clones.get(currentIdx % threads), emitter);
               if (request.isFireEnabled()) {
-                mqService.send(request.getFireTarget(), request.getFireKey(), threadCorr,
-                    new byte[24],
+                sendService.send(request.getFireTarget(), request.getFireKey(), threadCorr,
+                    threadMess,
                     request.isFireCopyCorrel(), request.getReplyTo(), request.getReplyToQMgr(),
                     false, java.util.Optional.empty(), request.getSource(),
-                    clones.get(currentIdx % threads), emitter);
+                    null, emitter);
               }
               successCount.incrementAndGet();
+              TimeUnit.MILLISECONDS.sleep(request.getDelay()); // Si se quiere un delay entre envíos
             } catch (Exception e) {
               errorCount.incrementAndGet();
               try {
                 emitter.send("Error en ítem " + (currentIdx + 1) + ": " + e.getMessage());
+                this.error = true;
               } catch (Exception ignored) {
               }
             } finally {
@@ -178,7 +186,9 @@ public class WebGuiController extends Utils {
         long totalTime = System.currentTimeMillis() - startTime;
 
         // MENSAJE FINAL (El JS busca la palabra "Completado")
+        if (!error) {
         emitter.send("Completado. Éxitos: " + successCount.get() + " en " + totalTime + "ms.");
+        }
         // emitter.complete();
 
       } catch (Exception e) {
@@ -210,18 +220,21 @@ public class WebGuiController extends Utils {
       log.info("Conexión finalizada para: {}", emitterKey);
       isCompleted.set(true);
       mqService.removerEmitter(emitterKey);
+      sendService.removerEmitter(emitterKey);
     });
 
     emitter.onTimeout(() -> {
       log.warn("Timeout en conexión: {}", emitterKey);
       isCompleted.set(true);
       mqService.removerEmitter(emitterKey);
+      sendService.removerEmitter(emitterKey);
     });
 
     emitter.onError((ex) -> {
       log.error("Error en conexión SSE: {}", emitterKey);
       isCompleted.set(true);
       mqService.removerEmitter(emitterKey);
+      sendService.removerEmitter(emitterKey);
     });
   }
 
@@ -245,7 +258,7 @@ public class WebGuiController extends Utils {
   }
 
   @Scheduled(fixedDelay = 30000) // Cada 1/2 minuto
-  private void checkConnections() {
+  public void checkConnections() {
     if (myconnections.size() == 0) {
       log.warn("No hay conexiones registradas para monitorear.");
       clones.clear();
