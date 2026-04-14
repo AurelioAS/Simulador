@@ -7,9 +7,9 @@ import com.ibm.mq.constants.MQConstants;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -19,7 +19,16 @@ public class MQNativeConfig {
   @Autowired
   MQProperties mqProperties;
 
-  @Getter
+  /**
+   * @return the props
+   */
+  @Cacheable("mqProps")
+  public Hashtable<String, Object> getProps() {
+    log.info("Generando propiedades de conexión MQ para host: {}, port: {}, channel: {}",
+        mqProperties.getHost(), mqProperties.getPort(), mqProperties.getChannel());
+    return props;
+  }
+
   Hashtable<String, Object> props = new Hashtable<>();
 
   static {
@@ -60,5 +69,12 @@ public class MQNativeConfig {
           appName, e.completionCode, e.reasonCode);
       throw e;
     }
+  }
+
+  /**
+   * @param props the props to set
+   */
+  public void setProps(Hashtable<String, Object> props) {
+    this.props = props;
   }
 }

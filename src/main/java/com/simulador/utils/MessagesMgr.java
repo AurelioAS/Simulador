@@ -1,5 +1,7 @@
 package com.simulador.utils;
 
+import com.simulador.config.SimulatorProperties;
+import com.simulador.service.SendService;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -10,10 +12,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
+@Component
 public class MessagesMgr {
 
   private static final Charset CS_284 = Charset.forName("Cp284");
@@ -22,7 +30,12 @@ public class MessagesMgr {
 
   private Map<String, Supplier<String>> table = new HashMap<>();
 
+  @Autowired
+  SendService sender;
+
+  @Cacheable(value = "msgs", key = "#idMsg")
   public String createStrPayload(String idMsg) {
+    log.debug("Creating payload for idMsg: {}", idMsg);
     if (idMsg.equals("msg1")) {
       return msg1();
     } else if (idMsg.equals("msg2")) {
@@ -176,7 +189,7 @@ public class MessagesMgr {
     } else if (table.containsKey(idMsg)) {
       return table.get(idMsg).get();
     } else {
-      throw new RuntimeException("Mensaje '" + idMsg + "' no encontrado");
+      return ("NOT_FOUND:Mensaje '" + idMsg + "' no encontrado");
     }
   }
   
@@ -711,5 +724,34 @@ public class MessagesMgr {
     }).findFirst().get();
   }
 
-
+  @Cacheable(value = "payloads", key = "#payloadKey")
+  public String checkPayload(String payloadKey, SimulatorProperties props,
+      Map<String, SseEmitter> emittersActivos) {
+    log.debug("Verificando payload para clave: " + payloadKey);
+    if (payloadKey.startsWith("payload:")) {
+      String customPayload = payloadKey.substring(8);
+      payloadKey = createStrPayload(customPayload);
+      if (payloadKey.startsWith("NOT_FOUND:")) {
+        log.error("Error simulado por payload personalizado: " + customPayload);
+        sender.enviarSafe(emittersActivos.get("A"),
+            "Error simulado por payload personalizado: " + customPayload,
+            new AtomicBoolean(false));
+        throw new RuntimeException("Error simulado por payload personalizado: " + customPayload);
+      }
+    } else if (props.getPayloads().get(payloadKey) != null
+        && props.getPayloads().get(payloadKey).startsWith("payload:")) {
+      String customPayload = props.getPayloads().get(payloadKey).substring(8);
+      payloadKey = createStrPayload(customPayload);
+      if (payloadKey.startsWith("NOT_FOUND:")) {
+        log.error("Error simulado por payload personalizado: " + customPayload);
+        sender.enviarSafe(emittersActivos.get("A"),
+            "Error simulado por payload personalizado: " + customPayload,
+            new AtomicBoolean(false));
+        throw new RuntimeException("Error simulado por payload personalizado: " + customPayload);
+      }
+    } else if (props.getPayloads().get(payloadKey) != null) {
+      payloadKey = props.getPayloads().get(payloadKey);
+    }
+    return payloadKey;
+  }
 }

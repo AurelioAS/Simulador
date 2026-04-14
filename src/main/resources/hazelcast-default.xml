@@ -1,0 +1,14 @@
+<hazelcast-client>
+
+	<cluster-name>dev</cluster-name>
+
+	<network>
+		<member-list>
+			<member>isblccfserd0004.scisb.isban.corp:8300</member>
+		</member-list>
+
+		<connection-attempt-period>3000</connection-attempt-period>
+		<connection-attempt-limit>10</connection-attempt-limit>
+	</network>
+
+</hazelcast-client>

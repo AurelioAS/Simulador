@@ -15,7 +15,7 @@
 
 # Toda la conf del client de hazelcast cuelga de aqui
 hazelcast-client:
-  cluster-name: dev
+  cluster-name: hz5
   connection-strategy:
     async-start: false
     reconnect-mode: ON
@@ -25,23 +25,30 @@ hazelcast-client:
       # multiplier: 1.2
       cluster-connect-timeout-millis: 5000
       # jitter: 0.2
+
   network:
     cluster-members:
       # - localhost:8200
-      - isblccfserd0004.scisb.isban.corp:8200
+      - isblccfserd0004.scisb.isban.corp:8300
       # - 10.117.10.19:8200
       # - hazelcast-ubi8-st-0.hz-service-region-a.sgt-bks-dev.svc.cluster.local
  
   # Configuración de Near Cache con Comodines
   near-cache:
       "PRU.*":
-        in-memory-format: OBJECT # Eficiente para tus byte[]
+        in-memory-format: BINARY # Eficiente para tus byte[]
         invalidate-on-change: true
         eviction:
           eviction-policy: LRU
           max-size-policy: ENTRY_COUNT
           size: 2000 # Límite conservador de memoria local
-
+      "queues":
+        in-memory-format: BINARY # Eficiente para tus byte[]
+        invalidate-on-change: true
+        eviction:
+          eviction-policy: LRU
+          max-size-policy: ENTRY_COUNT
+          size: 2000 # Límite conservador de memoria local
   metrics:
      enabled: true
      collection-frequency-seconds: 5

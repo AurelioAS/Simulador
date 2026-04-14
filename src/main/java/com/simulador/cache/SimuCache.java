@@ -3,8 +3,12 @@
  */
 package com.simulador.cache;
 
+import com.hazelcast.core.EntryEvent;
 import com.hazelcast.map.IMap;
+import com.hazelcast.map.listener.EntryEvictedListener;
+import com.hazelcast.map.listener.EntryExpiredListener;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 
@@ -18,6 +22,19 @@ public class SimuCache extends AbstractValueAdaptingCache {
     super(allowNullValues);
     this.name = name;
     this.store = store;
+    this.store.addEntryListener(new EntryEvictedListener<String, Object>() {
+      @Override
+      public void entryEvicted(EntryEvent<String, Object> event) {
+        log.warn("Cache:Valor evicted para clave: " + event.getKey() + " en cache: " + name);
+      }
+    }, true);
+
+    this.store.addEntryListener(new EntryExpiredListener<String, Object>() {
+      @Override
+      public void entryExpired(EntryEvent<String, Object> event) {
+        log.info("Clave EXPIRADA (TTL alcanzado) - Key: {}", event.getKey());
+      }
+    }, true);
   }
 
   @Override
@@ -33,18 +50,26 @@ public class SimuCache extends AbstractValueAdaptingCache {
   @Override
   protected Object lookup(Object key) {
     // Aquí se llama a tu método get() comprimido/binario
-    log.info("Obteniendo valor para clave: " + key);
+    if (log.isTraceEnabled()) {
+      log.trace("Cache:Buscando valor para clave: " + key);
+    }
     return store.get(key);
   }
 
   @Override
   public void put(Object key, Object value) {
-    // Aquí se llama a tu put() con compresión
-    store.put(key, value);
+    try {
+      store.put(key, value, 120, TimeUnit.SECONDS); // Ejemplo con TTL de 10 minutos
+    } catch (Exception e) {
+      log.error("Cache:Error al almacenar en cache: " + e.getMessage());
+    }
   }
 
   @Override
   public void evict(Object key) {
+    if (log.isDebugEnabled()) {
+      log.debug("Cache:Eliminando valor para clave (eviction): " + key);
+    }
     store.remove(key);
   }
 

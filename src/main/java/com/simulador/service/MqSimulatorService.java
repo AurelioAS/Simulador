@@ -3,25 +3,16 @@ package com.simulador.service;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQGetMessageOptions;
 import com.ibm.mq.MQMessage;
-import com.ibm.mq.MQPutMessageOptions;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.constants.MQConstants;
-import com.simulador.aspect.LogFullDetails;
 import com.simulador.components.JsonService;
 import com.simulador.config.MQConnectionBundle;
 import com.simulador.config.SimulatorProperties;
 import com.simulador.config.SimulatorProperties.AutoResponse;
-import com.simulador.config.SimulatorProperties.QueueConfig;
-import com.simulador.utils.MessagesMgr;
 import com.simulador.utils.Utils;
 import java.io.IOException;
-import java.util.GregorianCalendar;
 import java.util.Map;
-import java.util.Optional;
-import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -52,14 +43,16 @@ public class MqSimulatorService extends Utils {
   private final Utils                   utils           = new Utils();
   private SseEmitter                    emitter;
   private final Map<String, SseEmitter> emittersActivos = new ConcurrentHashMap<>();
+  private SendService                   sendService;
 
   @Autowired
   public MqSimulatorService(Map<String, MQConnectionBundle> connection,
       SimulatorProperties props,
-      JsonService jsonService) {
+      JsonService jsonService, SendService sendService) {
     this.connections = connection;
     this.props = props;
     this.jsonService = jsonService;
+    this.sendService = sendService;
   }
 
   /**
@@ -85,7 +78,7 @@ public class MqSimulatorService extends Utils {
           for (int i = 0; i < poolSize; i++) {
             int index = i % poolSize;
             createFlux(sourceQ.getName(), (msg) -> {
-              processAndReply(msg, sourceKey, rule, bundle, 1);
+              sendService.processAndReply(msg, sourceKey, rule, bundle, 1);
             }, 1).subscribe();
           }
         } catch (Exception ignored) {
@@ -109,7 +102,7 @@ public class MqSimulatorService extends Utils {
             int index = i % poolSize;
             createFlux(sourceQ.getName(),
                 (msg) -> {
-                  consumeAndLog(msg, consumeRule, sourceQ.getName(), index, bundle, 2);
+                  sendService.consumeAndLog(msg, consumeRule, sourceQ.getName(), index, bundle, 2);
                 }, 2).subscribe();
           } catch (Exception e) {
             log.error("Error configurando escucha para {}: {}", sourceQ.getName(), e.getMessage());
@@ -126,50 +119,6 @@ public class MqSimulatorService extends Utils {
     isRunning = true;
   }
 
-  /**
-   * @param msg2
-   * @param consumeRule
-   * @param i
-   * @param bundle
-   * @param j
-   * @return
-   */
-  private void consumeAndLog(MQMessage msg, String key, String consumeRule, int i,
-      MQConnectionBundle bundle, int actionType) {
-    try {
-      traceGet("<<< [PRG]", consumeRule, key, msg.characterSet,
-          bytesToHex(msg.correlationId));
-      AtomicBoolean isCompleted = new AtomicBoolean(false);
-      if (emittersActivos.get("A") != null) {
-        enviarSafe(emittersActivos.get("A"),
-            "Consumer: " + consumeRule + " | CCSID: " + msg.characterSet + " | HEX: "
-                + bytesToHex(msg.correlationId),
-            isCompleted);
-      }
-    } catch (Exception e) {
-      log.error("Error procesando mensaje en cola {}: {}", consumeRule, e.getMessage());
-    }
-  }
-
-
-  /**
-   * @param string
-   * @param qmName
-   * @param consumeRule
-   * @param key
-   * @param characterSet
-   * @param bytesToHex
-   */
-  private void traceGet(String string, String consumeRule, String key,
-      int characterSet, String correlationId) {
-    if (log.isDebugEnabled()) {
-      key = key.length() > 15 ? key.substring(0, 15) + "..." : key;
-      log.debug(string + " {} <-- {} | CCSID: {} | HEX: {} ",
-          consumeRule, String.format("%-18s", key), characterSet,
-          correlationId);
-    }
-  }
-
   public void registrarEmitter(String key, SseEmitter emitter) {
     this.emittersActivos.put(key, emitter);
   }
@@ -178,272 +127,8 @@ public class MqSimulatorService extends Utils {
     this.emittersActivos.remove(key);
   }
 
-  /**
-   * @param queueKey
-   * @param payloadKey
-   * @param correlationId
-   * @param messageId
-   * @param isCopyCorrel
-   * @param replyTo
-   * @param replyToQMgr
-   * @param processed
-   * @param overrideConfig
-   * @param source
-   * @param clone
-   * @param emitter
-   * @throws Exception
-   */
-
-  public void send(String queueKey, String payloadKey, byte[] correlationId, byte[] messageId,
-      boolean isCopyCorrel,
-      String replyTo, String replyToQMgr, boolean processed, Optional<QueueConfig> overrideConfig,
-      String source, MQConnectionBundle clone, SseEmitter emitter)
-      throws Exception {
-    this.emitter = emitter;
-    String content = "";
-    if (props.getRole().equals("T3270_START")) {
-      content = payloadKey;
-    } else {
-      content = props.getPayloads().get(payloadKey);
-    }
-    SimulatorProperties.QueueConfig qConfig = props.getQueues().get(queueKey);
-    MQQueue queue;
-    if (clone != null) {
-      queue = clone.getQueue();
-    } else {
-      queue = getQueue(qConfig.getName());
-    }
-
-    MQMessage msg = new MQMessage();
-    msg.characterSet = qConfig.getCcsid();
-    msg.format = MQConstants.MQFMT_STRING;
-    if (replyTo != null && !replyTo.isEmpty()) {
-      msg.replyToQueueName = replyTo;
-    }
-    if (replyToQMgr != null && !replyToQMgr.isEmpty()) {
-      msg.replyToQueueManagerName = replyToQMgr;
-    }
-    if (correlationId != null) {
-      msg.correlationId = correlationId;
-    }
-    if (isCopyCorrel) { // && processed) {
-      msg.messageId = msg.correlationId;
-    }
-    AtomicBoolean copied = new AtomicBoolean(false);
-    String correlation = props.getProperties().get("correlation");
-    overrideConfig.ifPresent(config -> {
-      if (config.isCopyCorrel()) {
-        msg.messageId = msg.correlationId;
-        copied.set(true);
-      }
-    });
-    if (!copied.get()) {
-      if (correlation.equals("msg-correl") && !props.getRole().equals("SOH_START")) {
-        msg.messageId = msg.correlationId;
-      } else if (correlation.equals("msg-correl") && props.getRole().equals("SOH_START")) {
-        if (messageId != null) {
-          msg.correlationId = messageId;
-        }
-      } else if (correlation.equals("correl-correl")) {
-        msg.messageId = msg.correlationId;
-      } else if (correlation.equals("msg-msg")) {
-        msg.correlationId = messageId;
-      } else if (qConfig.isCopyCorrel() && !props.getRole().equals("SOH_START")) {
-        msg.messageId = msg.correlationId;
-      } else if (qConfig.isCopyCorrel() && props.getRole().equals("SOH_START")) {
-        msg.correlationId = messageId;
-      }
-    }
-    if (msg.messageId == null || utils.isNullOrEmpty(msg.messageId)) {
-      msg.messageId = Utils.generateRandomId(24);
-    }
-    if (qConfig.getTresp() > 0) {
-      log.debug(
-          "*** Simulando tiempo de procesamiento de " + qConfig.getTresp() + " ms para " + queueKey
-              + " ***");
-      TimeUnit.MILLISECONDS.sleep(qConfig.getTresp()); // Simular tiempo de procesamiento
-    }
-    MessagesMgr messagesMgr = new MessagesMgr();
-    if (!processed) {
-      if (payloadKey.startsWith("payload:")) {
-        String customPayload = payloadKey.substring(8);
-        payloadKey = messagesMgr.createStrPayload(customPayload);
-      } else if (props.getPayloads().get(payloadKey).startsWith("payload:")) {
-        String customPayload = props.getPayloads().get(payloadKey).substring(8);
-        payloadKey = messagesMgr.createStrPayload(customPayload);
-      } else {
-        payloadKey = content;
-      }
-      msg.writeString(payloadKey);
-    } else {
-      msg.writeString(content);
-    }
-    TimeZone utc = TimeZone.getTimeZone("Zulu");
-    GregorianCalendar cal = new GregorianCalendar(utc);
-    msg.putDateTime = cal;
-    // msg.seek(0);
-    try {
-      queue.getConnectionReference().isOpen();
-      queue.put(msg, new MQPutMessageOptions());
-    } catch (MQException e) {
-      log.error("Error al enviar mensaje a {}: {}. Intentando reconectar...", qConfig.getName(),
-          e.getMessage(), e);
-      connections.remove(qConfig.getName()); // Limpia la conexión para forzar reconexión en el
-                                             // watchdog
-
-    }
-    String key = queueKey.length() > 15 ? queueKey.substring(0, 15) + "..." : queueKey;
-    log.debug(
-        ">>> [PUT] " + qConfig.getName() + " --> " + String.format("%-18s", key)
-            + " | CCSID: "
-            + qConfig.getCcsid() + " | HEX: "
-            + bytesToHex(msg.correlationId));
-    AtomicBoolean isCompleted = new AtomicBoolean(false);
-    if (emittersActivos.get("A") != null) {
-      enviarSafe(emittersActivos.get("A"),
-          "Enviando a " + qConfig.getName() + " | CCSID: " + qConfig.getCcsid() + " | HEX: "
-              + bytesToHex(msg.correlationId),
-          isCompleted);
-    }
-    if (qConfig.getFire() == null || qConfig.getFire().getQueues() == null
-        || qConfig.getFire().getQueues().isEmpty()) {
-      return;
-    }
-    log.trace(
-        ">>> [FIRE] Verificando mensajes adicionales configurados en fire para " + queueKey);
-    checkFire(qConfig, msg.correlationId, msg.messageId, isCopyCorrel, replyTo, replyToQMgr,
-        source);
-  }
-
-  /**
-   * @param qConfig
-   * @param correlationId
-   * @param messageId
-   * @param isCopyCorrel
-   * @param replyTo
-   * @param replyToQMgr
-   */
-  private void checkFire(QueueConfig qConfig, byte[] correlationId, byte[] messageId,
-      boolean isCopyCorrel, String replyTo, String replyToQMgr, String source) {
-
-    qConfig.getFire().getQueues().forEach((targetQueue, val) -> {
-      try {
-        TimeUnit.MILLISECONDS.sleep(5); // Simular tiempo de espera antes de disparar
-        pool.execute(() -> {
-          log.debug(
-              ">>> [FIRE] Disparando mensajes adicionales configurados en fire para "
-                  + targetQueue);
-          try {
-            send(targetQueue, val.getPayloadKey(), correlationId, messageId, val.isCopyCorrel(),
-                replyTo, replyToQMgr, false, Optional.of(val), source, null, emitter);
-          } catch (IOException e) {
-            log.error("Error al enviar mensaje al front configurado en fire para " + targetQueue,
-                e);
-          } catch (Exception e) {
-            log.error("Error al enviar mensaje adicional configurado en fire para " + targetQueue,
-                e);
-          }
-        });
-      } catch (InterruptedException ex) {
-        Thread.currentThread().interrupt();
-        log.error("Interrumpido al esperar para disparar mensaje adicional en fire para {}",
-            targetQueue, ex);
-      } catch (Exception ex) {
-        log.error("Error inesperado en checkFire para {}", targetQueue, ex);
-      }
-    });
-  }
-
-  public MQQueue getQueue(String name) {
-    MQConnectionBundle bundle = connections.get(name);
-    return queues.compute(name, (key, existingQueue) -> {
-      if (existingQueue == null || !existingQueue.isOpen()) {
-        log.info("Abriendo nueva instancia de cola: {}", key);
-        return bundle.getQueue();
-      }
-      return existingQueue;
-    });
-  }
-
-  /**
-   * @param msg
-   * @param sourceKey
-   * @param rule
-   * @param bundle
-   * @param actionType
-   */
-  private synchronized void processAndReply(MQMessage msg, String sourceKey, AutoResponse rule,
-      MQConnectionBundle bundle, int actionType) {
-    SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
-
-    bundle = connections.get(sourceQ.getName()); // Asegura que usamos la conexión actualizada
-    try {
-      traceGet("<<< [GET]", sourceQ.getName(), sourceKey, msg.characterSet,
-          bytesToHex(msg.correlationId));
-      AtomicBoolean isCompleted = new AtomicBoolean(false);
-      if (emittersActivos.get("A") != null) {
-        enviarSafe(emittersActivos.get("A"),
-            "Autorespuesta: " + sourceQ.getName() + " | CCSID: " + msg.characterSet + " | HEX: "
-                + bytesToHex(msg.correlationId),
-            isCompleted);
-      }
-      MessagesMgr messagesMgr = new MessagesMgr();
-      boolean isCopyCorrel = rule.isCopyCorrel();
-      if (rule.getPayloadKey().startsWith("payload:")) {
-        String customPayload = rule.getPayloadKey().substring(8);
-        String mgr = messagesMgr.createStrPayload(customPayload);
-        lSend(rule.getTargetQueue(), mgr, msg.correlationId, msg.messageId,
-            isCopyCorrel, "", "", true, java.util.Optional.empty(), bundle, true);
-      } else {
-        lSend(rule.getTargetQueue(), rule.getPayloadKey(), msg.correlationId,
-            msg.messageId, isCopyCorrel, "", "", true, java.util.Optional.empty(),
-            bundle, true);
-      }
-    } catch (Exception e) {
-      log.error("Error procesando mensaje en processAndReply para {}: {}", sourceKey,
-          e.getMessage(), e);
-    }
-  }
-
-  /**
-   * @param targetQueue
-   * @param payloadKey
-   * @param correlationId
-   * @param messageId
-   * @param isCopyCorrel
-   * @param string
-   * @param string2
-   * @param b
-   * @param empty
-   * @param c
-   */
-  @LogFullDetails(logResult = true)
-  private void lSend(String targetQueue, String payloadKey, byte[] correlationId, byte[] messageId,
-      boolean isCopyCorrel, String string, String string2, boolean b, Optional<QueueConfig> empty,
-      MQConnectionBundle bundle, boolean c) {
-    MQConnectionBundle bund = connections.get(targetQueue);
-    if (bund != null) {
-      try {
-        bund.getQueue().getOpenOutputCount();
-      } catch (MQException e) {
-        log.error("Error verificando conexión para {}: {}. Intentando reconectar...", targetQueue,
-            e.getMessage(), e);
-        e.printStackTrace();
-      }
-    }
-    pool.execute(() -> {
-      try {
-        send(targetQueue, payloadKey, correlationId, messageId, isCopyCorrel, string, string2, b,
-            empty, null, bund, emitter);
-      } catch (Exception e) {
-        log.error("Error al enviar mensaje desde processAndReply para " + targetQueue, e);
-      }
-    });
-
-  }
-
   public Flux<MQMessage> createFlux(String queueName, Consumer<MQMessage> action, int actionType) {
-    MQQueue queue = getQueue(queueName); // Asegura que la cola esté inicializada y
+    MQQueue queue = sendService.getQueue(queueName); // Asegura que la cola esté inicializada y
                                          // abierta
     if (queue == null) {
       return Flux
@@ -491,17 +176,4 @@ public class MqSimulatorService extends Utils {
         .doOnNext(action); // Aquí se ejecuta tu "doMethod()" cada vez que llega un mensaje
   }
 
-  private void enviarSafe(SseEmitter emitter, String texto, AtomicBoolean isCompleted) {
-    if (isCompleted.get() || emitter == null) {
-      return;
-    }
-    try {
-      emitter.send(texto);
-    } catch (IOException | IllegalStateException e) {
-      log.error("Error enviando mensaje: {}", e.getMessage());
-      // isCompleted.set(true);
-      // Si el emisor falla, lo limpiamos de todos los sitios
-      // emittersActivos.values().remove(emitter);
-    }
-  }
 }

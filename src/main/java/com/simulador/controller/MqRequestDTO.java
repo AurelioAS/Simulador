@@ -24,4 +24,6 @@ public class MqRequestDTO {
                                  // "A" o "B")
   private boolean fireCopyCorrel;   // Si se habilita el envío sin esperar respuesta (Fire and
                                     // Forget)
+  private int     delay;            // Si se habilita el envío sin esperar respuesta (Fire and
+                                    // Forget)
 }

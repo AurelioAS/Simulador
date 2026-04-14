@@ -29,6 +29,7 @@ public class SimulatorProperties {
   private Map<String, String>       consumers     = new HashMap<>();
   private Map<String, String>       properties;
   private int                       numThreads;
+  private boolean                   fire;
 
   @Data
   public static class QueueConfig {
