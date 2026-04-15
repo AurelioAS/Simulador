@@ -4,6 +4,7 @@ import com.simulador.config.MQConnectionBundle;
 import com.simulador.config.SimulatorProperties;
 import com.simulador.service.MqSimulatorService;
 import com.simulador.service.SendService;
+import com.simulador.utils.MessagesMgr;
 import com.simulador.utils.Utils;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.MediaType;
@@ -47,13 +50,15 @@ public class WebGuiController extends Utils {
   private byte[][]   correls = new byte[1][1];
   private SendService sendService;
   private boolean     error;
+  private MessagesMgr messages;
 
   public WebGuiController(MqSimulatorService mqService, SimulatorProperties props,
-      Map<String, MQConnectionBundle> connections, SendService sendService) {
+      Map<String, MQConnectionBundle> connections, SendService sendService, MessagesMgr messages) {
     this.mqService = mqService;
     this.props = props;
     this.myconnections = connections;
     this.sendService = sendService;
+    this.messages = messages;
   }
 
   @GetMapping("/ping")
@@ -66,9 +71,14 @@ public class WebGuiController extends Utils {
   }
   @GetMapping
   public String index(HttpSession session, Model model) {
+    List<Map.Entry<String, Supplier<String>>> sortedMessages = messages.getTable().entrySet()
+        .stream()
+        .sorted(Map.Entry.comparingByKey()) // Orden alfabético por la clave
+        .collect(Collectors.toList());
     model.addAttribute("queues", props.getQueues());
     model.addAttribute("payloads", props.getPayloads());
     model.addAttribute("fire", props.isFire());
+    model.addAttribute("messages", sortedMessages);
     session.setAttribute("SPRING_SECURITY_LAST_EXCEPTION", null);
     // Podemos pasar un ID de sesión al modelo para depuración visual en el HTML
     model.addAttribute("sessionId", session.getId());

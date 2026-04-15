@@ -53,6 +53,8 @@ public class SendService extends Utils {
 
   private final Utils utils = new Utils();
 
+  private Map<String, String> messages = new ConcurrentHashMap<>();
+
   private final Map<String, SseEmitter> emittersActivos = new ConcurrentHashMap<>();
 
   public SendService(SimulatorProperties props, Map<String, MQConnectionBundle> connection) {
@@ -153,7 +155,11 @@ public class SendService extends Utils {
               + " ***");
       TimeUnit.MILLISECONDS.sleep(qConfig.getTresp()); // Simular tiempo de procesamiento
     }
-    String payload = messagesMgr.checkPayload(payloadKey, props, emittersActivos);
+    String payload = messages.get(payloadKey);
+    if (payload == null) {
+      payload = messagesMgr.checkPayload(payloadKey, props, emittersActivos);
+      messages.put(payloadKey, payload);
+    }
     msg.writeString(payload);
     TimeZone utc = TimeZone.getTimeZone("Zulu");
     GregorianCalendar cal = new GregorianCalendar(utc);

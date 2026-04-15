@@ -7,6 +7,7 @@ import com.hazelcast.core.EntryEvent;
 import com.hazelcast.map.IMap;
 import com.hazelcast.map.listener.EntryEvictedListener;
 import com.hazelcast.map.listener.EntryExpiredListener;
+import com.simulador.config.SimulatorProperties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +18,14 @@ public class SimuCache extends AbstractValueAdaptingCache {
 
   private final String               name;
   private final IMap<Object, Object> store; // Tu IMapMock
+  private SimulatorProperties        props;
 
-  public SimuCache(String name, IMap<Object, Object> store, boolean allowNullValues) {
+  public SimuCache(String name, IMap<Object, Object> store, boolean allowNullValues,
+      SimulatorProperties props) {
     super(allowNullValues);
     this.name = name;
     this.store = store;
+    this.props = props;
     this.store.addEntryListener(new EntryEvictedListener<String, Object>() {
       @Override
       public void entryEvicted(EntryEvent<String, Object> event) {
@@ -59,7 +63,11 @@ public class SimuCache extends AbstractValueAdaptingCache {
   @Override
   public void put(Object key, Object value) {
     try {
-      store.put(key, value, 120, TimeUnit.SECONDS); // Ejemplo con TTL de 10 minutos
+      if (props.getTtl() <= 0) {
+        store.put(key, value); // Sin TTL
+      } else {
+        store.put(key, value, props.getTtl(), TimeUnit.SECONDS);
+      }
     } catch (Exception e) {
       log.error("Cache:Error al almacenar en cache: " + e.getMessage());
     }

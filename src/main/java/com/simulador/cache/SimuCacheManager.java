@@ -5,6 +5,7 @@ package com.simulador.cache;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import com.simulador.config.SimulatorProperties;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -17,13 +18,15 @@ public class SimuCacheManager implements CacheManager {
 
   private final ConcurrentMap<String, Cache> caches = new ConcurrentHashMap<>();
   private HazelcastInstance                  hz;
+  private SimulatorProperties                props;
 
 
   /**
    * @param hazelcastInstance
    */
-  public SimuCacheManager(HazelcastInstance hazelcastInstance) {
+  public SimuCacheManager(HazelcastInstance hazelcastInstance, SimulatorProperties props) {
     this.hz = hazelcastInstance;
+    this.props = props;
   }
 
   @Override
@@ -32,7 +35,7 @@ public class SimuCacheManager implements CacheManager {
       // AQUÍ creas tu IMapMock original
       log.info("Creando nuevo cache: " + cacheName);
       IMap<Object, Object> mockMap = hz.getMap(name);
-      return new SimuCache(cacheName, mockMap, true);
+      return new SimuCache(cacheName, mockMap, true, props);
     });
   }
 

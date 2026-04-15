@@ -2,7 +2,10 @@ package com.simulador.utils;
 
 import com.simulador.config.SimulatorProperties;
 import com.simulador.service.SendService;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,6 +17,8 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,15 +29,54 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Component
 public class MessagesMgr {
 
-  private static final Charset CS_284 = Charset.forName("Cp284");
+  public static final Charset CS_284 = Charset.forName("Cp284");
 
   private Path filepath;
 
+  @Getter
   private Map<String, Supplier<String>> table = new HashMap<>();
 
   @Autowired
   SendService sender;
 
+  @PostConstruct
+  public void init() {
+    log.info("Initializing MessagesMgr with simulator properties");
+    Stream.of(getClass().getMethods())
+        .filter(m -> m.getName().startsWith("msg"))
+        .forEach(m -> {
+          table.put(m.getName().replace("_", "-"), () -> invoke(m));
+        });
+    log.info("MessagesMgr initialized with file path: {}", filepath);
+  }
+
+
+  /**
+   * Ejecuta un método de generación de mensaje y devuelve su resultado. Se utiliza para evitar
+   * tener que
+   * 
+   * @param m el método a ejecutar, que debe ser un método de generación de mensaje (ej: msg1(),
+   *        msg2(), etc).
+   * @return el resultado del método, que debe ser un String con el payload del mensaje generado.
+   */
+  public String invoke(Method m) {
+    try {
+      return (String) m.invoke(this);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
+  /**
+   * Crea el payload de un mensaje a partir de su id. Para correcto funcionamiento, el id del
+   * mensaje debe coincidir con el nombre del método que lo genera (ej: msg1 -> msg1(). ej2: msg_1
+   * -> msg-1).
+   * 
+   * @param idMsg- el id del mensaje a generar, que debe coincidir con el nombre del método que lo
+   *        genera.
+   * @return el payload del mensaje, o un mensaje de error si el id no es reconocido.
+   */
   @Cacheable(value = "msgs", key = "#idMsg")
   public String createStrPayload(String idMsg) {
     log.debug("Creating payload for idMsg: {}", idMsg);
@@ -199,19 +243,19 @@ public class MessagesMgr {
     table.put(highDashes(idMsg), msgSupp);
   }
 
-  private String highDashes(String id) {
+  public String highDashes(String id) {
     return id.replace('_', '-');
   }
 
   private int sequencial = 0;
 
-  private String jsonReq() {
+  public String jsonReq() {
     // return
     // "\"root\":\"{\"cinemas\":[{\"name\":\"Cinema1\"},{\"name\":\"Cinema2\"},{\"name\":\"Cinema3\"}]}\"";
     return "\"mqbody\": {\"paymentType\":\"CUST\",\"indicatorTarget2\":\"N\",\"endToEndReference\":\"MAN/000002186779\",\"paymentAmount\":\"1,44\",\"paymentCurrency\":\"EUR\",\"date\":\"31/07/2025\",\"orderingName\":\"Santander Consumer Bank AG\",\"orderingTown\":\"Mönchengladbach\",\"orderingPostcode\":\"41061\",\"orderingAccount\":\"DE53370206009901380246\",\"orderingInstitution\":\"SCFBDE33XXX\",\"beneficiaryName\":\"Lady Gaga\",\"beneficiaryAccount\":\"ES9100730100542000017862\",\"remittanceInformation\":\"prueba mq dual run   \"}";
   }
 
-  private String jsonResp1() {
+  public String jsonResp1() {
     return "{\"returnCode\": \"OK\",\"medio\": \"SCT\",\"endToEndReference\": \"MAN/000002623633\",\"electronicPaymentReference\": \"32941029632BBGQLBY\"}";
     // return
     // "{\"cinemas\":[{\"name\":\"Cinema1\",\"movies\":[{\"title\":\"Movie1\",\"synopsis\":\"Brief
@@ -233,7 +277,7 @@ public class MessagesMgr {
     // Movie8...\",\"actors\":[\"Actor36\",\"Actor37\",\"Actor38\",\"Actor39\",\"Actor40\"],\"showtimes\":[\"11:00\",\"13:00\",\"15:00\",\"17:00\",\"19:00\",\"21:00\"]}]}]}";
   }
 
-  private String jsonResp2() {
+  public String jsonResp2() {
     sequencial++;
     return "{\"returnCode\": \"OK\",\"medio\": \"SCT\",\"endToEndReference\": \"MAN/000002623633\",\"electronicPaymentReference\": \"32941029632BBGQLBY\"}";
     // return "{\"sequencial\":" + sequencial
@@ -257,55 +301,55 @@ public class MessagesMgr {
   }
 
 
-  private String tbqqReq() {
+  public String tbqqReq() {
     return "TBQQL12             J00013000100010001                   N127.000.000.001ENB465880A2BBA57001FA39838B465880A2BBA02001FAB9844N00000                              IParticulares_ENS       180.101.136.010                        BKS     000017¤¤{\"secondary\":\"N\"}¤¤¤¤";
   }
 
-  private String tbqqResp2() {
+  public String tbqqResp2() {
     return "0     N 00010001                                                                                          00000024000000¤¤bbbbAAzzAAAkAAAAAAABAAACAAAJAAALAAATAB12ALTAALVAAYAYAYDEAYD1AYD2DSADEMAREMP8FGHGMAMANYNYPARBPDAV¤PDAV¤                            1111    000111110001    000100010001000600060001000600010006    0006¤0006¤ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASDD                                        ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ¤";
   }
 
-  private String tbqqResp1() {
+  public String tbqqResp1() {
     return "0     N 00010001                                                                                          00000024000000¤¤aaaaAAzzAAAkAAAAAAABAAACAAAJAAALAAATAB12ALTAALVAAYAYAYDEAYD1AYD2DSADEMAREMP8FGHGMAMANYNYPARBPDAV¤PDAV¤                            1111    000111110001    000100010001000600060001000600010006    0006¤0006¤ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASDD                                        ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ASDASDASD                                         ¤";
   }
 
-  private String trxopBPGLReq() {
+  public String trxopBPGLReq() {
     return "BPG8L12             J00001000100010001                   N               E B4658B231E87D000AE0D8D08UNCON#231E870F00AFF3A216N00000                              PartenonSampleApp       180.101.139.035                        UNVSPRNG000150¤¤{\"secondary\":\"N\",\"UNIVERSAL_CONNECTOR_DATA\":{\"APP_NAME\":\"PartenonSampleApp\",\"PROJECT_NAME\":null,\"SERVER_IP\":\"180.101.139.35\",\"TECHNOLOGY\":\"UNVSPRNG\"}}501¤502¤20190101¤0049¤";
   }
 
-  private String trxopBPGLResp1() {
+  public String trxopBPGLResp1() {
     return "0     S 00010001                                                                                          00000001000000¤¤501¤502¤0049¤VISA CLASSIC AFFINITY                             ¤";
   }
 
-  private String trxopBPGLResp2() {
+  public String trxopBPGLResp2() {
     return "0     S 00010001                                                                                          00000001000000¤¤501¤502¤0048¤VISA CLASSIC AFFINITY                             ¤";
   }
 
-  private String sat500223Req() {
+  public String sat500223Req() {
     return "50175002230000000003E`S`DEISM0  `********````A`";
   }
 
-  private String sat500223Resp1() {
+  public String sat500223Resp1() {
     return "50175002230000000003E        S0000000`OPERACION REALIZADA CORRECTAMENTE                                                                                                                                                                                                                         `2023-05-19-11.34.39.978356`0030`0001`......`00050090358S`NACS`........`........................................`SUANCES MARTINEZ, IGNACIO.....`          `          `          `1A97359F7461`DTODES  ISFDESA RECDES  RECTECNOYTDEMENUYTLBDESA`..................`........................`................................................................................................................................................................................................................................................`OREX`OPA1OPA2`";
   }
 
-  private String sat500223Resp2() {
+  public String sat500223Resp2() {
     return "50185002230000000003N        S0000000`OPERACION REALIZADA CORRECTAMENTE                                                                                                                                                                                                                         `2023-05-18-11.34.39.978356`0030`0001`......`00050090358S70`NACS`........`........................................`SUANCES MARTINEZ, IGNACIO.....`          `          `          `1A97359F7461`DTODES  ISFDESA RECDES  RECTECNOYTDEMENUYTLBDESA`..................`........................`................................................................................................................................................................................................................................................`OREX`OPA1OPA2`";
   }
 
-  private String sat005891Req() {
+  public String sat005891Req() {
     return "00010058916000000002E             N                B4658B771B740C00DC1C7108UNCON#771B748000DC1C7109N0000                              PartenonSampleApp       180.101.139.119                        UNVSPRNG000151¤{\"secondary\":\"N\",\"UNIVERSAL_CONNECTOR_DATA\":{\"APP_NAME\":\"PartenonSampleApp\",\"PROJECT_NAME\":null,\"SERVER_IP\":\"180.101.139.119\",\"TECHNOLOGY\":\"UNVSPRNG\"}}¤";
   }
 
-  private String sat005891Resp1() {
+  public String sat005891Resp1() {
     return "00010058916000000002E        N0000000¤OPERACION CORRECTA                                                                                                                                                                                                                                        ¤-                                                 ¤00238  ¤CUSUR¤A39000013   ¤   ¤0030¤28¤70547¤01¤28014¤20231115¤20231116¤20231117¤20231120¤20231116¤0001¤0049¤S¤N¤S¤MADRID, ALCALA, 28                                ¤BANCO SANTANDER, S.A.                             ¤MADR ALCA¤MADRID, ALCALA    ¤BANCO SANTANDER¤MADRID                        ¤USU.CANAL CREDINET,            ¤ALCALA                                            ¤28  ¤            ¤ES¤A¤URB¤S¤1¤CL¤00178¤GCIARQCAGCICBMYAGCICBTOAGCICSOITGCICSOTTGCICSVGAGCICUKEARCLICA2 RE@SAT19YSDETAGEYUPSDEP YURG10  ¤E421B832D4697858¤100421¤";
   }
 
-  private String sat005891Resp2() {
+  public String sat005891Resp2() {
     return "00020058916000000002E        N0000000¤OPERACION CORRECTA                                                                                                                                                                                                                                        ¤-                                                 ¤00238  ¤CUSUR¤A39000013   ¤   ¤0030¤28¤70547¤01¤28014¤20231115¤20231116¤20231117¤20231120¤20231116¤0001¤0049¤S¤N¤S¤MADRID, ALCALA, 29                                ¤BANCO SANTANDER, S.A.                             ¤MADR ALCA¤MADRID, ALCALA    ¤BANCO SANTANDER¤SEVILLA                       ¤USU.CANAL CREDINET,            ¤ALCALA                                            ¤28  ¤            ¤ES¤A¤URB¤S¤1¤CL¤00178¤GCIARQCAGCICBMYAGCICBTOAGCICSOITGCICSOTTGCICSVGAGCICUKEARCLICA2 RE@SAT19YSDETAGEYUPSDEP YURG10  ¤E421B832D4697858¤100421¤";
   }
 
-  private String msg1() {
+  public String msg1() {
     return PASMsgsExamples.MSGS[0];
     // return load(0);
     // return "@PRMDESPAMPAMPMPPEN004MQGRPAST1
@@ -319,7 +363,7 @@ public class MessagesMgr {
     // 00000000 ";
   }
 
-  private String msg2() {
+  public String msg2() {
     return PASMsgsExamples.MSGS[1];
     // return load(1);
     // return "@PRMDESPAMPAMPMPPEN004MQGRPAST1
@@ -333,7 +377,7 @@ public class MessagesMgr {
     // 00000000 ";
   }
 
-  private String msg3() {
+  public String msg3() {
     return changeMsg3(msg2());
     // return "@PRMDESPAMPAMPMPPEN004MQGRPAST1
     // UK_PASCLOG......................................@SAT0012SP ********MQGRPAST1
@@ -346,7 +390,7 @@ public class MessagesMgr {
     // 00000000 ";
   }
 
-  private String msg4() {
+  public String msg4() {
     return PASMsgsExamples.MSGS[3];
     // return load(1);
     // return "@PRMDESPAMPAMPMPPEN004MQGRPAST1
@@ -360,7 +404,7 @@ public class MessagesMgr {
     // 00000000 ";
   }
 
-  private String msg5() {
+  public String msg5() {
     return PASMsgsExamples.MSGS[4];
     // return load(1);
     // return "@PRMDESPAMPAMPMPPEN004MQGRPAST1
@@ -374,86 +418,86 @@ public class MessagesMgr {
     // 00000000 ";
   }
 
-  private String msg6() {
+  public String msg6() {
     return PASMsgsExamples.MSGS[5];
   }
 
-  private String msg7() {
+  public String msg7() {
     return PASMsgsExamples.MSGS[6];
   }
 
-  private String msg8() {
+  public String msg8() {
     return PASMsgsExamples.MSGS[7];
   }
 
-  private String msg9() {
+  public String msg9() {
     return PASMsgsExamples.MSGS[8];
   }
 
-  private String msg10() {
+  public String msg10() {
     return PASMsgsExamples.MSGS[9];
   }
 
-  private String msg11() {
+  public String msg11() {
     return PASMsgsExamples.MSGS[10];
   }
 
-  private String msg12() {
+  public String msg12() {
     return PASMsgsExamples.MSGS[11];
   }
 
-  private String msg13() {
+  public String msg13() {
     return PASMsgsExamples.MSGS[12];
   }
 
-  private String msg14() {
+  public String msg14() {
     return PASMsgsExamples.MSGS[13];
   }
 
-  private String msg15() {
+  public String msg15() {
     return PASMsgsExamples.MSGS[14];
   }
 
-  private String msg16() {
+  public String msg16() {
     return PASMsgsExamples.MSGS[15];
   }
 
-  private String msgPrc1() {
+  public String msgPrc1() {
     return PASMsgsExamples.MSGS[16];
   }
 
-  private String changeMsg3(String payload) {
+  public String changeMsg3(String payload) {
     // se cambia la sesion de pas
     payload = change(payload, 780, "0032941");
     // se cambian los saldos
     return change(payload, 880, "112233");
   }
 
-  private String change(String orig, int off, String s) {
+  public String change(String orig, int off, String s) {
     return orig.substring(0, off) + s + orig.substring(off + s.length());
   }
 
-  private String msgLynx1() {
+  public String msgLynx1() {
     return "<log:LogRecord LogType=\"4\" GlobalID=\"G061633678CBBBHZB       \" Lang=\"ES\"><Created>2021-04-06T11:08:38.35+01:00</Created><GroupID Type=\"2\">1633678CBBBHZB       406</GroupID><GroupID Type=\"3\">4061633678CBBBHZB       </GroupID><CreatedBy xsi:type=\"log:BSType\"><categoryName>root.operation.internal.ChequeDebit</categoryName><state Type=\"OPERATION\" Name=\"OK\"/></CreatedBy><LogData DataType=\"1\"><]£CDATA£<logRecordAppData><sortCode>090222</sortCode><accountNumber>10136577 </accountNumber><partenonAccountNumber>001522683008501325</partenonAccountNumber><customerType>J</customerType><customerNumber>000752936</customerNumber><productType>300</productType><txnDateTime>20210406110838</txnDateTime><creditDebit>1</creditDebit><txnCode>684</txnCode><sourceEntity>0932</sourceEntity><branch>0000</branch><draweeSortCode>302880</draweeSortCode><draweeAccNo>11111111</draweeAccNo><chequeNumber>000162</chequeNumber><partenonDraweeAccNo>                  </partenonDraweeAccNo><partenonChequeNo>02986669</partenonChequeNo><amount>00000000000030000</amount><currency>826</currency><chequePayDecision>00</chequePayDecision><returnReasonCode>00</returnReasonCode><chequeDepositDate>20210406</chequeDepositDate><depositCentre>0000</depositCentre><partenonReference>00151633678CBBBHZB</partenonReference><depositChannel>00</depositChannel><userid>00000000</userid><fraudReasonCode>000000</fraudReasonCode><LDAPUID>00000000</LDAPUID><suspectedFraud>0</suspectedFraud><representedCheque>0</representedCheque><cardNumber>0000000000000000000</cardNumber><thirdPartyDepositChannel>AUTO</thirdPartyDepositChannel></logRecordAppData>!!></LogData>                                   <InfraData xsi:type=\"log:BKSAuditInfraData\"><UserID>        </UserID><IPAddress>              </IPAddress><CalledServiceName>OperationContainerService</CalledServiceName><ScenarioName>CHEQUE_IMAGING</ScenarioName><SessionID>                    </SessionID><SessionIDSec>                    </SessionIDSec><ServerID>                    </ServerID></InfraData><LogLevel>10</LogLevel><LogLevel>LynxNRT</LogLevel></log:LogRecord>";
   }
 
-  private String msgLynx2() {
+  public String msgLynx2() {
     return "<log:LogRecord LogType=\"4\" GlobalID=\"G061633678CBBBPPP       \" Lang=\"ES\"><Created>2021-04-06T11:11:47.44+01:00</Created><GroupID Type=\"2\">1633678CBBBPPP       406</GroupID><GroupID Type=\"3\">4061633678CBBBPPP       </GroupID><CreatedBy xsi:type=\"log:BSType\"><categoryName>root.operation.internal.ChequeDebit</categoryName><state Type=\"OPERATION\" Name=\"OK\"/></CreatedBy><LogData DataType=\"1\"><]£CDATA£<logRecordAppData><sortCode>090222</sortCode><accountNumber>10136577 </accountNumber><partenonAccountNumber>001522683008501325</partenonAccountNumber><customerType>J</customerType><customerNumber>000752936</customerNumber><productType>300</productType><txnDateTime>20210406110838</txnDateTime><creditDebit>1</creditDebit><txnCode>684</txnCode><sourceEntity>0932</sourceEntity><branch>0000</branch><draweeSortCode>302880</draweeSortCode><draweeAccNo>11111111</draweeAccNo><chequeNumber>000162</chequeNumber><partenonDraweeAccNo>                  </partenonDraweeAccNo><partenonChequeNo>02986669</partenonChequeNo><amount>00000000000030000</amount><currency>826</currency><chequePayDecision>05</chequePayDecision><returnReasonCode>01</returnReasonCode><chequeDepositDate>20210406</chequeDepositDate><depositCentre>0000</depositCentre><partenonReference>00151633678CBBBPPP</partenonReference><depositChannel>00</depositChannel><userid>00000000</userid><fraudReasonCode>000000</fraudReasonCode><LDAPUID>00000000</LDAPUID><suspectedFraud>0</suspectedFraud><representedCheque>0</representedCheque><cardNumber>0000000000000000000</cardNumber><thirdPartyDepositChannel>AUTO</thirdPartyDepositChannel></logRecordAppData>!!></LogData>                                   <InfraData xsi:type=\"log:BKSAuditInfraData\"><UserID>        </UserID><IPAddress>              </IPAddress><CalledServiceName>OperationContainerService</CalledServiceName><ScenarioName>CHEQUE_IMAGING</ScenarioName><SessionID>                    </SessionID><SessionIDSec>                    </SessionIDSec><ServerID>                    </ServerID></InfraData><LogLevel>10</LogLevel><LogLevel>LynxNRT</LogLevel></log:LogRecord>";
   }
 
-  private String msgRecord1() {
+  public String msgRecord1() {
     return "11=452154^A23=PX-25^A37=RAUL GONZALEZ^A45=1300.00^A";
   }
 
-  private String msgRecord2() {
+  public String msgRecord2() {
     return "11=452154^A23=PX-37^A37=RAUL GONZALEZ^A45=1307.50^A";
   }
 
-  private String msgRecord3() {
+  public String msgRecord3() {
     return "trece=PX-25^A29=GRAN VIA^A57=TARIFA-1^A";
   }
 
-  private String msgMT103_1() {
+  public String msgMT103_1() {
     return "ERU1290 +004+000+001                       0202U4S3101083303000IZBZK03 T083204T008320000031010833                    00000000000793298400000000000000000000000000000000000000000000000000000000031010990051312100000000000000000000000000                                                                            000000000000000000                                                                                000.00000000  000000000000000000                                                                                000.00000000                                          OONNNOOPPJ0                                                                                   0                0                                      202500916368570                                         15   2025-12-240001-01-012025-12-242025-12-242025-12-242025-06-192025-12-24 0000000000000.00 0000000000021.1901 0000000000021.190245 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000                                          KN NNN              00.0000.0000.0000.0000.0000.00                     0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000                  0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00                                  0000.00                                    0000.00                                                                            0000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00                           00000000000.0000                                                         00000000000000000000                                                                                                                                                                       F910747572 000000000            0526608000000532930078302052660800000052025-06-192025-12-24           A70          00000000000000000                    03000004310001-01-01                    0000000000000.00 0000000000000.00                              0000000000000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ";
     // return " PMCP2BRC70 N BSCHGB2L XXXIRVTGB2X XXX103N NNESPMC0000000126062STP
     // eba4b30a-ad78-492f-b335-3837cdc5700b 02754GUFA02802596.001 CREDSDVA
@@ -464,7 +508,7 @@ public class MessagesMgr {
     // 000000000000000BNF CCLAIM GB00BDX8CX86 35672";
   }
 
-  private String msgMT103_2() {
+  public String msgMT103_2() {
     return "ERU1290 +004+000+002                       0202U4S3101083303000IZBZK03 T083204T008320000031010833                    00000000000793298400000000000000000000000000000000000000000000000000000000031010990051312100000000000000000000000000                                                                            000000000000000000                                                                                000.00000000  000000000000000000                                                                                000.00000000                                          OONNNOOPPJ0                                                                                   0                0                                      202500916368570                                         15   2025-12-240001-01-012025-12-242025-12-242025-12-242025-06-192025-12-24 0000000000000.00 0000000000021.1901 0000000000021.190245 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000                                          KN NNN              00.0000.0000.0000.0000.0000.00                     0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000                  0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00                                  0000.00                                    0000.00                                                                            0000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00                           00000000000.0000                                                         00000000000000000000                                                                                                                                                                       F910747572 000000000            0526608000000532930078302052660800000052025-06-192025-12-24           A70          00000000000000000                    03000004310001-01-01                    0000000000000.00 0000000000000.00                              0000000000000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ";
     // return " PMCP2BRC70 N BSCHGB2L XXXIRVTGB2X XXX103N NNESPMC0000000126077STP
     // eba4b30a-ad78-492f-b335-3837cdc5700b 02754GUFA02802596.001 CREDSDVA
@@ -475,7 +519,7 @@ public class MessagesMgr {
     // 000000000000000BNF CCLAIM GB00BDX8CX86 35672";
   }
 
-  private String msgMTACK_1() {
+  public String msgMTACK_1() {
     return "ERU1290 +004+000+000                       086000202U4S3101083303000IZBZK03 T083204T008320000031010833                    00000000000793298400000000000000000000000000000000000000000000000000000000031010990051312100000000000000000000000000                                                                            000000000000000000                                                                                000.00000000  000000000000000000                                                                                000.00000000                                          OONNNOOPPJ0                                                                                   0                0                                      202500916368570                                         15   2025-12-240001-01-012025-12-242025-12-242025-12-242025-06-192025-12-24 0000000000000.00 0000000000021.1901 0000000000021.190245 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000 0000000000000.000000                                          KN NNN              00.0000.0000.0000.0000.0000.00                     0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 00000000000.0000                  0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00                                  0000.00                                    0000.00                                                                            0000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00 0000000000000.00                           00000000000.0000                                                         00000000000000000000                                                                                                                                                                       F910747572 000000000            0526608000000532930078302052660800000052025-06-192025-12-24           A70          00000000000000000                    03000004310001-01-01                    0000000000000.00 0000000000000.00                              0000000000000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ";
     // return "ERU1290 +004+000+000 086000202U4S3101083303000IZBZK03 T083204T008320000031010833
     // 00000000000792846500000000000792846500000000000000000000000000000000000000031010990051597200000000990046825731010833
@@ -510,11 +554,11 @@ public class MessagesMgr {
     // return "0001234567890123456N000PMC0000000126062AAABBBCCCCDDDDDD2022-07-121641-121641";
   }
 
-  private String msgMTACK_2() {
+  public String msgMTACK_2() {
     return "0001234567890123456N000PMC0000000126062AAABBBCCCCDDDDDD2022-07-121641";
   }
 
-  private String msgT3270_1() {
+  public String msgT3270_1() {
     String cad = new String(T3270MsgsExamples.MSGS[0], CS_284);
     String[] nombres = {"FRACTA", "FRACTB", "FRACTC", "FRACTD", "FRACTA"};
     int indiceAleatorio = ThreadLocalRandom.current().nextInt(nombres.length);
@@ -524,11 +568,11 @@ public class MessagesMgr {
     return new String(T3270MsgsExamples.MSGS[0], CS_284);
   }
 
-  private String msgT3270_2() {
+  public String msgT3270_2() {
     return new String(T3270MsgsExamples.MSGS[1], CS_284);
   }
 
-  private String msgTB60_1() {
+  public String msgTB60_1() {
     String cad = TB60MsgsExamples.MSGS[0];
     String[] nombres = {"X230526A", "X230526B", "X230526C", "X230526D", "X230526E"};
 
@@ -539,103 +583,103 @@ public class MessagesMgr {
     // return TB60MsgsExamples.MSGS[0];
   }
 
-  private String msgTB60_2() {
+  public String msgTB60_2() {
     return TB60MsgsExamples.MSGS[1];
   }
 
-  private String msgTB60_3() {
+  public String msgTB60_3() {
     return TB60MsgsExamples.MSGS[2];
   }
 
-  private String msgTB60Record_1() {
+  public String msgTB60Record_1() {
     return TB60MsgsExamples.MSGSRECORD[0];
   }
 
-  private String msgTB60Record_2() {
+  public String msgTB60Record_2() {
     return TB60MsgsExamples.MSGSRECORD[1];
   }
 
-  private String msgTB60Record_3() {
+  public String msgTB60Record_3() {
     return TB60MsgsExamples.MSGSRECORD[2];
   }
 
-  private String msgSohRR1() {
+  public String msgSohRR1() {
     return SOHMsgs.MSGS[0];
   }
 
-  private String msgSohRR2() {
+  public String msgSohRR2() {
     return SOHMsgs.MSGS[1];
   }
 
-  private String msgSohRR3() {
+  public String msgSohRR3() {
     return SOHMsgs.MSGS[2];
   }
 
-  private String msgOBII_1() {
+  public String msgOBII_1() {
     return "SANT0007XXL1234567BBVA0013LLL7654321AB00ESTO ES UNA\r\nDESCRIPCION";
   }
 
-  private String msgOBII_2() {
+  public String msgOBII_2() {
     return "SANT0009XXL8910112BBVA0013LLL7654321AB00ESTO ES UNA\r\nDESCRIPCION";
   }
 
-  private String msgOBIIcsv3() {
+  public String msgOBIIcsv3() {
     return "VALOR1, VALOR3, VALOR7, VALOR2";
   }
 
-  private String msgMultiple_201_ZOS() {
+  public String msgMultiple_201_ZOS() {
     return "This is test 201          201123456781347-12471234561234567";
   }
 
-  private String msgMultiple_201_GRA() {
+  public String msgMultiple_201_GRA() {
     return "This is test 201          201123456781347-12471234567654321";
   }
 
-  private String msgMultiple_207_ZOS() {
+  public String msgMultiple_207_ZOS() {
     return "This is test 207          2076661234567890123  2023-01-318889876543210987  87654321123456789";
   }
 
-  private String msgMultiple_207_GRA() {
+  public String msgMultiple_207_GRA() {
     return "This is test 207          2076661234567890123  2023-01-318889876543210987  87654321987654321";
   }
 
-  private String msgMultiple_201_ZOS_MSGDIST() {
+  public String msgMultiple_201_ZOS_MSGDIST() {
     return "This is test 201          201123456781374-24578123695214789";
   }
 
-  private String msgMultiple_301() {
+  public String msgMultiple_301() {
     return "This is test 301          301123456781347-RAUL        GONZALEZ BLANCO     1234567";
   }
 
-  private String msgMultiple_307() {
+  public String msgMultiple_307() {
     return "This is test 307          307VROBERTOCARLOS  1985-01-26777GRANADA   123456789";
   }
 
-  private String msgRECORDOBII_1() {
+  public String msgRECORDOBII_1() {
     return "11=452154^A23=PX-25^A37=RAUL GONZALEZ^A45=1300.00^A";
   }
 
-  private String msgRECORDOBII_2() {
+  public String msgRECORDOBII_2() {
     return "11=452154^A23=PX-37^A37=RAUL GONZALEZ^A45=1307.50^A";
   }
 
-  private String msgEMBEDDEDXMLOBII_1() {
+  public String msgEMBEDDEDXMLOBII_1() {
     return "<?xml version=\"1.0\" ?><FxFlowMD_root xmlns=\"http://www.tibco.com/schemas/FxFlowMD/FxFlowMD.xsd\">      <ApplicationID>Aggregator</ApplicationID><Message>&lt;?xml version=&quot;1.0&quot; ?&gt;&lt;event&gt;&lt;okErrorCode&gt;KO&lt;/okErrorCode&gt;&lt;uniqueId&gt;ECUR  001500754410060599-000000000000000&lt;/uniqueId&gt;&lt;ids&gt;&lt;systemDealId&gt;&lt;system&gt;ECUR  0015&lt;/system&gt;&lt;dealId&gt;001500754410060599&lt;/dealId&gt;&lt;/systemDealId&gt;&lt;/ids&gt;&lt;eventType&gt;Insert&lt;/eventType&gt;&lt;eventDate&gt;2023-04-03&lt;/eventDate&gt;&lt;eventTime&gt;12:39:50&lt;/eventTime&gt;&lt;exceptionMessage&gt;DuplicatedOperation&lt;/exceptionMessage&gt;&lt;sequenceStatus&gt;Completed&lt;/sequenceStatus&gt;&lt;sequenceDetail&gt;Entry Aggregator&lt;/sequenceDetail&gt;&lt;webPortal&gt;NO&lt;/webPortal&gt;&lt;deal&gt;&lt;producto&gt;441004&lt;/producto&gt;&lt;currencyPair&gt;EUR/GBP&lt;/currencyPair&gt;&lt;direction&gt;BUY&lt;/direction&gt;&lt;amount1&gt;1000,00&lt;/amount1&gt;&lt;amount2&gt;855,95&lt;/amount2&gt;&lt;valDate1&gt;2023-03-31&lt;/valDate1&gt;&lt;dealtCurrency&gt;EUR&lt;/dealtCurrency&gt;&lt;blockTrade&gt;NO&lt;/blockTrade&gt;&lt;entity&gt;0015&lt;/entity&gt;&lt;/deal&gt;&lt;/event&gt;</Message></FxFlowMD_root>";
   }
 
-  private String msgEMBEDDEDXMLOBII_2() {
+  public String msgEMBEDDEDXMLOBII_2() {
     return "<?xml version=\"1.0\" ?><FxFlowMD_root xmlns=\"http://www.tibco.com/schemas/FxFlowMD/FxFlowMD.xsd\">      <ApplicationID>Aggregator</ApplicationID><Message>&lt;?xml version=&quot;1.0&quot; ?&gt;&lt;event&gt;&lt;okErrorCode&gt;KO&lt;/okErrorCode&gt;&lt;uniqueId&gt;ECUR  001500754410060599-000000000000000&lt;/uniqueId&gt;&lt;ids&gt;&lt;systemDealId&gt;&lt;system&gt;ECUR  0015&lt;/system&gt;&lt;dealId&gt;001500754410060599&lt;/dealId&gt;&lt;/systemDealId&gt;&lt;/ids&gt;&lt;eventType&gt;Insert&lt;/eventType&gt;&lt;eventDate&gt;2023-04-03&lt;/eventDate&gt;&lt;eventTime&gt;18:05:25&lt;/eventTime&gt;&lt;exceptionMessage&gt;DuplicatedOperation&lt;/exceptionMessage&gt;&lt;sequenceStatus&gt;Completed&lt;/sequenceStatus&gt;&lt;sequenceDetail&gt;Entry Aggregator&lt;/sequenceDetail&gt;&lt;webPortal&gt;NO&lt;/webPortal&gt;&lt;deal&gt;&lt;producto&gt;441004&lt;/producto&gt;&lt;currencyPair&gt;EUR/GBP&lt;/currencyPair&gt;&lt;direction&gt;BUY&lt;/direction&gt;&lt;amount1&gt;1750,00&lt;/amount1&gt;&lt;amount2&gt;687,95&lt;/amount2&gt;&lt;valDate1&gt;2023-03-31&lt;/valDate1&gt;&lt;dealtCurrency&gt;EUR&lt;/dealtCurrency&gt;&lt;blockTrade&gt;NO&lt;/blockTrade&gt;&lt;entity&gt;0015&lt;/entity&gt;&lt;/deal&gt;&lt;/event&gt;</Message></FxFlowMD_root>";
   }
 
-  private String msgEMBEDDEDXMLOBII_3() {
+  public String msgEMBEDDEDXMLOBII_3() {
     return "<?xml version=\"1.0\" ?><FxFlowMD_root xmlns=\"http://www.tibco.com/schemas/FxFlowMD/FxFlowMD.xsd\">      <ApplicationID>Aggregator</ApplicationID><Message>&lt;?xml version=&quot;1.0&quot; ?&gt;&lt;event&gt;&lt;okErrorCode&gt;KO&lt;/okErrorCode&gt;&lt;uniqueId&gt;ECUR  001500754410060599-000000000000000&lt;/uniqueId&gt;&lt;ids&gt;&lt;systemDealId&gt;&lt;system&gt;ECUR  0015&lt;/system&gt;&lt;dealId&gt;001500754410060599&lt;/dealId&gt;&lt;/systemDealId&gt;&lt;/ids&gt;&lt;eventType&gt;Insert&lt;/eventType&gt;&lt;eventDate&gt;2023-04-03&lt;/eventDate&gt;&lt;eventTime&gt;18:05:25&lt;/eventTime&gt;&lt;exceptionMessage&gt;DuplicatedOperation&lt;/exceptionMessage&gt;&lt;sequenceStatus&gt;Completed&lt;/sequenceStatus&gt;&lt;sequenceDetail&gt;Entry Aggregator&lt;/sequenceDetail&gt;&lt;webPortal&gt;NO&lt;/webPortal&gt;&lt;deal&gt;&lt;producto&gt;441004&lt;/producto&gt;&lt;currencyPair&gt;EUR/GBP&lt;/currencyPair&gt;&lt;direction&gt;BUY&lt;/direction&gt;&lt;amount1&gt;1750,00&lt;/amount1&gt;&lt;amount2&gt;687,95&lt;/amount2&gt;&lt;valDate1&gt;2023-03-31&lt;/valDate1&gt;&lt;dealtCurrency&gt;EUR&lt;/dealtCurrency&gt;&lt;blockTrade&gt;NO&lt;/blockTrade&gt;&lt;entity&gt;0015&lt;/entity&gt;&lt;/deal&gt;&lt;/event&gt;</Message></FxFlowMD_root>";
   }
 
-  private String msgOBIIcsv1() {
+  public String msgOBIIcsv1() {
     return "VALOR1, VALOR3, VALOR4, VALOR2";
   }
 
-  private String msgOBIIcsv2() {
+  public String msgOBIIcsv2() {
     String valor = "";
     for (int i = 1; i <= 78; i++) {
       if (i != 78) {
@@ -647,7 +691,7 @@ public class MessagesMgr {
     return valor;
   }
 
-  private String satT3270Msg1() {
+  public String satT3270Msg1() {
     try {
       byte[] array = DumpRead.readMsg("t3270-sat-1");
       return new String(array, CS_284);
@@ -658,7 +702,7 @@ public class MessagesMgr {
     }
   }
 
-  private String satT3270Msg2() {
+  public String satT3270Msg2() {
     try {
       byte[] array = DumpRead.readMsg("t3270-sat-2");
       return new String(array, CS_284);
@@ -669,7 +713,7 @@ public class MessagesMgr {
     }
   }
 
-  private String satT3270Net1() {
+  public String satT3270Net1() {
     try {
       byte[] array = DumpRead.readMsg("t3270-net-1");
       return new String(array, CS_284);
@@ -680,15 +724,15 @@ public class MessagesMgr {
     }
   }
 
-  private String msgSohOnewway() {
+  public String msgSohOnewway() {
     return SOHMsgs.MSGS[3];
   }
 
-  private String msgSpringApp() {
+  public String msgSpringApp() {
     return "190120111000PRUEBA TRANSAC. ARRPPRUEBA RTMAAAAAAAAAA";
   }
 
-  private String msgMoses1() {
+  public String msgMoses1() {
     try {
       byte[] array = DumpRead.readMsg("msg-moses-1");
       return new String(array, CS_284);
@@ -700,7 +744,7 @@ public class MessagesMgr {
   }
 
   @SuppressWarnings("unused")
-  private String load(int numline) {
+  public String load(int numline) {
     List<String> lines;
 
     try {
@@ -727,7 +771,7 @@ public class MessagesMgr {
   @Cacheable(value = "payloads", key = "#payloadKey")
   public String checkPayload(String payloadKey, SimulatorProperties props,
       Map<String, SseEmitter> emittersActivos) {
-    log.debug("Verificando payload para clave: " + payloadKey);
+    log.trace("*** Getting payload for key: " + payloadKey + " ***");
     if (payloadKey.startsWith("payload:")) {
       String customPayload = payloadKey.substring(8);
       payloadKey = createStrPayload(customPayload);

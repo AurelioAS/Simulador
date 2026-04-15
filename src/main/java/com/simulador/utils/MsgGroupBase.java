@@ -6,10 +6,12 @@ import java.util.stream.Stream;
 
 public abstract class MsgGroupBase {
 
-  protected MsgGroupBase(MessagesMgr messages) {
+  public MsgGroupBase(MessagesMgr messages) {
     Stream.of(getClass().getMethods())
         .filter(m -> m.getName().startsWith("msg_"))
-        .forEach(m -> messages.put(m.getName().substring(4), () -> invoke(m)));
+        .forEach(m -> {
+          messages.put(m.getName().substring(4), () -> invoke(m));
+        });
   }
 
   private String invoke(Method m) {

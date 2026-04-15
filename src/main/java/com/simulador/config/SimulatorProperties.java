@@ -30,6 +30,7 @@ public class SimulatorProperties {
   private Map<String, String>       properties;
   private int                       numThreads;
   private boolean                   fire;
+  private long                      ttl;
 
   @Data
   public static class QueueConfig {

@@ -1,5 +1,5 @@
 # spring.profiles.active: dualrun-ger, mq-dev-ger # dualrun-ger, external-driven, master-driven
-spring.profiles.include: simu-cache # dev
+# spring.profiles.include: simu-cache # dev
 server:
   port: 8089
   error:
@@ -116,6 +116,7 @@ simulador:
   numThreads: 2
   fire: true
   role: DR_START
+  ttl: 120 # Tiempo de vida del mensaje en segundos (10 minutos)
   # Definición de colas con su respectivo CCSID
   queues:
       master-in:

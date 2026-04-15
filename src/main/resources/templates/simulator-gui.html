@@ -191,7 +191,7 @@
 							            <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
 							        </select>
 							    </div>
-							    
+							    v
 							    <div class="col-md-2">
 							        <label class="form-label small text-uppercase">Threads</label>
 							        <input type="number" name="threads" id="threadsA" class="form-control shadow-sm" value="1">
@@ -407,19 +407,32 @@
                             <div class="text-muted extra-small text-truncate" style="font-size: 0.75rem;" th:text="${entry.value}"></div>
                         </button>
                     </div>
-                    <div class="d-grid gap-2 mt-4 pt-3 border-top">
+                 <div class="form-group mt-3">
+                     <label for="messageSelector"><strong>Seleccionar Payload de Método:</strong></label>
+                     <select class="form-select shadow-sm" id="messageSelector" name="selectedMessageKey" >
+                         <option value="" disabled selected>-- Elige un mensaje --</option>
+                         
+                         <option th:each="entry : ${messages}"
+                                 th:value="${entry.key}"
+                                 th:text="${entry.key}">
+                         </option>
+                     </select>
+                 </div>
+                     <div class="d-grid gap-2 mt-4 pt-3 border-top">
                         <button onclick="beautify()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-code-slash me-1"></i>Beautify JSON</button>
                         <button onclick="clearAll()" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3 me-1"></i>Reset System</button>
                     </div>
                 </div>
+
             </div>
+
         </div>
     </div>
 
 <script th:inline="javascript">
     // REGISTRO DE CAMPOS PARA PERSISTENCIA (Sincronizado A y B)
     const fields = [
-        'queueA', 'correlA', 'iterA', 'threadsA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'showModalA', 'showEmittersA','fireCheckA','fireTargetA','fireKeyA','fireCopyCorrelA','delayA',
+        'queueA', 'correlA', 'iterA', 'threadsA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'showModalA', 'showEmittersA','fireCheckA','fireTargetA','fireKeyA','fireCopyCorrelA','delayA','messageSelector',
         'queueB', 'correlB', 'iterB', 'threadsB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB', 'showModalB', 'showEmittersB','fireCheckB','fireTargetB','fireKeyB','fireCopyCorrelB','delayB'
     ];
     let lastActiveTextarea = "payloadA";
@@ -429,6 +442,17 @@
     let notificationTimeout = null;
     let activeEventSource = null; // Referencia global para cerrar flujos
 
+    document.getElementById('messageSelector').addEventListener('change', function() {
+        // Obtenemos la lista de mensajes (esto requiere que pases los datos a JS)
+        const messagesData = /*[[${messages}]]*/ {}; 
+        const selectedKey = this.value;
+        const t = document.getElementById(lastActiveTextarea);
+        t.value ="payload:"+this.value.replace("_","-");
+        t.focus();
+        // Aquí podrías hacer un fetch o buscar en un objeto JS 
+        // para actualizar el textarea 'payloadPreview'
+        console.log("Has seleccionado la clave: " + selectedKey);
+    });
     document.addEventListener('DOMContentLoaded', () => {
         bsModal = new bootstrap.Modal(document.getElementById('sseModal'));
         bsEmittersModal = new bootstrap.Modal(document.getElementById('emittersModal'));

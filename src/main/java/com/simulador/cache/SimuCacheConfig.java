@@ -4,6 +4,7 @@
 package com.simulador.cache;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.simulador.config.SimulatorProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -33,9 +34,9 @@ public class SimuCacheConfig {
   @Bean
   @ConditionalOnMissingBean(name = "cacheManager") // Solo se crea si no existe otro bean con este
   @DependsOn("hazelcastInstance") // Asegura que hazelcastInstance se cree antes
-  public CacheManager cacheManager(HazelcastInstance hazelcastInstance) {
+  public CacheManager cacheManager(HazelcastInstance hazelcastInstance, SimulatorProperties props) {
     log.info("Inicializando MuninnCacheManager");
-    return new SimuCacheManager(hazelcastInstance);
+    return new SimuCacheManager(hazelcastInstance, props);
   }
 
   @PostConstruct
