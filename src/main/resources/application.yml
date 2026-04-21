@@ -8,14 +8,14 @@ server:
     session:
       tracking-modes: cookie # Evita generación innecesaria de IDs de sesión si no usas sesiones
 
+spring.thymeleaf.cache: false
+      
 simu-mq:
     path: "c:/temp"
     expiry: 120     #in seconds
     ttl: 60
     debug: false
     debugAll: false
-
-spring.thymeleaf.cache: true
 
 logging.config: classpath:log4j2.xml
 logging.level.org.springframework.boot.context.properties: DEBUG
@@ -113,7 +113,7 @@ simulador:
 spring.config.activate.on-profile: external-driven, default
 
 simulador:
-  numThreads: 2
+  numThreads: 10
   fire: true
   role: DR_START
   ttl: 120 # Tiempo de vida del mensaje en segundos (10 minutos)

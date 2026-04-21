@@ -166,7 +166,6 @@ public class SendService extends Utils {
     msg.putDateTime = cal;
     // msg.seek(0);
     try {
-      // queue.getConnectionReference().isOpen();
       queue.put(msg, new MQPutMessageOptions());
     } catch (MQException e) {
       log.error("Error al enviar mensaje a {}: {}. Intentando reconectar...", qConfig.getName(),

@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
+    
     <style>
         /* SISTEMA DE DISEÑO - ESTILO CONSULTORÍA */
         :root {
@@ -102,10 +104,36 @@
 
         /* Estilo para las líneas acumuladas en la notificación */
         .notification-line { border-top: 1px solid rgba(0,0,0,0.1); padding-top: 4px; margin-top: 4px; display: block; font-size: 0.9em; }
+                /* Estilo del lienzo SVG superpuesto */
+                
+        #canvas-container { position: relative; width: 100%; height: 100%; }
+
+        /* Estilo de los objetos (Nodos) */
+        .node {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            background-color: #4a90e2;
+            color: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Capa SVG */
+        #svg-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; /* Permite interactuar con lo que hay debajo */
+            z-index: 5;
+        }
     </style>
 </head>
 <body>
-
+<div id="diagram-container" style="position: relative; overflow: auto;">
     <div id="offline-banner">
         <span id="offline-msg"><i class="bi bi-wifi-off me-2"></i> CONEXIÓN PERDIDA - REINTENTANDO RECONEXIÓN...</span>
         <button class="btn btn-sm btn-light ms-3 py-0 fw-bold" onclick="window.location.href='/gui'" id="btn-refresh" style="display:none">RESTAURAR AHORA</button>
@@ -191,7 +219,6 @@
 							            <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
 							        </select>
 							    </div>
-							    v
 							    <div class="col-md-2">
 							        <label class="form-label small text-uppercase">Threads</label>
 							        <input type="number" name="threads" id="threadsA" class="form-control shadow-sm" value="1">
@@ -398,16 +425,25 @@
                 </div>
             </div>
 
-            <div class="col-lg-4">
+            <div class="col-lg-4" id="">
                 <div class="sidebar-payloads shadow-sm p-4 border-0">
-                    <h6 class="fw-bold mb-4 text-secondary border-bottom pb-3"><i class="bi bi-folder-fill me-2"></i>LIBRERÍA DE PAYLOADS</h6>
-                    <div class="list-group list-group-flush">
-                        <button th:each="entry : ${payloads}" type="button" class="list-group-item list-group-item-action border-0 rounded-3 mb-2 shadow-sm py-3" th:data-key="${entry.key}" onclick="insertKey(this.getAttribute('data-key'))">
-                            <div class="fw-bold text-primary small" th:text="${entry.key}"></div>
-                            <div class="text-muted extra-small text-truncate" style="font-size: 0.75rem;" th:text="${entry.value}"></div>
-                        </button>
-                    </div>
-                 <div class="form-group mt-3">
+				<h6 class="fw-bold mb-4 text-secondary border-bottom pb-3 d-flex justify-content-between align-items-center">
+				    <span>
+				        <i class="bi bi-folder-fill me-2"></i>LIBRERÍA DE PAYLOADS
+				    </span>
+				    
+				    <div class="form-check form-switch mb-0"> 
+				        <input class="form-check-input" type="checkbox" id="showRows" onChange="toggleRows()"/>
+				        <label class="form-check-label fw-normal small" for="showRows">Rows</label>
+				    </div>
+				</h6>                    
+                  <div class="list-group list-group-flush" id="payloadsList">
+                     <button th:each="entry : ${payloads}" type="button" class="list-group-item list-group-item-action border-0 rounded-3 mb-2 shadow-sm py-3" th:data-key="${entry.key}" onclick="insertKey(this.getAttribute('data-key'))">
+                         <div class="fw-bold text-primary small" th:text="${entry.key}"></div>
+                         <div class="text-muted extra-small text-truncate" style="font-size: 0.75rem;" th:text="${entry.value}"></div>
+                     </button>
+                 </div>
+                 <div class="form-group mt-3" id="messageSelectorContainer">
                      <label for="messageSelector"><strong>Seleccionar Payload de Método:</strong></label>
                      <select class="form-select shadow-sm" id="messageSelector" name="selectedMessageKey" >
                          <option value="" disabled selected>-- Elige un mensaje --</option>
@@ -419,7 +455,7 @@
                      </select>
                  </div>
                      <div class="d-grid gap-2 mt-4 pt-3 border-top">
-                        <button onclick="beautify()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-code-slash me-1"></i>Beautify JSON</button>
+                        <button id="beauti" onclick="beautify()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-code-slash me-1"></i>Beautify JSON</button>
                         <button onclick="clearAll()" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3 me-1"></i>Reset System</button>
                     </div>
                 </div>
@@ -428,13 +464,22 @@
 
         </div>
     </div>
+</div>
 
 <script th:inline="javascript">
+"use strict";
     // REGISTRO DE CAMPOS PARA PERSISTENCIA (Sincronizado A y B)
     const fields = [
         'queueA', 'correlA', 'iterA', 'threadsA', 'payloadA', 'copyCheckA', 'replyToA', 'replyToQMgrA', 'showModalA', 'showEmittersA','fireCheckA','fireTargetA','fireKeyA','fireCopyCorrelA','delayA','messageSelector',
         'queueB', 'correlB', 'iterB', 'threadsB', 'payloadB', 'copyCheckB', 'replyToB', 'replyToQMgrB', 'showModalB', 'showEmittersB','fireCheckB','fireTargetB','fireKeyB','fireCopyCorrelB','delayB'
     ];
+    // 2. Definir los elementos
+    let nodeA = document.getElementById('payloadsList');
+    let nodeB = document.getElementById('messageSelectorContainer');
+    let nodeC = document.getElementById('payloadA');
+    
+    let nodeD = document.getElementById('beauti');
+    
     let lastActiveTextarea = "payloadA";
     let isAppDown = false;
     let bsModal = null;
@@ -475,9 +520,26 @@
         // Track active textarea
         ['payloadA', 'payloadB', 'fireKeyA', 'fireKeyB'].forEach(id => {
             const el = document.getElementById(id);
-            if(el) el.addEventListener('focus', () => lastActiveTextarea = id);
+            if(el){
+                 el.addEventListener('focus', () => {
+                	lastActiveTextarea = id
+                	nodeC=document.getElementById(lastActiveTextarea);
+                	initDiagram();
+                	toggleRows(); // Actualizar visibilidad de filas al cambiar de textarea
+                 });
+            }
         });
 
+        window.addEventListener('scroll', () => {
+            if (lineAC) lineAC.position();
+            if (lineBC) lineBC.position();
+        }, true);
+
+        window.addEventListener('resize', () => {
+            if (lineAC) lineAC.position();
+            if (lineBC) lineBC.position();
+        });
+        
         updateTitles();
         startHealthCheck();
         toggleCorrel('A');
@@ -753,7 +815,73 @@
         } else {
             panel.style.display = 'none';
         }
+        toggleRows();
     }
+    
+    function toggleRows() {
+        const isEnabled = document.getElementById('showRows').checked;
+        
+        if (isEnabled) {
+            nodeC = document.getElementById(lastActiveTextarea) ;
+            initDiagram();
+            activeLines.forEach(line => {
+                line.show(); 
+            });
+        } else {
+            activeLines.forEach(line => {
+                line.hide(); 
+            });
+        }
+    }
+    
+    let lineAC, lineBC, lineDC; // Variables globales para las líneas
+
+    function initDiagram() {
+        // 1. Verificar si la librería cargó
+        clearLines(); // Limpiar líneas anteriores
+        if (typeof LeaderLine === 'undefined') {
+            console.error("LeaderLine no se cargó. Reintentando en 500ms...");
+            setTimeout(initDiagram, 500);
+            return;
+        }
+
+        // 3. Crear las líneas solo si los nodos existen
+        if (nodeA && nodeB && nodeC) {
+            lineAC = new LeaderLine(nodeA, nodeC, {
+                color: '#ccc',
+                size: 2,
+                dash: { animation: true }, // Opcional: línea discontinua animada
+                path: 'straight'           // Opcional: línea recta
+            });
+            activeLines.push(lineAC);
+            lineBC = new LeaderLine(nodeB, nodeC, {
+                color: '#ccc',
+                size: 2,
+                dash: { animation: true }, // Opcional: línea discontinua animada
+                path: 'straight'
+            });
+            activeLines.push(lineBC);
+            lineDC = new LeaderLine(nodeD, nodeC, {
+                color: '#ccc',
+                size: 2,
+                dash: { animation: true }, // Opcional: línea discontinua animada
+                path: 'straight'
+            });
+            activeLines.push(lineDC);
+        }
+    }
+
+    let activeLines = []; // Array global para rastrear las líneas
+
+    function clearLines() {
+        // Recorremos el array y eliminamos cada línea del DOM
+        activeLines.forEach(line => {
+            line.remove(); 
+        });
+        // Vaciamos el array
+        activeLines = [];
+    }
+   
     function clearAll() { if(confirm("¿Desea limpiar toda la configuración local?")) { localStorage.clear(); location.reload(); } }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

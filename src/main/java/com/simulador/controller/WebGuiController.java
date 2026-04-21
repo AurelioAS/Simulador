@@ -69,6 +69,17 @@ public class WebGuiController extends Utils {
     status.put("sessionId", session.getId());
     return ResponseEntity.ok(status);
   }
+
+  @GetMapping("/diagrama")
+  public String diagrama(Model model) {
+    return "diagrama";
+  }
+
+  @GetMapping("/flows")
+  public String flows(Model model) {
+    return "flowsEditor";
+  }
+
   @GetMapping
   public String index(HttpSession session, Model model) {
     List<Map.Entry<String, Supplier<String>>> sortedMessages = messages.getTable().entrySet()

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Creador de Diagramas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        #canvas {
+            width: 100%;
+            height: 90vh;
+            background-color: #f8f9fa;
+            border: 2px dashed #ccc;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .node {
+            width: 120px;
+            height: 60px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            position: absolute;
+            cursor: hand;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .nodo {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            position: absolute;
+            cursor: hand;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            z-index: 100;
+        }
+        
+        .controls {
+            padding: 10px;
+            background: #343a40;
+            color: white;
+        }
+        
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        /* Añade esto a tu bloque <style> */
+		.node i.fa-star {
+		    color: #f1c40f; /* Amarillo brillante */
+		    margin-right: 8px; /* Separación con el texto */
+		    font-size: 1.2em; /* Un poco más grande que el texto */
+		}
+		
+		.leader-line-label {
+		    transform: rotate(-90deg);
+		    transform-origin: center; /* Asegura que rote sobre su propio eje */
+		    white-space: nowrap;      /* Evita que el texto se parta en varias líneas */
+		}
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button onclick="addNode()">+ Añadir Nodo</button>
+        <button onclick="startConnection()">🔗 Conectar Nodos</button>
+        <small>(Haz clic en 'Conectar' y luego selecciona dos nodos consecutivamente)</small>
+        <button onclick="saveDiagram()" style="background: #28a745; color: white;">💾 Guardar Diagrama</button>
+		<button onclick="loadDiagram()" style="background: #ffc107; color: black;">📂 Cargar Diagrama</button>
+		<button onclick="clearAll(false)" style="background: #dc3545; color: white;">🗑️ Borrar Todo</button>
+    </div>
+
+    <div id="canvas" style="position: relative; width: 100%; height: 900px; background: #f4f4f4;">
+    <h3 style="position: absolute; top: 30px; left: 50%; transform: translateX(-50%); margin: 0;">
+        Diagrama Dual run
+    </h3>
+    <h3 style="position: absolute; top: 450px; left: 50%; transform: translateX(-50%); margin: 0;">
+        Diagrama Single Output Hub
+    </h3>
+    </div>
+    <script>
+        let nodeCount = 0;
+        let connections = [];
+        let lines = [];
+        let connectionMode = false;
+        let selectedNodes = [];
+
+        function addNode() {
+            nodeCount++;
+            const canvas = document.getElementById('canvas');
+            const div = document.createElement('div');
+            
+            div.id = 'node-' + nodeCount;
+            div.className = 'node';
+            div.innerText = 'Nodo ' + nodeCount;
+            div.style.left = '50px';
+            div.style.top = '50px';
+
+            // Hacerlo arrastrable de forma simple
+            makeDraggable(div);
+            
+            // Evento para selección de conexión
+            div.onclick = () => handleNodeClick(div);
+
+            canvas.appendChild(div);
+        }
+
+        function makeDraggable(el) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            el.onmousedown = (e) => {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = () => {
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                };
+                document.onmousemove = (e) => {
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    el.style.top = (el.offsetTop - pos2) + "px";
+                    el.style.left = (el.offsetLeft - pos1) + "px";
+                    
+                    // Actualizar flechas al mover
+                    connections.forEach(conn => conn.line.position());
+                };
+            };
+        }
+
+        function startConnection() {
+            connectionMode = true;
+            selectedNodes = [];
+            //alert("Selecciona el primer nodo y luego el segundo.");
+        }
+
+        function handleNodeClick(el) {
+            if (!connectionMode) return;
+
+            selectedNodes.push(el);
+            el.style.border = "2px solid yellow";
+
+            if (selectedNodes.length === 2) {
+                const line = new LeaderLine(
+                    selectedNodes[0],
+                    selectedNodes[1],
+                    { color: '#333', size: 3, path: 'straight' }
+                );
+                connections.push({ line: line, start: selectedNodes[0], end: selectedNodes[1] });
+                
+                // Limpiar selección
+                selectedNodes.forEach(n => n.style.border = "none");
+                selectedNodes = [];
+                connectionMode = false;
+            }
+        }
+        
+        let activeLines = [];
+        let activeLines2 = [];
+
+        function initDR() {
+            // 1. Limpiar líneas previas si las hubiera
+            if (typeof clearLines === 'function') clearLines();
+            const offset = -10;
+            const canvas = document.getElementById('canvas');
+            
+            // 2. Definir los nodos (puedes crearlos dinámicamente o usar los que ya tienes)
+            const nodeIzq = createNode('node-izq', 'Externo', 1025, 120 + offset);
+            makeDraggable(nodeIzq);
+            nodeIzq.style.width = '100px';
+            nodeIzq.style.height = '180px';
+            nodeIzq.style.backgroundColor = '#2ecc71';
+            nodeIzq.innerHTML = '<i class="fas fa-star"></i> Sistema<br>Externo';
+            
+            const nodeMQ = createNode('node-mq', 'IBM MQ', 750, 200 + offset);
+            nodeMQ.style.backgroundColor = '#0062ff';
+            nodeMQ.style.color = 'white';
+            makeDraggable(nodeMQ);
+            
+            const nodeIzq2 = createNode('node-izq2', 'MQLauncher', 550, 120 + offset);
+            nodeIzq2.style.width = '100px';
+            nodeIzq2.style.height = '180px';
+            nodeIzq2.style.backgroundColor = '#3498db';
+            makeDraggable(nodeIzq2);
+            
+            const nodeDer1 = createNode('node-der-1', 'IBM MQ', 300, 150 + offset);
+            nodeDer1.style.backgroundColor = '#0062ff';
+            nodeDer1.style.color = 'white';
+            makeDraggable(nodeDer1);
+            const nodeDer2 = createNode('node-der-2', 'IBM MQ', 300, 250 + offset);
+            nodeDer2.style.backgroundColor = '#0062ff';
+            nodeDer2.style.color = 'white';
+            makeDraggable(nodeDer2);
+            
+            const nodeDer3 = createNode('node-der-3', 'Master/Mainframe', 50, 150 + offset);
+            nodeDer3.style.backgroundColor = '#e67e22';
+            makeDraggable(nodeDer3);
+            const nodeDer4 = createNode('node-der-4', 'Secundario/Gravity', 50, 250 + offset);
+            nodeDer4.style.backgroundColor = '#e67e22';
+            makeDraggable(nodeDer4);
+            
+            // 3. Unir con LeaderLine
+            if (typeof LeaderLine !== 'undefined') {
+            	// Definimos los datos de la etiqueta por separado
+            	let myLabelData = {
+            		start: {text: 'QUEUE03', options: {fontFamily: 'Arial', color: 'blue',  offset: [-80, 0]}},
+            	    end: {text: 'QUEUE01', options: {fontFamily: 'Arial', color: 'blue',  offset: [-1, 0]}}
+            	};
+                const line0 = new LeaderLine(nodeIzq, nodeMQ, {
+                	startPlug: 'square',
+                    color: '#3498db',
+                    size: 3,
+                    dash: {len: 5, gap: 10, animation: true },
+                    path: 'grid', // Curva suave
+                    startLabel: LeaderLine.captionLabel(myLabelData.start.text, myLabelData.start.options),
+                    endLabel: LeaderLine.captionLabel(myLabelData.end.text, myLabelData.end.options),
+                });
+                line0.onclick = () => handleNodeClick(el);
+                connections.push({ line: line0, start: nodeIzq, end: nodeMQ, customLabels: myLabelData });
+                
+                myLabelData = {
+                        start: {text: 'GETI_QUEUE', options: {fontFamily: 'Arial', color: 'blue',  offset: [-60, 0]}},
+                    };
+                const lineMQ = new LeaderLine(nodeMQ, nodeIzq2, {
+                    startPlug: 'square',
+                    color: '#3498db',
+                    size: 3,
+                    path: 'grid', // Curva suave
+                    startLabel: LeaderLine.captionLabel(myLabelData.start.text, myLabelData.start.options),
+                });
+                lineMQ.onclick = () => handleNodeClick(el);
+                connections.push({ line: lineMQ, start: nodeMQ, end: nodeIzq2, customLabels: myLabelData });
+                
+                const line1 = new LeaderLine(nodeIzq2, nodeDer1, {
+                	startPlug: 'square',
+                    color: '#3498db',
+                    size: 3,
+                    gravity: [150,20],
+                    path: 'grid',
+                    endLabel: 'To Mainframe'
+                });
+                line1.onclick = () => handleNodeClick(el);
+                connections.push({ line: line1, start: nodeIzq2, end: nodeDer1 });
+                
+                const line2 = new LeaderLine(nodeIzq2, nodeDer2, {
+                    color: '#3498db',
+                    size: 3,
+                    gravity: [150,20],
+                    path: 'grid',
+                    endLabel: 'To Gravity'
+                });
+                line2.onclick = () => handleNodeClick(el);
+                connections.push({ line: line2, start: nodeIzq2, end: nodeDer2 });
+                
+                myLabelData = {
+                        middle: {text: 'From Mainframe', options: {fontFamily: 'Arial', color: 'red'}},
+                    };
+                const line4 = new LeaderLine(nodeDer1, nodeIzq2, {
+                	startPlug: 'square',
+                    color: '#e74c3c',
+                    gravity: [150,20],
+                    size: 3,
+                    path: 'grid', // Curva suave
+                    dash: {len: 5, gap: 10, animation: true },
+                    middleLabel: LeaderLine.captionLabel(myLabelData.middle.text, myLabelData.middle.options),
+                    //endPlug: 'arrow3'
+                });
+                line4.setOptions({startSocket: 'top', endSocket: 'top'});
+                line4.onclick = () => handleNodeClick(el);
+                connections.push({ line: line4, start: nodeDer1, end: nodeIzq2, customLabels: myLabelData });
+                
+                myLabelData = {
+                        start: {text: 'QUEUE02', options: {fontFamily: 'Arial', color: 'red',  offset: [-1, 0]}},
+                        middle: {text: 'From Gravity', options: {fontFamily: 'Arial', color: 'red'}},
+                        end: {text: 'QUEUE01', options: {fontFamily: 'Arial', color: 'red',  offset: [-30, 0]}}
+                    };
+                const line5 = new LeaderLine(nodeDer2, nodeIzq2,{
+                	startPlug: 'square',
+                    color: '#e74c3c',
+                    size: 3,
+                    path: 'grid',
+                    dash: {len: 5, gap: 10, animation: true },
+                    startLabel: LeaderLine.captionLabel(myLabelData.start.text, myLabelData.start.options),
+                    endLabel: LeaderLine.captionLabel(myLabelData.end.text, myLabelData.end.options),
+                    middleLabel: LeaderLine.captionLabel(myLabelData.middle.text, myLabelData.middle.options),
+                });
+                line5.setOptions({startSocket: 'bottom', endSocket: 'bottom'});
+                line5.onclick = () => handleNodeClick(el);
+                connections.push({ line: line5, start: nodeDer2, end: nodeIzq2, customLabels: myLabelData });
+                
+                const line6 = new LeaderLine(nodeDer1, nodeDer3, {
+                    startPlug: 'square',
+                    color: '#3498db',
+                    size: 3
+                });
+                line6.setOptions({startSocket: 'left', endSocket: 'rigth'});
+                line6.onclick = () => handleNodeClick(el);
+                connections.push({ line: line6, start: nodeDer1, end: nodeDer3 });
+
+                const line7 = new LeaderLine(nodeDer2, nodeDer4,{
+                    startPlug: 'square',
+                    color: '#3498db',
+                    size: 3
+                });
+                line7.setOptions({startSocket: 'left', endSocket: 'rigth'});
+                line7.onclick = () => handleNodeClick(el);
+                connections.push({ line: line7, start: nodeDer2, end: nodeDer4 });
+
+//Vuelta
+				let pStart = {x: '50%', y: '0%'};
+				let pEnd = {x: '25%', y: '0%'};
+                const line8 = new LeaderLine(LeaderLine.pointAnchor(nodeDer3, pStart), 
+                        LeaderLine.pointAnchor(nodeDer1, pEnd),           {
+	                	startPlug: 'square',
+	                    color: '#e74c3c',
+	                    path: 'grid',
+	                    dash: {len: 5, gap: 10, animation: true },
+	                    size: 3,
+	                    gravity: [150,20]
+	                });
+                line8.setOptions({startSocket: 'top', endSocket: 'top'});
+                line8.onclick = () => handleNodeClick(el);
+                registerLine(line8, nodeDer3, nodeDer1, pStart, pEnd );
+
+                pStart = {x: '50%', y: '100%'};
+                pEnd = {x: '25%', y: '100%'};
+                const line9 =  new LeaderLine(LeaderLine.pointAnchor(nodeDer4, pStart), 
+                        LeaderLine.pointAnchor(nodeDer2, pEnd),               {
+                         startPlug: 'square',
+                         color: '#e74c3c',
+                         path: 'grid',
+                         dash: {len: 5, gap: 10, animation: true },
+                         size: 3,
+                         gravity: [20,150]
+                     });
+                line9.setOptions({startSocket: 'bottom', endSocket: 'bottom'});
+                line9.onclick = () => handleNodeClick(el);
+                registerLine(line9, nodeDer4, nodeDer2, pStart, pEnd );
+                
+                pStart = {x: '75%', y: '0%'};
+                pEnd = {x: '25%', y: '0%'};
+                const line10 = new LeaderLine(LeaderLine.pointAnchor(nodeIzq2, pStart), 
+                        LeaderLine.pointAnchor(nodeMQ, pEnd),           {
+                        startPlug: 'square',
+                        color: '#e74c3c',
+                        path: 'grid',
+                        dash: {len: 5, gap: 10, animation: true },
+                        size: 3,
+                        gravity: [150,20],
+                        startLabel: LeaderLine.captionLabel('HOLA', {fontFamily: 'Arial', color: 'red',  offset: [-1, -22]}),
+                    });
+                line10.setOptions({startSocket: 'top', endSocket: 'top'});
+                line10.onclick = () => handleNodeClick(el);
+                registerLine(line10, nodeIzq2, nodeMQ, pStart, pEnd );
+
+                pStart = {x: '100%', y: '15%'};
+                pEnd = {x: '0%', y: '41%'};
+                const line11 = new LeaderLine(LeaderLine.pointAnchor(nodeMQ, pStart), 
+                        LeaderLine.pointAnchor(nodeIzq, pEnd),           {
+                        startPlug: 'square',
+                        color: '#e74c3c',
+                        path: 'grid',   
+                        dash: {len: 5, gap: 10, animation: true },
+                        size: 3,
+                        startLabel: LeaderLine.captionLabel('GET_QUEUE', {fontFamily: 'Arial', color: 'red',  offset: [-1, -22]}),
+                    });
+//                line11.setOptions({startSocket: 'top', endSocket: 'top'});
+                line11.onclick = () => handleNodeClick(el);
+                connections.push({ line: line11, start: nodeMQ, end: nodeIzq, anchors: {start: pStart, end:pEnd} });
+                
+                // Guardar para poder borrarlas o moverlas luego
+                activeLines.push(line0.toString(), line1.toString(), line2.toString(), line4.toString(), line5.toString(), line6.toString(), line7.toString(), line8.toString(), line9.toString(), line10.toString(), line11.toString());
+            }
+        }
+
+        function initSOH() {
+            // 1. Limpiar líneas previas si las hubiera
+            if (typeof clearLines === 'function') clearLines();
+
+            const canvas = document.getElementById('canvas');
+            const offset = 425; // Ajusta según tu diseño
+            // 2. Definir los nodos (puedes crearlos dinámicamente o usar los que ya tienes)
+            const nodeIzq = createNode('sohNode-izq', 'Externo', 1025, 120 + offset);
+            makeDraggable(nodeIzq);
+            nodeIzq.style.width = '100px';
+            nodeIzq.style.height = '180px';
+            nodeIzq.style.backgroundColor = '#2ecc71';
+            
+            const nodeMQ = createNode('sohNode-mq', 'IBM MQ', 750, 200 + offset);
+            nodeMQ.style.backgroundColor = '#0062ff';
+            nodeMQ.style.color = 'white';
+            makeDraggable(nodeMQ);
+            const nodeIzq2 = createNode('sohNode-izq2', 'MQLauncher', 550, 120 + offset);
+            nodeIzq2.style.width = '100px';
+            nodeIzq2.style.height = '180px';
+            nodeIzq2.style.backgroundColor = '#3498db';
+            makeDraggable(nodeIzq2);
+            
+            const nodeDer1 = createNode('sohNode-der-1', 'IBM MQ', 300, 150 + offset);
+            nodeDer1.style.backgroundColor = '#0062ff';
+            nodeDer1.style.color = 'white';
+            makeDraggable(nodeDer1);
+            const nodeDer2 = createNode('sohNode-der-2', 'IBM MQ', 300, 250 + offset);
+            nodeDer2.style.backgroundColor = '#0062ff';
+            nodeDer2.style.color = 'white';
+            makeDraggable(nodeDer2);
+            
+            const nodeDer3 = createNode('sohNode-der-3', 'Master/Mainframe', 50, 140 + offset);
+            nodeDer3.style.backgroundColor = '#e67e22';
+            nodeDer3.innerHTML = '<i class="fas fa-star"></i> Master<br>Mainframe';
+            makeDraggable(nodeDer3);
+            const nodeDer4 = createNode('sohNode-der-4', 'Secundario/Gravity', 50, 240 + offset);
+            nodeDer4.style.backgroundColor = '#e67e22';
+            nodeDer4.innerHTML = '<i class="fas fa-star"></i> Secundario<br>Mainframe';
+            makeDraggable(nodeDer4);
+            
+            // 3. Unir con LeaderLine
+            if (typeof LeaderLine !== 'undefined') {
+                const line0 = new LeaderLine(nodeMQ, nodeIzq, {
+                    startPlug: 'square',
+                    color: '#3498db',
+                    size: 3,
+                    dash: {len: 5, gap: 10, animation: true },
+                    path: 'grid', // Curva suave
+                    endLabel: 'PUT_QUEUE1'
+                });
+                line0.onclick = () => handleNodeClick(el);
+                connections.push({ line: line0, start: nodeMQ, end: nodeIzq });
+                
+                const lineMQ = new LeaderLine(nodeIzq2, nodeMQ, {
+                    startPlug: 'square',
+                    color: '#3498db',
+                    size: 3,
+                    path: 'grid', // Curva suave
+                    startLabel: LeaderLine.captionLabel('GETsQUEUE', {fontFamily: 'Arial', color: 'blue',  offset: [-1, 0]}),
+                });
+                lineMQ.onclick = () => handleNodeClick(el);
+                connections.push({ line: lineMQ, start: nodeIzq2, end: nodeMQ });
+                
+                const line1 = new LeaderLine(nodeDer1, nodeIzq2, {
+                    startPlug: 'square',
+                    color: '#3498db',
+                    size: 3,
+                    path: 'grid',
+                    startLabel: 'From Mainframe'
+                });
+                line1.onclick = () => handleNodeClick(el);
+                connections.push({ line: line1, start: nodeDer1, end: nodeIzq2 });
+                
+                const line2 = new LeaderLine(nodeDer2, nodeIzq2, {
+                    color: '#3498db',
+                    size: 3,
+                    gravity: [150,20],
+                    path: 'grid',
+                    startLabel: 'From Gravity'
+                });
+                line2.onclick = () => handleNodeClick(el);
+                connections.push({ line: line2, start: nodeDer2, end: nodeIzq2 });
+                
+                const line4 = new LeaderLine(nodeIzq2, nodeDer1, {
+                    startPlug: 'square',
+                    color: '#e74c3c',
+                    size: 3,
+                    path: 'grid', // Curva suave
+                    dash: {len: 5, gap: 10, animation: true },
+                    middleLabel: 'To MQ'
+                    //endPlug: 'arrow3'
+                });
+                line4.setOptions({startSocket: 'top', endSocket: 'top'});
+                line4.onclick = () => handleNodeClick(el);
+                connections.push({ line: line4, start: nodeIzq2, end: nodeDer1 });
+
+                const line5 = new LeaderLine(nodeIzq2, nodeDer2,{
+                    startPlug: 'square',
+                    color: '#e74c3c',
+                    size: 3,
+                    path: 'grid',
+                    dash: {len: 5, gap: 10, animation: true },
+                    middleLabel: 'To MQ'
+                });
+                line5.setOptions({startSocket: 'bottom', endSocket: 'bottom'});
+                line5.onclick = () => handleNodeClick(el);
+                //connections.push({ line: line5, start: nodeIzq2, end: nodeDer1 });
+                line5.hide();
+                
+                const line6 = new LeaderLine(nodeDer3, nodeDer1, {
+                    startPlug: 'square',
+                    color: '#3498db',
+                    size: 3
+                });
+                line6.setOptions({startSocket: 'right', endSocket: 'rigth'});
+                line6.onclick = () => handleNodeClick(el);
+                connections.push({ line: line6, start: nodeDer3, end: nodeDer1 });
+
+                const line7 = new LeaderLine(nodeDer4, nodeDer2,{
+                    startPlug: 'square',
+                    color: '#3498db',
+                    size: 3
+                });
+                line7.setOptions({startSocket: 'right', endSocket: 'rigth'});
+                line7.onclick = () => handleNodeClick(el);
+                connections.push({ line: line7, start: nodeDer4, end: nodeDer2 });
+
+//Vuelta
+                let pStart = {x: '25%', y: '0%'};
+                let pEnd = {x: '50%', y: '0%'};
+                const line8 = new LeaderLine(LeaderLine.pointAnchor(nodeDer1, {x: '25%', y: '0%'}), 
+                        LeaderLine.pointAnchor(nodeDer3, {x: '50%', y: '0%'}),           {
+                        startPlug: 'square',
+                        color: '#e74c3c',
+                        path: 'grid',
+                        dash: {len: 5, gap: 10, animation: true },
+                        size: 3,
+                        gravity: [150,20]
+                    });
+                line8.setOptions({startSocket: 'top', endSocket: 'top'});
+                line8.onclick = () => handleNodeClick(el);
+                connections.push({ line: line8, start: nodeDer1, end: nodeDer3 , anchors: {start: pStart, end:pEnd} });
+
+/*                 const line9 =  new LeaderLine(LeaderLine.pointAnchor(nodeDer2, {x: '25%', y: '100%'}), 
+                        LeaderLine.pointAnchor(nodeDer4, {x: '50%', y: '100%'}),               {
+                         startPlug: 'square',
+                         color: '#e74c3c',
+                         path: 'grid',
+                         dash: {len: 5, gap: 10, animation: true },
+                         size: 3,
+                         gravity: [20,150]
+                     });
+                line9.setOptions({startSocket: 'bottom', endSocket: 'bottom'});
+                line9.onclick = () => handleNodeClick(el); */
+                
+                pStart = {x: '50%', y: '0%'};
+                pEnd = {x: '75%', y: '0%'};
+                const line10 = new LeaderLine(LeaderLine.pointAnchor(nodeMQ, {x: '50%', y: '0%'}), 
+                        LeaderLine.pointAnchor(nodeIzq2, {x: '75%', y: '0%'}),           {
+                        startPlug: 'square',
+                        color: '#e74c3c',
+                        path: 'grid',
+                        dash: {len: 5, gap: 10, animation: true },
+                        size: 3,
+                        gravity: [150,20]
+                    });
+                line10.setOptions({startSocket: 'top', endSocket: 'top'});
+                line10.onclick = () => handleNodeClick(el);
+                connections.push({ line: line10, start: nodeMQ, end: nodeIzq2, anchors: {start: pStart, end:pEnd} });
+
+                pStart = {x: '100%', y: '21%'};
+                pEnd = {x: '0%', y: '42%'};
+                const line11 = new LeaderLine(LeaderLine.pointAnchor(nodeIzq, {x: '0%', y: '42%'}), 
+                        LeaderLine.pointAnchor(nodeMQ, {x: '100%', y: '21%'}),           {
+                        startPlug: 'square',
+                        color: '#e74c3c',
+                        path: 'grid',   
+                        dash: {len: 5, gap: 10, animation: true },
+                        size: 3,
+                    });
+//                line11.setOptions({startSocket: 'top', endSocket: 'top'});
+                line11.onclick = () => handleNodeClick(el);
+                connections.push({ line: line11, start: nodeIzq, end: nodeMQ, anchors: {start: pEnd, end:pStart} });
+                
+                // Guardar para poder borrarlas o moverlas luego
+                activeLines2.push(line0.toString(), line1.toString(), line2.toString(), line4.toString(), line5.toString(), line6.toString(), line7.toString(), line8.toString(), line10.toString(), line11.toString());
+            }
+            initDR();
+        }
+        function createLine(start, end, options = {}) {
+            if (typeof LeaderLine === 'undefined') return null;
+            const line = new LeaderLine(start, end, options);
+            activeLines.push(line.toString());
+            return line;
+        }
+        // Función auxiliar para crear los DIVs rápidamente
+        function createNode(id, text, x, y) {
+            let el = document.getElementById(id);
+            if (!el) {
+                el = document.createElement('div');
+                el.id = id;
+                el.className = 'nodo'; // Usa tus clases CSS
+                el.innerText = text;
+                el.style.position = 'absolute';
+                el.style.padding = '15px';
+                el.style.border = '1px solid black';
+                el.style.backgroundColor = 'white';
+                el.style.display= 'flex';          // Para centrar el texto
+                el.style.alignItems = 'center';      // Centrado Vertical
+                el.style.justifyContent = 'center'; // Centrado Horizontal
+                el.style.textAlign = 'center';      // Asegura el centro si hay varias líneas
+                document.getElementById('canvas').appendChild(el);
+            }
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.onclick = () => handleNodeClick(el);
+            return el;
+        }
+
+     // --- SISTEMA DE PERSISTENCIA ---
+
+		function saveDiagram() {
+		    // 1. Guardar Nodos
+		    const nodesData = Array.from(document.querySelectorAll('.node, .nodo')).map(el => ({
+		        id: el.id,
+		        text: el.innerText,
+		        html: el.innerHTML,
+		        left: el.style.left,
+		        top: el.style.top,
+		        width: el.style.width,
+		        height: el.style.height,
+		        bg: el.style.backgroundColor,
+		        color: el.style.color,
+		    }));
+		
+		    // 2. Guardar Conexiones (Corregido)
+		    const connectionsData = connections.map(conn => ({
+		        startId: conn.start.id,
+		        endId: conn.end.id,
+		        anchors: conn.anchors,
+		        labels: conn.customLabels || null,
+		        // Usamos valores fijos o recuperados si están disponibles
+		        options: {
+		            color: conn.line.color || '#333',
+		            size: 3,
+                    startPlug: conn.line.startPlug,
+                    color: conn.line.color,
+                    size: conn.line.size,
+                    dash: conn.line.dash,
+                    path: conn.line.path,
+                    startLabel: conn.line.startLabel,
+                    endLabel: conn.line.endLabel,
+                    middleLabel: conn.line.middleLabel,
+                    gravity: conn.line.gravity,
+                    startSocket: conn.line.startSocket,
+                    endSocket: conn.line.endSocket,
+                    position: conn.line.position()
+		        }
+		    }));
+		
+		    localStorage.setItem('diagram_data', JSON.stringify({
+                nodes: nodesData,
+                conns: connectionsData,
+                count: nodeCount,
+                lines: activeLines,
+                lines2: activeLines2
+		    }));
+		    alert("Guardado correctamente");
+		}
+		
+		function loadDiagram() {
+		    const data = JSON.parse(localStorage.getItem('diagram_data'));
+		    if (!data) return;
+
+	          // Limpiar canvas y líneas
+            clearAll(false);
+        
+            // Restaurar Nodos
+            data.nodes.forEach(n => {
+                const div = createNode(n.id, n.text, parseInt(n.left), parseInt(n.top));
+                div.innerHTML = n.html;
+                div.innerText = n.text; // Asegura que el texto se muestre correctamente
+                div.style.width = n.width;
+                div.style.height = n.height;
+                div.style.backgroundColor = n.bg;
+                div.style.color = n.color;
+                div.style.fontFamily = 'Arial, sans-serif';
+                   
+                    // Mantener estilos de centrado que tenías
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.justifyContent = 'center';
+                    div.style.textAlign = 'center';
+
+                    makeDraggable(div);
+                    div.onclick = () => handleNodeClick(div);
+                    document.getElementById('canvas').appendChild(div);
+                    
+                    // Actualizar el contador global para que no haya IDs duplicados al añadir nuevos
+                    const currentIdNum = parseInt(n.id.replace('node-', ''));
+                    if (!isNaN(currentIdNum) && currentIdNum >= nodeCount) nodeCount = currentIdNum;
+            });
+        
+
+            nodeCount = data.count || 0;
+
+		    setTimeout(() => {
+		        data.conns.forEach(c => {
+		            const sNode = document.getElementById(c.startId);
+		            const eNode = document.getElementById(c.endId);
+
+		            if (sNode && eNode) {
+		                // Si el JSON dice que hay anchors, los aplicamos
+		                const startParam = c.anchors && c.anchors.start ? LeaderLine.pointAnchor(sNode, c.anchors.start) : sNode;
+		                const endParam = c.anchors && c.anchors.end ? LeaderLine.pointAnchor(eNode, c.anchors.end) : eNode;
+		                // Buscamos si guardamos metadatos de etiquetas en el objeto 'c'
+		                let lineOpts = {};
+		                for (let key in c.options) {
+		                    lineOpts[key] = c.options[key];
+		                }
+		                if (c.labels) {
+		                    if (c.labels.start) {
+		                        lineOpts.startLabel = LeaderLine.captionLabel(
+		                            c.labels.start.text, 
+		                            c.labels.start.options
+		                        );
+		                    }
+		                    if (c.labels.middle) {
+		                        lineOpts.middleLabel = LeaderLine.captionLabel(
+		                            c.labels.middle.text, 
+		                            c.labels.middle.options
+		                        );
+		                    }
+                            if (c.labels.end) {
+                                lineOpts.endLabel = LeaderLine.captionLabel(
+                                    c.labels.end.text, 
+                                    c.labels.end.options
+                                );
+                            }
+		                }
+		                const newLine = new LeaderLine(startParam, endParam, lineOpts);
+		                
+		                // Volvemos a registrar en el array activo
+		                connections.push({
+		                    line: newLine,
+		                    start: sNode,
+		                    end: eNode,
+		                    anchors: c.anchors ? c.anchors : null
+		                });
+		            }
+		        });
+		    }, 200);
+		}
+		
+		function loadDiagram2() {
+		    const data = JSON.parse(localStorage.getItem('diagram_storage'));
+		    if (!data) return;
+		
+		    // Limpiar canvas y líneas
+		    clearAll(false);
+		
+		    // Restaurar Nodos
+		    data.nodes.forEach(n => {
+		        const div = createNode(n.id, n.text, parseInt(n.left), parseInt(n.top));
+		        div.innerHTML = n.html;
+		        div.style.width = n.width;
+		        div.style.height = n.height;
+		        div.style.backgroundColor = n.bg;
+		        div.style.color = n.color;
+		    });
+		
+		    nodeCount = data.count || 0;
+		
+		    // Restaurar Conexiones con delay
+		    setTimeout(() => {
+		        data.conns.forEach(c => {
+		            const s = document.getElementById(c.startId);
+		            const e = document.getElementById(c.endId);
+		            if (s && e) {
+		                const line = new LeaderLine(s, e, c.options);
+		                connections.push({ line, start: s, end: e });
+		            }
+		        });
+		    }, 200);
+		}
+
+        function clearAll(deleteStorage = true) {
+            // Eliminar líneas visualmente
+            connections.forEach(conn => {
+			    // Verificamos que la conexión y la línea existan antes de llamar a remove()
+			    if (conn && conn.line) {
+			        try {
+			            conn.line.remove();
+			        } catch (e) {
+			            console.warn("La línea ya no existía o no se pudo borrar:", e);
+			        }
+			    }
+			});
+            
+            // Limpiar arrays
+            connections = [];
+            activeLines = [];
+            activeLines2 = [];
+            
+            // Eliminar elementos del DOM
+            document.querySelectorAll('.node, .nodo').forEach(el => el.remove());
+            
+            if (deleteStorage) {
+                localStorage.removeItem('myFlowchartData');
+                nodeCount = 0;
+            }
+        }
+        
+        function registerLine(lineObj, startNode, endNode, startPoint = null, endPoint = null) {
+            connections.push({
+                line: lineObj,
+                start: startNode,
+                end: endNode,
+                // Guardamos las coordenadas como texto para el JSON
+                anchors: {
+                    start: startPoint, // ej: {x: '50%', y: '100%'}
+                    end: endPoint      // ej: {x: '25%', y: '100%'}
+                }
+            });
+        }
+        // Ejecutar al cargar la página
+        window.addEventListener('load', initSOH);
+    </script>
+</body>
+</html>
