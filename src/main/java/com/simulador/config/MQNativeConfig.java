@@ -11,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Profile("simulator")
 @Slf4j
 public class MQNativeConfig {
 
@@ -32,22 +34,25 @@ public class MQNativeConfig {
   Hashtable<String, Object> props = new Hashtable<>();
 
   static {
-    System.setProperty("com.ibm.mq.pooling.isPoolingEnabled", "false");
+    System.setProperty("com.ibm.mq.pooling.isPoolingEnabled", "true");
     MQEnvironment.addConnectionPoolToken();
   }
 
   public Map<String, Object> createConnection(String appName) throws MQException {
 
     // Configuración básica de red
-    props.put(MQConstants.HOST_NAME_PROPERTY, mqProperties.getHost());
-    props.put(MQConstants.PORT_PROPERTY, mqProperties.getPort());
-    props.put(MQConstants.CHANNEL_PROPERTY, mqProperties.getChannel());
-    props.put(MQConstants.TRANSPORT_PROPERTY, MQConstants.TRANSPORT_MQSERIES_CLIENT);
+    if (props.isEmpty()) {
+      log.info("Inicializando propiedades de conexión MQ...");
+      props.put(MQConstants.HOST_NAME_PROPERTY, mqProperties.getHost());
+      props.put(MQConstants.PORT_PROPERTY, mqProperties.getPort());
+      props.put(MQConstants.CHANNEL_PROPERTY, mqProperties.getChannel());
+      props.put(MQConstants.TRANSPORT_PROPERTY, MQConstants.TRANSPORT_MQSERIES_CLIENT);
 
-    // Autenticación
-    props.put(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, false);
-    props.put(MQConstants.USER_ID_PROPERTY, mqProperties.getUser());
-    props.put(MQConstants.PASSWORD_PROPERTY, mqProperties.getPassword());
+      // Autenticación
+      props.put(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, false);
+      props.put(MQConstants.USER_ID_PROPERTY, mqProperties.getUser());
+      props.put(MQConstants.PASSWORD_PROPERTY, mqProperties.getPassword());
+    }
 
     // --- EL ARREGLO PARA EL BLOQUEO ---
     // 1. Identificador de aplicación único (forzamos a MQ a no agrupar)
@@ -60,7 +65,7 @@ public class MQNativeConfig {
     // MQConstants.MQCNO_RECONNECT | MQConstants.MQCNO_HANDLE_SHARE_BLOCK);
 
     try {
-      Map<String,Object> debugProps =  new HashMap<>();
+      Map<String, Object> debugProps = new HashMap<>();
       debugProps.put("props", props);
       debugProps.put("mq", new MQQueueManager(mqProperties.getQueueManager(), props));
       return debugProps;

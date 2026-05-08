@@ -6,22 +6,20 @@ import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
 import com.simulador.components.JsonService;
-import com.simulador.service.MqSimulatorService;
 import jakarta.annotation.PostConstruct;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@RefreshScope
 // @DependsOn("cacheManager")
 public class MQConnectionManager {
 
@@ -32,7 +30,7 @@ public class MQConnectionManager {
   @Autowired
   ApplicationContext context;
   // Este es el mapa que consumirán tus otros servicios
-  private final ConcurrentMap<String, MQConnectionBundle> connectionMap = new ConcurrentHashMap<>();
+  private final Map<String, MQConnectionBundle> connectionMap = new LinkedHashMap<>();
   public MQQueueManager                                   qMan;
 
   public MQConnectionManager(SimulatorProperties props, MQNativeConfig nativeConfig,
@@ -57,7 +55,7 @@ public class MQConnectionManager {
 
   @PostConstruct
   public void init() {
-    log.info("Iniciando conexión masiva a MQ...");
+    log.info("Iniciando conexines a MQ...");
     connectAll();
   }
 
@@ -66,9 +64,9 @@ public class MQConnectionManager {
    */
   public void connectAll() {
     props.getQueues().forEach((key, qConfig) -> {
-      if (!isConnectionActive(key)) {
+      // if (!isConnectionActive(key)) {
         connectQueue(qConfig.getName());
-      }
+      // }
     });
   }
 
@@ -77,7 +75,7 @@ public class MQConnectionManager {
    * 
    * @return
    */
-  public synchronized boolean connectQueue(String queueName) {
+  public synchronized MQConnectionBundle connectQueue(String queueName) {
     try {
       // Limpiar conexión vieja si existe
       closeQuietly(queueName);
@@ -91,57 +89,20 @@ public class MQConnectionManager {
 
       connectionMap.put(queueName, new MQConnectionBundle(qm, queue, conn.get("props")));
       log.debug("✅ Conexión establecida con éxito: {}", queueName);
-      return true;
+      return new MQConnectionBundle(qm, queue, conn.get("props"));
 
     } catch (MQException e) {
       log.error("❌ Error conectando a {}. Motivo: {} (Reason Code: {})",
           queueName, e.getMessage(), e.getReason());
-      return false;
+      return null;
     } catch (Exception e) {
       log.error("❌ Error inesperado conectando a {}", queueName, e);
-      return false;
-    }
-  }
-
-  /**
-   * Verifica si una conexión específica sigue viva
-   */
-  public boolean isConnectionActive(String queueName) {
-    MQConnectionBundle bundle = connectionMap.get(queueName);
-    if ((bundle == null || bundle.getQm() == null || bundle.getQueue() == null)
-        || !bundle.getQm().isConnected() || !bundle.getQueue().isOpen()) {
-      return false;
-    }
-    try {
-      // La mejor forma de saber si sigue vivo es preguntar algo al QMgr
-      return bundle.getQm().isConnected() && bundle.getQueue().isOpen();
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  /**
-   * Tarea programada que revisa la salud de las conexiones cada 30 segundos
-   */
-  @Scheduled(fixedDelay = 30000)
-  public void watchdog() {
-    AtomicBoolean allHealthy = new AtomicBoolean(true);
-    props.getQueues().forEach((key, config) -> {
-      if (!isConnectionActive(config.getName())) {
-        log.warn("Detectada conexión caída para {}. Reconectando...", key);
-        boolean connected = connectQueue(config.getName());
-        allHealthy.set(!connected);
-      }
-    });
-    if (!allHealthy.get()) {
-      log.info("Reconexiones realizadas. Verifique los logs para más detalles.");
-      MqSimulatorService theService = context.getBean(MqSimulatorService.class);
-      theService.runConsumers();
+      return null;
     }
   }
 
   @Bean(name = "mqConnections")
-  public ConcurrentMap<String, MQConnectionBundle> getConnections() {
+  public Map<String, MQConnectionBundle> getConnections() {
     return this.connectionMap;
   }
 
@@ -163,10 +124,10 @@ public class MQConnectionManager {
       try {
         if (old.getQueue() != null)
           old.getQueue().close();
-        if (old.getQm() != null) {
-          old.getQm().disconnect();
-          old.getQm().close();
-        }
+        // if (old.getQm() != null) {
+        // old.getQm().disconnect();
+        // old.getQm().close();
+        // }
       } catch (Exception e) {
         // Ignorar fallos al cerrar una conexión ya rota
       }

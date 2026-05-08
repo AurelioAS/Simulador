@@ -23,18 +23,29 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter.SseEventBuilder;
 
 /**
- * 
+ * SendService - Servicio encargado de enviar mensajes a las colas MQ configuradas. Este servicio
+ * maneja la lógica de construcción del mensaje, asignación de correlationId y messageId. También se
+ * encarga de simular tiempos de procesamiento y disparar mensajes adicionales configurados en
+ * "fire".
  */
 @Service
 @Slf4j
+@RefreshScope
+@LogFullDetails(logArguments = true, logResult = false) // Configura el aspecto para no loguear
+// argumentos ni resultados (puede contener
+// datos sensibles)
 public class SendService extends Utils {
 
   @Autowired
@@ -57,6 +68,9 @@ public class SendService extends Utils {
 
   private final Map<String, SseEmitter> emittersActivos = new ConcurrentHashMap<>();
 
+  @Setter
+  private int contador;
+
   public SendService(SimulatorProperties props, Map<String, MQConnectionBundle> connection) {
     super();
     this.props = props;
@@ -64,6 +78,15 @@ public class SendService extends Utils {
   }
 
   private SseEmitter emitter;
+
+  @Value("${simulador.role:DEFAULT_START}")
+  private String role;
+
+  @Setter
+  private int actual;
+
+  @Setter
+  private long startTime;
 
   /**
    * @param queueKey
@@ -88,20 +111,19 @@ public class SendService extends Utils {
       String source, MQConnectionBundle clone, SseEmitter emitter)
       throws Exception {
 
-    SendService clazz = appContext.getBean(SendService.class);
     this.emitter = emitter;
     if (emittersActivos.get(source) == null && emitter != null) {
       emittersActivos.put(source, emitter);
     }
     String content = "";
-    if (props.getRole().equals("T3270_START")) {
+    if (role.equals("T3270_START")) {
       content = payloadKey;
     } else {
       content = props.getPayloads().get(payloadKey);
     }
     SimulatorProperties.QueueConfig qConfig = props.getQueues().get(queueKey);
     MQQueue queue;
-    if (clone != null) {
+    if (clone != null && false) {
       queue = clone.getQueue();
     } else {
       queue = this.getQueue(qConfig.getName());
@@ -130,9 +152,9 @@ public class SendService extends Utils {
       }
     });
     if (!copied.get()) {
-      if (correlation.equals("msg-correl") && !props.getRole().equals("SOH_START")) {
+      if (correlation.equals("msg-correl") && !role.equals("SOH_START")) {
         msg.messageId = msg.correlationId;
-      } else if (correlation.equals("msg-correl") && props.getRole().equals("SOH_START")) {
+      } else if (correlation.equals("msg-correl") && role.equals("SOH_START")) {
         if (messageId != null) {
           msg.correlationId = messageId;
         }
@@ -140,9 +162,9 @@ public class SendService extends Utils {
         msg.messageId = msg.correlationId;
       } else if (correlation.equals("msg-msg")) {
         msg.correlationId = messageId;
-      } else if (qConfig.isCopyCorrel() && !props.getRole().equals("SOH_START")) {
+      } else if (qConfig.isCopyCorrel() && !role.equals("SOH_START")) {
         msg.messageId = msg.correlationId;
-      } else if (qConfig.isCopyCorrel() && props.getRole().equals("SOH_START")) {
+      } else if (qConfig.isCopyCorrel() && role.equals("SOH_START")) {
         msg.correlationId = messageId;
       }
     }
@@ -170,9 +192,8 @@ public class SendService extends Utils {
     } catch (MQException e) {
       log.error("Error al enviar mensaje a {}: {}. Intentando reconectar...", qConfig.getName(),
           e.getMessage(), e);
-      connections.remove(qConfig.getName()); // Limpia la conexión para forzar reconexión en el
-                                             // watchdog
-
+      // connections.remove(qConfig.getName()); // Limpia la conexión para forzar reconexión en el
+      // // watchdog
     }
     String key = queueKey.length() > 15 ? queueKey.substring(0, 15) + "..." : queueKey;
     log.debug(
@@ -183,8 +204,9 @@ public class SendService extends Utils {
     AtomicBoolean isCompleted = new AtomicBoolean(false);
     if (emittersActivos.get("A") != null) {
       enviarSafe(emittersActivos.get("A"),
-          "Enviando a " + qConfig.getName() + " | CCSID: " + qConfig.getCcsid() + " | HEX: "
+          qConfig.getName() + " | CCSID: " + qConfig.getCcsid() + " | HEX: "
               + bytesToHex(msg.correlationId),
+          "Enviando",
           isCompleted);
     }
     log.trace(
@@ -205,12 +227,18 @@ public class SendService extends Utils {
     });
   }
 
-  public void enviarSafe(SseEmitter emitter, String texto, AtomicBoolean isCompleted) {
+  public void enviarSafe(SseEmitter emitter, String texto, String id, AtomicBoolean isCompleted) {
     if (isCompleted.get() || emitter == null) {
       return;
     }
     try {
-      emitter.send(texto);
+      // emitter.send(texto);
+      SseEventBuilder event = SseEmitter.event();
+      event.id(id);
+      if (id.toLowerCase().contains("last") || id.toLowerCase().contains("error")) {
+        log.debug("--- [SSE] '{}'", texto);
+      }
+      emitter.send(event.data(texto));
     } catch (IOException | IllegalStateException e) {
       log.error("Error enviando mensaje: {}", e.getMessage());
       // isCompleted.set(true);
@@ -227,6 +255,7 @@ public class SendService extends Utils {
    * @param replyTo
    * @param replyToQMgr
    */
+  @LogFullDetails(logResult = false)
   private void checkFire(QueueConfig qConfig, byte[] correlationId, byte[] messageId,
       boolean isCopyCorrel, String replyTo, String replyToQMgr, String source) {
     if (qConfig.getFire() == null || qConfig.getFire().getQueues() == null
@@ -275,16 +304,17 @@ public class SendService extends Utils {
     SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
     SimulatorProperties.QueueConfig sourceQ2 = props.getQueues().get(rule.getTargetQueue());
 
-    bundle = connections.get(sourceQ.getName()); // Asegura que usamos la conexión actualizada
+    // bundle = connections.get(sourceQ.getName()); // Asegura que usamos la conexión actualizada
     try {
       traceGet("<<< [GET]", sourceQ.getName(), sourceKey, msg.characterSet,
           bytesToHex(msg.correlationId));
       AtomicBoolean isCompleted = new AtomicBoolean(false);
       if (emittersActivos.get("A") != null) {
         enviarSafe(emittersActivos.get("A"),
-            "Autorespuesta: " + sourceQ.getName() + " -> " + sourceQ2.getName() + " | CCSID: "
+            sourceQ.getName() + " -> " + sourceQ2.getName() + " | CCSID: "
                 + msg.characterSet + " | HEX: "
                 + bytesToHex(msg.correlationId),
+            "Autorespuesta",
             isCompleted);
       }
       boolean isCopyCorrel = rule.isCopyCorrel();
@@ -309,20 +339,21 @@ public class SendService extends Utils {
    * @param consumeRule
    * @param i
    * @param bundle
-   * @param j
+   * @param last
    * @return
    */
   @LogFullDetails(logResult = true)
-  public void consumeAndLog(MQMessage msg, String key, String consumeRule, int i,
-      MQConnectionBundle bundle, int actionType) {
+  public void consumeAndLog(MQMessage msg, String key, String queue, int i,
+      MQConnectionBundle bundle, int actionType, boolean last) {
     try {
-      traceGet("<<< [PRG]", consumeRule, key, msg.characterSet,
+      traceGet("<<< [PRG]", queue, key, msg.characterSet,
           bytesToHex(msg.correlationId));
       AtomicBoolean isCompleted = new AtomicBoolean(false);
       if (emittersActivos.get("A") != null) {
         enviarSafe(emittersActivos.get("A"),
-            "Consumer: " + consumeRule + " | CCSID: " + msg.characterSet + " | HEX: "
+            queue + " | CCSID: " + msg.characterSet + " | HEX: "
                 + bytesToHex(msg.correlationId),
+            "Consumer",
             isCompleted);
       }
       log.trace(
@@ -331,8 +362,16 @@ public class SendService extends Utils {
       SimulatorProperties.QueueConfig qConfig = props.getQueues().get(key);
       checkFire(qConfig, msg.correlationId, msg.messageId, false, "", "",
           "A");
+      actual++;
+      if (last && actual >= contador) {
+        enviarSafe(emittersActivos.get("A"), contador + " mensajes procesados en "
+            + (System.currentTimeMillis() - startTime) + "ms.",
+            "Last",
+            isCompleted);
+        start = false;
+      }
     } catch (Exception e) {
-      log.error("Error procesando mensaje en cola {}: {}", consumeRule, e.getMessage());
+      log.error("Error procesando mensaje en cola {}: {}", queue, e.getMessage());
     }
   }
 
@@ -366,7 +405,6 @@ public class SendService extends Utils {
    * @param empty
    * @param c
    */
-  @LogFullDetails(logResult = true)
   public void lSend(String targetQueue, String payloadKey, byte[] correlationId, byte[] messageId,
       boolean isCopyCorrel, String string, String string2, boolean b, Optional<QueueConfig> empty,
       MQConnectionBundle bundle, boolean c) {

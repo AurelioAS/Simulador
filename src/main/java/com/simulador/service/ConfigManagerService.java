@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 @Service
 @Slf4j
+@RefreshScope
 public class ConfigManagerService {
 
   public ConfigManagerService() {

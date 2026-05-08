@@ -8,29 +8,34 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "simulador")
+@RefreshScope
 @JsonIgnoreProperties(ignoreUnknown = true) // Evita errores si el YAML tiene campos extra
 @Slf4j
 public class SimulatorProperties {
 
-  private String                    role;
-  private Map<String, QueueConfig>  queues;
-  private Map<String, String>       payloads;
-  private Map<String, AutoResponse> autoResponses = new HashMap<>();
-  private Map<String, String>       consumers     = new HashMap<>();
-  private Map<String, String>       properties;
-  private int                       numThreads;
-  private boolean                   fire;
-  private long                      ttl;
+  @Value("${simulador.role:default}")
+  private String                      role;
+  private Map<String, QueueConfig>    queues;
+  private Map<String, String>         payloads;
+  private Map<String, AutoResponse>   autoResponses = new LinkedHashMap<>();
+  private Map<String, Consumers>    consumers     = new HashMap<>();
+  private Map<String, String>         properties;
+  private int                         numThreads;
+  private boolean                     fire;
+  private long                        ttl;
 
   @Data
   public static class QueueConfig {
@@ -47,8 +52,14 @@ public class SimulatorProperties {
     private String  targetQueue;
     private String  payloadKey;
     private boolean copyCorrel;
+    private boolean last;
   }
 
+  @Data
+  public static class Consumers {
+    private String  targetQueue;
+    private boolean last;
+  }
   @Data
   public static class FireConfig {
     private Map<String, QueueConfig> queues;
@@ -60,10 +71,11 @@ public class SimulatorProperties {
       data.add(queues.get(key).getName());
     });
     consumers.forEach((key, value) -> {
-      data.add(queues.get(value).getName());
+      data.add(queues.get(key).getName());
     });
     return data;
   }
+
   public String toJson() {
     try {
       ObjectMapper mapper = new ObjectMapper();
@@ -118,5 +130,5 @@ public class SimulatorProperties {
       log.error("Error al convertir a Mapa: {}", e.getMessage());
       return Collections.emptyMap();
     }
-}
+  }
 }

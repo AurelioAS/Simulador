@@ -7,6 +7,7 @@ import com.simulador.service.SendService;
 import com.simulador.utils.MessagesMgr;
 import com.simulador.utils.Utils;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,15 +30,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter.SseEventBuilder;
 
 @Slf4j
 @Controller
 @DependsOn("mqConnections")
 @RequestMapping("/gui")
+
 public class WebGuiController extends Utils {
 
   private final MqSimulatorService        mqService;
@@ -68,6 +73,29 @@ public class WebGuiController extends Utils {
     status.put("status", mqService.isRunning() ? "ok" : "ko");
     status.put("sessionId", session.getId());
     return ResponseEntity.ok(status);
+  }
+
+  @PostMapping("/cambiar-cola")
+  public ResponseEntity<String> cambiarCola(@RequestBody Map<String, String> request) {
+    log.info("Recibida solicitud de cambio de cola: {}", request.get("nuevaCola"));
+    SimulatorProperties.QueueConfig qConfig = props.getQueues().get(request.get("nuevaCola"));
+    MQConnectionBundle bundle = myconnections.get(qConfig.getName());
+
+    clones.clear(); // Limpiamos los clones para forzar nuevas conexiones con la nueva cola
+    while (clones.size() < Integer.parseInt(request.get("threads"))) {
+      try {
+        clones.add(bundle.cloneBundle(bundle));
+        String txt =
+            "Thread " + (clones.size()) + ": Conexión a la Cola " + qConfig.getName()
+                + " establecida.";
+        log.info(txt);
+      } catch (Exception e) {
+        log.error("Error clonando conexión: {}", e.getMessage());
+        return ResponseEntity.status(500).body("Error al cambiar de cola: " + e.getMessage());
+      }
+    }
+    // SimulatorProperties.QueueConfig qConfig = props.getQueues().get(request.get("nuevaCola"));
+    return ResponseEntity.ok("Cola actualizada a: " + request.get("nuevaCola"));
   }
 
   @GetMapping("/diagrama")
@@ -115,11 +143,17 @@ public class WebGuiController extends Utils {
     // 2. Ejecutamos TODO en un hilo separado para liberar a Tomcat
     CompletableFuture.runAsync(() -> {
       ExecutorService executor = null;
+      SseEventBuilder eventBuilder =
+          SseEmitter.event().id("CONFIG").data("showModal=" + showModal);
+      try {
+        emitter.send(eventBuilder);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
 
       try {
         int iterations = request.getIterations();
         int threads = Math.max(request.getThreads(), 1);
-        emitter.send("CONFIG:showModal=" + showModal);
 
         emitter.send("Iniciando simulación: " + iterations + " mensajes en " + threads + " hilos.");
 
@@ -129,7 +163,8 @@ public class WebGuiController extends Utils {
         }
 
         // Preparación de Conexiones (Clones)
-        emitter.send("Estableciendo " + threads + " conexiones MQ...");
+        eventBuilder.id("connection").data("Estableciendo " + threads + " conexiones MQ...");
+        emitter.send(eventBuilder);
         SimulatorProperties.QueueConfig qConfig = props.getQueues().get(request.getQueue());
         MQConnectionBundle bundle = myconnections.get(qConfig.getName());
 
@@ -149,8 +184,12 @@ public class WebGuiController extends Utils {
         AtomicInteger errorCount = new AtomicInteger(0);
         long startTime = System.currentTimeMillis();
 
-        emitter.send("Enviando mensajes a la cola: " + request.getQueue());
-
+        eventBuilder.id("startSend").data("Enviando mensajes a la cola: " + request.getQueue());
+        emitter.send(eventBuilder);
+        sendService.setStart(true);
+        sendService.setContador(iterations);
+        sendService.setActual(0);
+        sendService.setStartTime(startTime);
         for (int i = 0; i < iterations; i++) {
           final int currentIdx = i;
           if (clones.size() < threads) {
@@ -159,7 +198,8 @@ public class WebGuiController extends Utils {
                 "Thread " + (clones.size()) + ": Conexión a la Cola " + qConfig.getName()
                     + " establecida.";
             log.info(txt);
-            emitter.send(txt);
+            eventBuilder.id("Sending").data(txt);
+            emitter.send(eventBuilder);
           }
           executor.execute(() -> {
             try {
@@ -189,11 +229,12 @@ public class WebGuiController extends Utils {
                     null, emitter);
               }
               successCount.incrementAndGet();
-              TimeUnit.MILLISECONDS.sleep(request.getDelay()); // Si se quiere un delay entre envíos
             } catch (Exception e) {
               errorCount.incrementAndGet();
               try {
-                emitter.send("Error en ítem " + (currentIdx + 1) + ": " + e.getMessage());
+                eventBuilder.id("error")
+                    .data("Error en ítem " + (currentIdx + 1) + ": " + e.getMessage());
+                emitter.send(eventBuilder);
                 this.error = true;
               } catch (Exception ignored) {
               }
@@ -201,6 +242,9 @@ public class WebGuiController extends Utils {
               latch.countDown();
             }
           });
+          if (request.getDelay() > 0) {
+          TimeUnit.MILLISECONDS.sleep(request.getDelay()); // Si se quiere un delay entre envíos
+          }
         }
 
         latch.await(); // Esperamos a que terminen todos los hilos
@@ -208,14 +252,18 @@ public class WebGuiController extends Utils {
 
         // MENSAJE FINAL (El JS busca la palabra "Completado")
         if (!error) {
-        emitter.send("Completado. Éxitos: " + successCount.get() + " en " + totalTime + "ms.");
+          eventBuilder.id("Completado").comment("Todo completado.")
+              .data(successCount.get() + " mensajes enviados en "
+                  + totalTime + "ms.");
+          emitter.send(eventBuilder);
         }
         // emitter.complete();
 
       } catch (Exception e) {
         log.error("Error en el stream");
         try {
-          emitter.send("Error Crítico: " + e.getMessage());
+          eventBuilder.id("criticalError").data("Error Crítico: " + e.getMessage());
+          emitter.send(eventBuilder);
         } catch (Exception ignored) {
         }
         emitter.completeWithError(e);

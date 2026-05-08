@@ -5,11 +5,17 @@
         <title>Diagramas MQLauncher</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
         <script src="/javascript/diagrams.js"></script>
+        <script src="/javascript/flows.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
 	    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 	    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
         <style>
+            body {
+                background-color: var(--bg-gray); 
+                font-family: 'Urbanist', sans-serif; 
+                color: #1e293b;
+            }
             #canvas {
 	            width: 100%;
 	            height: 90vh;
@@ -18,13 +24,20 @@
 	            position: relative;
 	            overflow: hidden;
             }
+            #canvas2 {
+                width: 100%;
+                height: 90vh;
+                background-color: #f8f9fa;
+                border: 2px dashed #ccc;
+                overflow: hidden;
+            }
             .node {
 	            width: 120px;
 	            height: 60px;
 	            background-color: #007bff;
 	            color: white;
 	            padding: 10px;
-	            position: absolute;
+	            position: relative;
 	            cursor: hand;
 	            border-radius: 8px;
 	            display: flex;
@@ -37,7 +50,7 @@
 	            background-color: #007bff;
 	            color: white;
 	            padding: 10px;
-	            position: absolute;
+	            position: relative;
 	            cursor: hand;
 	            border-radius: 8px;
 	            display: flex;
@@ -76,8 +89,31 @@
             h3 {
 	            font-family: 'Arial', Consoles, sans-serif;
 	            color: rgb(0, 128, 255);
-	            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+	            text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
             }
+            .navbar {
+	            position: fixed;
+	            top: 0;
+	            left: 0;
+	            z-index: 9999;
+	            width: 100%;
+                background-color: #343a40;
+                color: white;
+            }
+            .dos-colores {
+			    border: 3px solid #0d6efd;    /* Borde interno */
+			    outline: 3px solid #0dcaf0;   /* Borde externo */
+			    outline-offset: 0px;          /* Pegado al borde real */
+			    padding: 20px;
+			}
+			.bordes-infinitos {
+			    border: 3px solid #0d6efd; /* Primer borde */
+			    box-shadow: 0 0 0 4px #1e293b, /* Segundo borde (gris oscuro) */
+			                0 0 0 8px #00ff41; /* Tercer borde (verde terminal) */
+			    margin: 10px; /* Necesario para que la sombra no se corte */
+			    width: 100px;
+                height: 180px;
+			}
         </style>
     </head>
     <body>
@@ -114,340 +150,22 @@
         </div>
     </div>
 </nav>
-        <div id="canvas" style="position: relative; width: 100%; height: 900px; background: #f4f4f4;">
-            <h3 style="position: absolute; top: 30px; left: 50%; transform: translateX(-50%); margin: 0;">
+        <div id="canvas" style="position: relative; top: 30px; width: 100%; height: 500px; background: #f4f4f4;">
+            <h3 style="position: relative; top: 20px; left: 50%; transform: translateX(-50%); margin: 15px;">
                 Diagrama Dual run
             </h3>
-            <h3 style="position: absolute; top: 450px; left: 50%; transform: translateX(-50%); margin: 0;">
+        </div>
+        <div id="canvas2" style="position: relative; width: 100%; height: 500px; background: #f4f4f4;">
+            <h3 style="position: relative; top: 20px; left: 50%; transform: translateX(-50%); margin: 15px;">
                 Diagrama Single Output Hub
             </h3>
         </div>
+        <div id="canvas3" style="position: relative; width: 100%; height: 500px; background: #f4f4f4;">
+            <h3 style="position: relative; top: 20px; left: 50%; transform: translateX(-50%); margin: 15px;">
+                Diagrama t3270
+            </h3>
+        </div>
         <script>
-            let nodeCount = 0;
-            let connections = [];
-            let lines = [];
-            let connectionMode = false;
-            let selectedNodes = [];
-            
-            let activeLines = [];
-            let activeLines2 = [];
-            
-            function addNode() {
-                nodeCount++;
-                const canvas = document.getElementById('canvas');
-                const div = document.createElement('div');
-                
-                div.id = 'node-' + nodeCount;
-                div.className = 'nodo';
-                div.innerText = 'Nodo ' + nodeCount;
-                div.style.left = '50px';
-                div.style.top = '50px';
-            
-                // Hacerlo arrastrable de forma simple
-                makeDraggable(div);
-                
-                // Evento para selección de conexión
-                div.onclick = () => handleNodeClick(div);
-            
-                canvas.appendChild(div);
-            }
-            
-            function makeDraggable(el) {
-                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-                
-                el.onmouseenter = () => el.style.cursor = "grab";
-                el.onmousedown = (e) => {
-                    e.preventDefault();
-                    pos3 = e.clientX;
-                    pos4 = e.clientY;
-                    document.onmouseup = () => {
-                        document.onmouseup = null;
-                        document.onmousemove = null;
-                        el.style.cursor = "grab";
-                    };
-                    document.onmousemove = (e) => {
-                        pos1 = pos3 - e.clientX;
-                        pos2 = pos4 - e.clientY;
-                        pos3 = e.clientX;
-                        pos4 = e.clientY;
-                        el.style.cursor="grabbing";
-                        el.style.top = (el.offsetTop - pos2) + "px";
-                        el.style.left = (el.offsetLeft - pos1) + "px";
-                        
-                        // Actualizar flechas al mover
-                        connections.forEach(conn => conn.line.position());
-                    };
-                };
-            }
-            
-            function startConnection() {
-                connectionMode = true;
-                selectedNodes = [];
-                //alert("Selecciona el primer nodo y luego el segundo.");
-            }
-            
-            function handleNodeClick(el) {
-                if (!connectionMode) return;
-            
-                selectedNodes.push(el);
-                el.style.border = "2px solid yellow";
-            
-                if (selectedNodes.length === 2) {
-                    const line = new LeaderLine(
-                        selectedNodes[0],
-                        selectedNodes[1],
-                        { color: '#333', size: 3, path: 'straight' }
-                    );
-                    connections.push({ line: line, start: selectedNodes[0], end: selectedNodes[1] });
-                    
-                    // Limpiar selección
-                    selectedNodes.forEach(n => n.style.border = "none");
-                    selectedNodes = [];
-                    connectionMode = false;
-                }
-            }
-            
-            function pushCconnectionsToActiveLines( line, start, end, customLabels = null, anchores = null) {
-                connections.push({ line: line, start: start, end: end, customLabels: customLabels, anchors: anchores });
-                activeLines.push(line.toString());
-            }
-            
-            function doLine( start, end, customLabels = null, color = '#333', size = 3, path = 'grid', dash = null, startLabel = null, middleLabel = null, endLabel = null, anchors = null) {
-                myLabelData = {
-                        start: customLabels?.start ? customLabels.start : startLabel ? {text: startLabel, options: {}} : {text: '', options: {}},
-                        middle: customLabels?.middle ? customLabels.middle : middleLabel ? {text: middleLabel, options: {}} : {text: '', options: {}},
-                        end: customLabels?.end ? customLabels.end : endLabel ? {text: endLabel, options: {}} : {text: '', options: {}}
-                    };
-                let lineStart = start;
-                let lineEnd = end;
-                let anchorStart = anchors?.start ? anchors.start : null;
-                let anchorEnd = anchors?.end ? anchors.end : null;
-                
-                if (anchorStart) { 
-                    lineStart = LeaderLine.pointAnchor(start, anchorStart);
-                }
-                if (anchorEnd) { 
-                    lineEnd = LeaderLine.pointAnchor(end, anchorEnd);
-                }
-                const lineX = new LeaderLine(lineStart, lineEnd, {
-                    startPlug: 'square',
-                    color: `${color}`,
-                    size: size,
-                    dash: dash,
-                    path: path , // Curva suave
-                    startLabel: LeaderLine.captionLabel(myLabelData.start.text, myLabelData.start.options),
-                    middleLabel: LeaderLine.captionLabel(myLabelData.middle.text, myLabelData.middle.options),
-                    endLabel: LeaderLine.captionLabel(myLabelData.end.text, myLabelData.end.options),
-                    
-                });
-                lineX.onclick = () => handleNodeClick(el);
-                pushCconnectionsToActiveLines(lineX, start, end, myLabelData, anchors);
-                return lineX;
-            }
-            function initDR() {
-                // 1. Limpiar líneas previas si las hubiera
-                if (typeof clearLines === 'function') clearLines();
-                const offset = 0;
-                const canvas = document.getElementById('canvas');
-                
-                // 2. Definir los nodos (puedes crearlos dinámicamente o usar los que ya tienes)
-                const nodeIzq = createNode('node-izq', 'Externo', 1025, 120 + offset);
-                makeDraggable(nodeIzq);
-                nodeIzq.style.width = '100px';
-                nodeIzq.style.height = '180px';
-                nodeIzq.style.backgroundColor = '#2ecc71';
-                nodeIzq.innerHTML = '<i class="fas fa-star"></i> Sistema<br>Externo';
-                
-                const nodeMQ = createNode('node-mq', 'IBM MQ', 750, 182 + offset);
-                nodeMQ.style.backgroundColor = '#0062ff';
-                nodeMQ.style.color = 'white';
-                makeDraggable(nodeMQ);
-                
-                const nodeIzq2 = createNode('node-izq2', 'MQLauncher', 550, 120 + offset);
-                nodeIzq2.style.width = '100px';
-                nodeIzq2.style.height = '180px';
-                nodeIzq2.style.backgroundColor = '#3498db';
-                makeDraggable(nodeIzq2);
-                
-                const nodeDer1 = createNode('node-der-1', 'IBM MQ', 300, 150 + offset);
-                nodeDer1.style.backgroundColor = '#0062ff';
-                nodeDer1.style.color = 'white';
-                makeDraggable(nodeDer1);
-                const nodeDer2 = createNode('node-der-2', 'IBM MQ', 300, 250 + offset);
-                nodeDer2.style.backgroundColor = '#0062ff';
-                nodeDer2.style.color = 'white';
-                makeDraggable(nodeDer2);
-                
-                const nodeDer3 = createNode('node-der-3', 'Master/Mainframe', 50, 150 + offset);
-                nodeDer3.style.backgroundColor = '#e67e22';
-                makeDraggable(nodeDer3);
-                const nodeDer4 = createNode('node-der-4', 'Secundario/Gravity', 50, 250 + offset);
-                nodeDer4.style.backgroundColor = '#e67e22';
-                makeDraggable(nodeDer4);
-                
-                let myLabelData = {};
-                // 3. Unir con LeaderLine
-                if (typeof LeaderLine !== 'undefined') {
-                    
-                    myLabelData = {
-                        end: {text: 'QUEUE0001', options: {color: 'blue', offset: [-1, 0]}}
-                    };
-                    const line0 = doLine(nodeIzq, nodeMQ, myLabelData, '#3498db', 3, 'grid', {len: 5, gap: 10, animation: true }, null, null, myLabelData.end);
-                    
-                    myLabelData = {
-                            start: {text: 'GETI_QUEUE', options: {color: 'blue', offset: [-90, 0]}},
-                        };
-                    const lineMQ= doLine(nodeMQ, nodeIzq2, myLabelData, '#3498db', 3, 'grid', null, myLabelData.start, null, null);
-                    
-                    const line1 = doLine(nodeIzq2, nodeDer1, {}, '#3498db', 3, 'grid', null, null, null, 'To Mainframe');
-            
-                    const line2 = doLine(nodeIzq2, nodeDer2, {}, '#3498db', 3, 'grid', null, null, null, 'To Gravity');
-            
-                    
-                    myLabelData = {
-                            middle: {text: 'From Mainframe', options: {color: 'red', fontSize: 10}},
-                            end: {text: 'QUEUE', options: {color: 'red', offset: [-1, -10]}}
-                        };
-                    
-                    const line4 = doLine(nodeDer1, nodeIzq2, myLabelData, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, null, myLabelData.middle, myLabelData.end);
-                    line4.setOptions({startSocket: 'top', endSocket: 'top'});
-                    
-                    myLabelData = {
-                            start: {text: 'QUEUE02', options: {color: 'red', offset: [-1, 0]}},
-                            middle: {text: 'From Gravity', options: {color: 'red', fontSize: 10}},
-                            end: {text: 'QUEUE01', options: {color: 'red', offset: [-30, 0]}}
-                        };
-                    const line5 = doLine(nodeDer2, nodeIzq2, myLabelData, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, myLabelData.start, myLabelData.middle, myLabelData.end);
-                    line5.setOptions({startSocket: 'bottom', endSocket: 'bottom'});
-            
-                    const line6 = doLine(nodeDer1, nodeDer3, {}, '#3498db', 3, 'straight', null, null, null, null);
-                    line6.setOptions({startSocket: 'left', endSocket: 'rigth'});
-            
-                    const line7 = doLine(nodeDer2, nodeDer4, {}, '#3498db', 3, 'straight', null, null, null, null);
-                    line7.setOptions({startSocket: 'left', endSocket: 'rigth'});
-            //Vuelta
-		            let pStart = {x: '50%', y: '0%'};
-		            let pEnd = {x: '25%', y: '0%'};
-		            const line8 = doLine(nodeDer3, nodeDer1, {}, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, null, null, null, anchors = {start: pStart, end: pEnd});
-                    line8.setOptions({startSocket: 'top', endSocket: 'top'});
-            
-                    pStart = {x: '50%', y: '100%'};
-                    pEnd = {x: '25%', y: '100%'};
-                    const line9 = doLine(nodeDer4, nodeDer2, {}, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, null, null, null, anchors = {start: pStart, end: pEnd});
-                    line9.setOptions({startSocket: 'bottom', endSocket: 'bottom'});
-                    
-                    pStart = {x: '75%', y: '0%'};
-                    pEnd = {x: '25%', y: '0%'};
-                    myLabelData = {
-                            end: {text: 'PUT_QUEUE', options: {color: 'red', offset: [-20, -42]}},
-                        };
-                    const line10 = doLine(nodeIzq2, nodeMQ, myLabelData, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, null, null, myLabelData.end, anchors = {start: pStart, end: pEnd});
-                    line10.setOptions({startSocket: 'top', endSocket: 'top'});
-            
-                    pStart = {x: '100%', y: '15%'};
-                    pEnd = {x: '0%', y: '41%'};
-                    myLabelData = {
-                            start: {text: 'GET_QUEUE', options: {color: 'red', offset: [-1, -20]}},
-                        };
-                    const line11 = doLine(nodeMQ, nodeIzq, myLabelData, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, myLabelData.start, null, null, anchors = {start: pStart, end: pEnd});
-            
-                    activeLines.push(line0.toString(), line1.toString(), line2.toString(), line4.toString(), line5.toString(), line6.toString(), line7.toString(), line8.toString(), line9.toString(), line10.toString(), line11.toString());
-                }
-            }
-            
-            function initSOH() {
-                // 1. Limpiar líneas previas si las hubiera
-                if (typeof clearLines === 'function') clearLines();
-            
-                const canvas = document.getElementById('canvas');
-                const offset = 425; // Ajusta según tu diseño
-                // 2. Definir los nodos (puedes crearlos dinámicamente o usar los que ya tienes)
-                const nodeIzq = createNode('sohNode-izq', 'Externo', 1025, 120 + offset);
-                makeDraggable(nodeIzq);
-                nodeIzq.style.width = '100px';
-                nodeIzq.style.height = '180px';
-                nodeIzq.style.backgroundColor = '#2ecc71';
-                nodeIzq.innerHTML = 'Sistema<br>Externo';
-                
-                const nodeMQ = createNode('sohNode-mq', 'IBM MQ', 750, 182 + offset);
-                nodeMQ.style.backgroundColor = '#0062ff';
-                nodeMQ.style.color = 'white';
-                makeDraggable(nodeMQ);
-                const nodeIzq2 = createNode('sohNode-izq2', 'MQLauncher', 550, 120 + offset);
-                nodeIzq2.style.width = '100px';
-                nodeIzq2.style.height = '180px';
-                nodeIzq2.style.backgroundColor = '#3498db';
-                makeDraggable(nodeIzq2);
-                
-                const nodeDer1 = createNode('sohNode-der-1', 'IBM MQ', 300, 150 + offset);
-                nodeDer1.style.backgroundColor = '#0062ff';
-                nodeDer1.style.color = 'white';
-                makeDraggable(nodeDer1);
-                const nodeDer2 = createNode('sohNode-der-2', 'IBM MQ', 300, 250 + offset);
-                nodeDer2.style.backgroundColor = '#0062ff';
-                nodeDer2.style.color = 'white';
-                makeDraggable(nodeDer2);
-                
-                const nodeDer3 = createNode('sohNode-der-3', 'Master/Mainframe', 50, 140 + offset);
-                nodeDer3.style.backgroundColor = '#e67e22';
-                nodeDer3.innerHTML = '<i class="fas fa-star"></i> Master<br>Mainframe';
-                makeDraggable(nodeDer3);
-                const nodeDer4 = createNode('sohNode-der-4', 'Secundario/Gravity', 50, 240 + offset);
-                nodeDer4.style.backgroundColor = '#e67e22';
-                nodeDer4.innerHTML = '<i class="fas fa-star"></i> Secundario<br>Mainframe';
-                makeDraggable(nodeDer4);
-                
-                // 3. Unir con LeaderLine
-                if (typeof LeaderLine !== 'undefined') {
-            
-                    let myLabelData = {
-                            end: {text: 'PUT_QUEUE01', options: {color: 'blue', offset: [-30, 0]}}
-                        };
-                    const line0 = doLine(nodeIzq, nodeMQ, myLabelData, '#3498db', 3, 'square', {len: 5, gap: 10, animation: true }, null, null, myLabelData.end);
-                    
-                    myLabelData = {
-                            end: {text: 'GETsQUEUE', options: {color: 'blue', offset: [-50, 0]}},
-                        };
-                    const lineMQ = doLine(nodeIzq2, nodeMQ, myLabelData, '#3498db', 3, 'grid', null, null, null, myLabelData.end);
-                    
-                    const line1 = doLine(nodeDer1, nodeIzq2, {}, '#3498db', 3, 'grid', null, 'From Mainframe',null,null);
-                    
-                    const line2 = doLine(nodeDer2, nodeIzq2, {}, '#3498db', 3, 'grid', null, 'From Gravity',null,null);
-                    
-                    myLabelData = {
-                            middle: {text: 'To MQ', options: {color: 'red', offset: [-1, -10]}},
-                        };
-                    const line4 = doLine(nodeIzq2, nodeDer1, myLabelData, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, null, myLabelData.middle, null);
-                    line4.setOptions({startSocket: 'top', endSocket: 'top'});
-                    
-                    const line6 = doLine(nodeDer3, nodeDer1, {}, '#3498db', 3, 'straight', null, null, null, null);
-                    line6.setOptions({startSocket: 'right', endSocket: 'rigth'});
-            
-                    const line7 = doLine(nodeDer4, nodeDer2, {}, '#3498db', 3, 'straight', null, null, null, null);
-                    line7.setOptions({startSocket: 'right', endSocket: 'rigth'});
-            //Vuelta
-                    let pStart = {x: '25%', y: '0%'};
-                    let pEnd = {x: '50%', y: '0%'};
-                    const line8 = doLine(nodeDer1, nodeDer3, {}, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, null, null, null, anchors = {start: pStart, end: pEnd});
-                    line8.setOptions({startSocket: 'top', endSocket: 'top'});
-                    
-                    pStart = {x: '50%', y: '0%'};
-                    pEnd = {x: '75%', y: '0%'};
-                    const line10 = doLine(nodeMQ, nodeIzq2, {}, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, null, null, null, anchors = {start: pStart, end: pEnd});
-                    line10.setOptions({startSocket: 'top', endSocket: 'top'});
-            
-                    pStart = {x: '100%', y: '21%'};
-                    pEnd = {x: '0%', y: '42%'};
-                    myLabelData = {
-                            end: {text: 'QUEUE_NAME', options: {color: 'red', offset: [-1, -10]}},
-                        };
-                    const line11 = doLine(nodeMQ, nodeIzq, myLabelData, '#e74c3c', 3, 'grid', {len: 5, gap: 10, animation: true }, null, null, myLabelData.end, anchors = {start: pStart, end: pEnd});
-                    
-                    // Guardar para poder borrarlas o moverlas luego
-                    activeLines2.push(line0.toString(), line1.toString(), line2.toString(), line4.toString(), line6.toString(), line7.toString(), line8.toString(), line10.toString(), line11.toString());
-                }
-            }
-     
             // Ejecutar al cargar la página
             window.addEventListener('load', init);
         </script>

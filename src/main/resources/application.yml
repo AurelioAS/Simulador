@@ -1,6 +1,6 @@
 # spring.profiles.active: dualrun-ger, mq-dev-ger # dualrun-ger, external-driven, master-driven
 # spring.profiles.include: simu-cache # dev
-server:
+server: 
   port: 8089
   error:
     include-message: always
@@ -9,13 +9,18 @@ server:
       tracking-modes: cookie # Evita generación innecesaria de IDs de sesión si no usas sesiones
 
 spring.thymeleaf.cache: false
+
+spring.cloud.refresh.enabled: true
+management.endpoints.web.exposure.include: "*" #refresh,health,info
+management.endpoint.env.post.enabled: true
+management.endpoint.env.show-values: always
+management.endpoint.configprops.show-values: always
       
 simu-mq:
-    path: "c:/temp"
     expiry: 120     #in seconds
     ttl: 60
     debug: false
-    debugAll: false
+    debugAll: true
 
 logging.config: classpath:log4j2.xml
 logging.level.org.springframework.boot.context.properties: DEBUG
@@ -101,8 +106,12 @@ simulador:
       payload-key: "RESPUESTA_EXITOSA"
 
   consumers:
-    - master-res
-    - secondary-res
+    master-res:
+       last: true
+       tResp: 25
+    secondary-res:
+        last: true
+        tResp: 25
     
   properties:
     correlation: msg-correl
@@ -113,7 +122,7 @@ simulador:
 spring.config.activate.on-profile: external-driven, default
 
 simulador:
-  numThreads: 10
+  numThreads: 5
   fire: true
   role: DR_START
   ttl: 120 # Tiempo de vida del mensaje en segundos (10 minutos)
@@ -166,7 +175,9 @@ simulador:
         copy-correl: false
   
   consumers:
-    - external-res
+     external-res:
+        last: true
+        tResp: 25
     
   properties:
     correlation: msg-correl    
@@ -212,8 +223,12 @@ simulador:
 #        copy-correl: false
 #  
   consumers:
-    - master-in
-    - secondary-in
+    master-in:
+      last: true
+      tResp: 25
+    secondary-in      :
+      last: true
+      tResp: 25
 #    
 #  properties:
 #    correlation: msg-correl    
@@ -274,7 +289,9 @@ simulador:
         copy-correl: true
   
   consumers:
-    - external-res
+    external-res:
+      last: true
+      tResp: 25
   
   properties:
     correlation: msg-correl
@@ -289,6 +306,7 @@ spring.config.activate.on-profile: t3270-driven
 # -------------------------------------------------------------------
 simulador:
   numThreads: 1
+  fire: true
   role: T3270_START
   # Definición de colas con su respectivo CCSID
   queues:
@@ -304,6 +322,7 @@ simulador:
       name: "QNAME08"
       ccsid: 284
       tresp: 50          #Millis
+      
     external-in:
       name: "QNAME10"
       ccsid: 1208
@@ -324,8 +343,10 @@ simulador:
 #      copy-correl: true
 
   consumers:
-   - external-in
-      
+    - external-in:
+        last: true
+        tResp: 25
+            
   properties:
     correlation: none
 ---

@@ -21,12 +21,11 @@ public class MuninnDebugAspect {
   private boolean isDebugEnabled;
 
   // Intercepta clases enteras (@within) O métodos sueltos (@annotation)
-  // @Around("@within(com.simulador.aspect.LogFullDetails) ||
-  // @annotation(com.simulador.aspect.LogFullDetails)")
   @Around("(@within(com.simulador.aspect.LogFullDetails) || @annotation(com.simulador.aspect.LogFullDetails)) && !within(com.simulador.aspect..*)")
   public Object handleLog(ProceedingJoinPoint joinPoint) throws Throwable {
 
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+    String clazz = joinPoint.getTarget().getClass().getSimpleName();
     String[] paramNames = signature.getParameterNames();
     String methodName = signature.getName();
 
@@ -44,16 +43,16 @@ public class MuninnDebugAspect {
     if (logDetails.logArguments()) {
       Object[] args = joinPoint.getArgs();
       String[] params = signature.getParameterNames();
-      log.info("### [ENTER] '{}': args {}", methodName, formatArgs(params, args));
+      log.info("### [ENTER] '{}': args {}", clazz + "." + methodName, formatArgs(params, args));
     }
     try {
       Object result = joinPoint.proceed();
       long duration = System.currentTimeMillis() - start;
       String timeMsg = logDetails.logExecutionTime() ? " in " + duration + "ms" : "";
       if (logDetails.logResult()) {
-        log.info("### [EXIT] '{}'{}: result [{}]", methodName, timeMsg, result);
+        log.info("### [EXIT] '{}'{}: result [{}]", clazz + "." + methodName, timeMsg, result);
       } else {
-        log.info("### [EXIT] '{}'{}", methodName, timeMsg);
+        log.info("### [EXIT] '{}'{}", clazz + "." + methodName, timeMsg);
       }
       return result;
     } catch (Throwable e) {
@@ -63,13 +62,15 @@ public class MuninnDebugAspect {
   }
 
   // Cambia temporalmente el Pointcut para que escuche TODO en un paquete
-  @Around("execution(* com.simulador..*(..))")
+  // @Around("execution(* com.simulador..*(..))")
+  // @Around("execution(* com.simulador..*(*))")
   public Object testLog(ProceedingJoinPoint joinPoint) throws Throwable {
     if (!isDebugEnabled) {
       return joinPoint.proceed();
     }
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     String[] paramNames = signature.getParameterNames();
+    String clazz = joinPoint.getTarget().getClass().getSimpleName();
     String methodName = signature.getName();
     // 1. PRIORIDAD: Buscar la anotación en el método
     LogFullDetails logDetails = signature.getMethod().getAnnotation(LogFullDetails.class);
@@ -81,7 +82,7 @@ public class MuninnDebugAspect {
     // --- Resto de la lógica igual ---
       Object[] args = joinPoint.getArgs();
       String[] params = signature.getParameterNames();
-      log.info("### [ENTER] '{}': args {}", methodName, formatArgs(params, args));
+      log.info("### [ENTER-2] '{}': args {}", clazz + "." + methodName, formatArgs(params, args));
 
     long start = System.currentTimeMillis();
     Object result = joinPoint.proceed();
@@ -111,11 +112,16 @@ public class MuninnDebugAspect {
     }
     String timeMsg = logDetails.logExecutionTime() ? " in " + duration + "ms" : "";
     if (logDetails.logResult()) {
-      log.info("### [EXIT] '{}'{}: result [{}]", methodName, timeMsg, result);
+      log.info("### [EXIT-2] '{}'{}: result [{}]", clazz + "." + methodName, timeMsg, result);
     } else {
-      log.info("### [EXIT] '{}'{}", methodName, timeMsg);
+      log.info("### [EXIT-2] '{}'{}", clazz + "." + methodName, timeMsg);
     }
     return result;
+  }
+
+  @LogFullDetails
+  public void generateReport() {
+    System.out.println("Generating XLS report !!");
   }
 
   private String formatArgs(String[] names, Object[] values) {

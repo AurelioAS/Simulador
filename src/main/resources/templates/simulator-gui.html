@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>MQ Simulator | Dashboard SSE Professional</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
     
     <style>
-        /* SISTEMA DE DISEÑO - ESTILO CONSULTORÍA */
         :root {
             --primary-blue: #0d6efd;
             --secondary-cian: #0dcaf0;
@@ -77,8 +74,9 @@
             top: 100px; 
             left: 50%; 
             transform: translateX(-50%); 
-            z-index: 10050; 
+            z-index: 9999; 
             width: 90%; 
+            font-size: 0.8em;
             max-height: 300px; 
             max-width: 950px; 
             overflow-y: auto;
@@ -122,7 +120,38 @@
             justify-content: center;
             z-index: 10;
         }
+        
+        .status-bar {
+		    position: fixed;
+		    bottom: 0;
+		    left: 0;
+		    width: 100%;
+		    background-color: #343a40; /* Gris oscuro */
+		    color: #00ff41; /* Verde terminal */
+		    padding: 5px 15px;
+		    font-family: 'Courier New', Courier, monospace;
+		    font-size: 0.9rem;
+		    border-top: 1px solid #444;
+		    z-index: 1000;
+		    display: flex;
+		    gap: 10px;
+		}
 
+		.status-label {
+		    font-weight: bold;
+		    color: #adb5bd;
+		}
+
+		/* 1. Hacemos que el contenedor del modal sea "transparente" a los clics */
+		#sseModal {
+		    pointer-events: none !important;
+		    background-color: transparent !important;
+		}
+		
+		/* 2. Hacemos que el cuadro de la consola SÍ reciba clics */
+		#sseModal .modal-dialog {
+		    pointer-events: auto !important;
+		}
         /* Capa SVG */
         #svg-canvas {
             position: absolute;
@@ -141,8 +170,9 @@
     </div>
 
     <!-- MODAL DE CONSOLA MEJORADO -->
-    <div class="modal fade" id="sseModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <!-- Cambia esto -->
+       <div class="modal fade" id="sseModal" data-bs-backdrop="false" data-bs-keyboard="false" tabindex="-1">
+        <div id="sseModal2" class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-2xl overflow-hidden">
                 <div class="modal-header console-header-highlight align-items-center">
                     <h5 class="modal-title fw-bold mb-0">
@@ -193,7 +223,7 @@
                     <button onclick="resetFontSize()" class="btn btn-dark"><i class="bi bi-type"></i></button>
                     <button onclick="changeFontSize(1)" class="btn btn-dark"><i class="bi bi-plus-lg"></i></button>
                 </div>
-                <a class="nav-link active" href="/gui"><i class="bi bi-cpu-fill me-1"></i> Dashboard</a>
+                <a class="nav-link active" href="/gui/diagrama"><i class="bi bi-cpu-fill me-1"></i> Diagramas</a>
             </div>
         </div>
     </nav>
@@ -216,7 +246,7 @@
 							<div class="row g-3 mb-4 align-items-end">
 							    <div class="col-md-4">
 							        <label class="form-label small text-uppercase">Cola de Destino</label>
-							        <select name="queue" id="queueA" class="form-select shadow-sm" onchange="updateTitles()">
+							        <select name="queue" id="queueA" class="form-select shadow-sm" onchange="updateTitles('A',this)">
 							            <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
 							        </select>
 							    </div>
@@ -261,11 +291,11 @@
 						    </div>
 						    <div class="col-md-2">
 						            <div class="form-check form-switch m-0">
-						                <input class="form-check-input" type="checkbox" id="showModalA" style="transform: scale(0.85);">
+						                <input class="form-check-input" type="checkbox" id="showModalA" onchange="dochange(this)" style="transform: scale(0.85);">
 						                <label class="form-check-label fw-bold text-dark" for="showModalA" style="font-size: 9px; line-height: 1.5;">Console</label>
 						            </div>
 						            <div class="form-check form-switch m-0">
-						                <input class="form-check-input" type="checkbox" id="showEmittersA" style="transform: scale(0.85);">
+						                <input class="form-check-input" type="checkbox" id="showEmittersA" onchange="dochange(this)" style="transform: scale(0.85);">
 						                <label class="form-check-label fw-bold text-dark" for="showEmittersA" style="font-size: 9px; line-height: 1.5;">Emitter</label>
 						            </div>
 						    </div>
@@ -326,7 +356,7 @@
 							<div class="row g-3 mb-4 align-items-end">
 							    <div class="col-md-4">
 							        <label class="form-label small text-uppercase">Cola de Destino</label>
-							        <select name="queue" id="queueB" class="form-select shadow-sm" onchange="updateTitles()">
+							        <select name="queue" id="queueB" class="form-select shadow-sm" onchange="updateTitles('B',this)">
 							            <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
 							        </select>
 							    </div>
@@ -372,8 +402,8 @@
 							    </div>
 							    <div class="col-md-2">
 							            <div class="form-check form-switch m-0">
-							                <input class="form-check-input" type="checkbox" id="showModalB" style="transform: scale(0.85);">
-							                <label class="form-check-label fw-bold text-dark" for="showModalB" style="font-size: 9px; line-height: 1.5;">Console</label>
+							                <input class="form-check-input" type="checkbox" id="showModalB" onchange="dochange(this)" style="transform: scale(0.85);">
+							                <label class="form-check-label fw-bold text-dark" for="showModalB" onchange="dochange(this)" style="font-size: 9px; line-height: 1.5;">Console</label>
 							            </div>
 							            <div class="form-check form-switch m-0">
 							                <input class="form-check-input" type="checkbox" id="showEmittersB" style="transform: scale(0.85);">
@@ -435,7 +465,7 @@
 				    
 				    <div class="form-check form-switch mb-0"> 
 				        <input class="form-check-input" type="checkbox" id="showRows" onChange="toggleRows()"/>
-				        <label class="form-check-label fw-normal small" for="showRows">Rows</label>
+				        <label class="form-check-label fw-normal small" for="showRows">Arrows</label>
 				    </div>
 				</h6>                    
                   <div class="list-group list-group-flush" id="payloadsList">
@@ -466,7 +496,11 @@
         </div>
     </div>
 </div>
-
+<!-- Al final del body -->
+<div id="status-bar" class="status-bar">
+    <span class="status-label">ESTADO:</span>
+    <span id="status-message">Online...</span>
+</div>
 <script th:inline="javascript">
 "use strict";
     // REGISTRO DE CAMPOS PARA PERSISTENCIA (Sincronizado A y B)
@@ -487,7 +521,8 @@
     let bsEmittersModal = null;
     let notificationTimeout = null;
     let activeEventSource = null; // Referencia global para cerrar flujos
-
+    let timer = null;
+    
     document.getElementById('messageSelector').addEventListener('change', function() {
         // Obtenemos la lista de mensajes (esto requiere que pases los datos a JS)
         const messagesData = /*[[${messages}]]*/ {}; 
@@ -500,6 +535,8 @@
         console.log("Has seleccionado la clave: " + selectedKey);
     });
     document.addEventListener('DOMContentLoaded', () => {
+    	const statusElement = document.getElementById('status-message');
+    	
         bsModal = new bootstrap.Modal(document.getElementById('sseModal'));
         bsEmittersModal = new bootstrap.Modal(document.getElementById('emittersModal'));
         
@@ -517,7 +554,16 @@
                 if (val !== null) el.type === 'checkbox' ? el.checked = (val === 'true') : el.value = val;
             }
         });
-
+        const miDiv = document.getElementById('sseModal');
+        window.addEventListener('click', function(event) {
+            // Si el div está visible Y el clic NO ocurrió dentro del div
+            if (miDiv.style.display !== 'none' && !miDiv.contains(event.target)) {
+                // Importante: asegúrate de que el botón que ABRE el div no active esto también
+                bsModal.hide();
+                clearTimeout(timer); // Limpiar cualquier notificación pendiente
+                //miDiv.style.display = 'none';
+            }
+        });  
         // Track active textarea
         ['payloadA', 'payloadB', 'fireKeyA', 'fireKeyB'].forEach(id => {
             const el = document.getElementById(id);
@@ -553,6 +599,7 @@
     function startHealthCheck() {
         setInterval(() => {
             const controller = new AbortController();
+            const statusElement = document.getElementById('status-message');
             const timeoutId = setTimeout(() => controller.abort(), 2500);
             const btnSub = document.getElementById('formA').querySelector('button[type="submit"]');
             const oldIsAppDown = isAppDown;
@@ -592,6 +639,7 @@
                      banner.style.backgroundColor = '#ef4444'; 
                      msg.innerHTML = '<i class="bi bi-wifi-off me-2"></i> CONEXIÓN PERDIDA CON EL BACKEND - ESPERANDO...';
                      btnSub.disabled = true;
+                     statusElement.innerText = "Offline - Intentando reconectar...";
                 }
                 else {
                     isAppDown = false;
@@ -601,6 +649,7 @@
                     // SI EL SERVIDOR VUELVE: Redirigimos a la raíz para evitar re-envíos automáticos de formularios
                      if (isAppDown != oldIsAppDown) {
                         window.location.href = '/gui';
+                        statusElement.innerText = "Online...";
                     } 
                 }
             })
@@ -612,18 +661,40 @@
                 banner.style.backgroundColor = '#ef4444'; 
                 msg.innerHTML = '<i class="bi bi-wifi-off me-2"></i> CONEXIÓN PERDIDA CON EL BACKEND - REINTENTANDO...';
                 btnSub.disabled = true;
+                statusElement.innerText = "Offline - Intentando reconectar...";
                 console.log(e);
             });
         }, 3000);
     }
 
+    function dochange(ck) {
+        if(ck.id === "showEmittersA") {
+            if(document.getElementById('showModalA').checked ){
+                document.getElementById('showModalA').checked = !ck.checked;
+            }
+        } else if(ck.id === "showEmittersB") {
+        	if(document.getElementById('showModalB').checked ){
+        	    document.getElementById('showModalB').checked = !ck.checked;
+        	}
+        }
+        if(ck.id === "showModalA") {
+            if(document.getElementById('showEmittersA').checked ){
+                document.getElementById('showEmittersA').checked = !ck.checked;
+            }
+        } else if(ck.id === "showModalB") {
+        	if(document.getElementById('showEmittersB').checked ){
+        	    document.getElementById('showEmittersB').checked = !ck.checked;
+        	}
+        }
+    }
     // ENVÍO SSE (STREAMING)
     function sendFormAjax(formId) {
         const form = document.getElementById(formId);
-        
+        const statusElement = document.getElementById('status-message');
         // Validación Threads <= Items
         const threadInput = form.querySelector('input[name="threads"]');
         const iterInput = form.querySelector('input[name="iterations"]');
+        statusElement.innerText = "Iniciando flujo...("+iterInput.value+" items)";
         let threads = parseInt(threadInput.value) || 1;
         const items = parseInt(iterInput.value) || 1;
 
@@ -666,44 +737,54 @@
         const formData = new FormData(form);
         const ckConsole = document.getElementById('showModal' + suffix);
         const ckEmitters = document.getElementById('showEmitters' + suffix);
-        
+
         formData.set('showModal', ckConsole.checked ? "true" : "false");
 
         const params = new URLSearchParams(formData).toString();
         activeEventSource = new EventSource(`${form.action}?${params}`);
 
         activeEventSource.onmessage = (event) => {
-            const rawData = event.data.trim();
 
-            if (rawData.startsWith("CONFIG:")) {
+        	const statusElement = document.getElementById('status-message');
+        	
+            const rawData = event.data.trim();
+            const eventId = event.lastEventId.toLowerCase();
+
+            console.log("Event: "+event.lastEventId + " - "+ rawData); // Para depuración
+            if (eventId.toLowerCase().includes("config")) {
                 if (rawData.includes("showModal=true") && ckConsole.checked) bsModal.show();
                 //if (ckEmitters.checked) bsEmittersModal.show();
                 return;
             }
 
+            
             const line = document.createElement("div");
             line.className = "status-entry";
-            line.innerHTML = `<span class="time">${new Date().toLocaleTimeString()}</span> <span>${rawData}</span>`;
+            line.innerHTML = `<span>${new Date().toLocaleTimeString()} - ${event.lastEventId}: ${rawData}</span>`;
             modalContent.appendChild(line);
             modalContent.scrollTop = modalContent.scrollHeight;
 
-            const lowMsg = rawData.toLowerCase();
-            
             // --- CORRECCIÓN LÓGICA DE DETECCIÓN ---
-            const valoresABuscar = ["estableciendo", "enviando", "consumer:", "autorespuesta:","conex"];
-            const isEmitterLog = valoresABuscar.some(val => lowMsg.includes(val));
+            const valoresABuscar = ["estableciendo", "enviando", "consumer", "autorespuesta","conex"];
+            const isEmitterLog = valoresABuscar.some(val => eventId.includes(val));
             
-            const isFinalMsg = lowMsg.includes("completado") || lowMsg.includes("error");
+            const isFinalMsg = eventId.includes("completado") || eventId.includes("error") || eventId.includes("last");
 
             if (isEmitterLog) {
-                if (ckEmitters.checked) showNotification(rawData, "success",3000);
+                if(isEmitterLog && eventId.includes("last") ) {
+                    statusElement.innerText = `${rawData}`;
+                }else if (ckEmitters.checked) showNotification(`${new Date().toLocaleTimeString()} - ` +event.lastEventId +": "+ rawData, "success",3000);
             } else if (isFinalMsg) {
                 if(!ckConsole.checked && ckEmitters.checked) {
-                    showNotification(rawData, lowMsg.includes("error") ? "danger" : "success",3000);
+                    showNotification(`${new Date().toLocaleTimeString()} - ${event.lastEventId}: ${rawData}`, eventId.includes("error") ? "danger" : "success",3000);
                 }
-                if (lowMsg.includes("completado")) finalizar(true);
+                const statusBuscar = ["completado", "error", "last", "fin"];
+                const iscompleted = statusBuscar.some(val => eventId.includes(val));
+                iscompleted ? statusElement.innerText = `${rawData}` : null;
+                if (eventId.includes("completado") || eventId.includes("fin")) finalizar(true);
+                
             }
-            //finalizar(lowMsg.includes("error"));
+            //finalizar(eventId.includes("error"));
         };
 
         activeEventSource.onerror = (e) => {
@@ -725,7 +806,9 @@
             btn.disabled = false;
             document.getElementById('btnCloseModal').disabled = false;
             document.getElementById('modalSpinner').style.display = "none";
-            if (exito && ckConsole.checked) setTimeout(() => bsModal.hide(), 60000);
+            if (exito && ckConsole.checked){
+                 timer = setTimeout(() => bsModal.hide(), 60000);
+            }
         }
     }
 
@@ -741,6 +824,7 @@
             newLine.className = 'notification-line';
             newLine.innerText = msg;
             body.appendChild(newLine);
+            area.scrollTop = area.scrollHeight;
             if (notificationTimeout) clearTimeout(notificationTimeout);
         } else {
             area.innerHTML = '';
@@ -757,7 +841,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>`;
         }
-        area.scrollTop = area.scrollHeight;
         notificationTimeout = setTimeout(() => {
             const el = area.querySelector('.alert');
             if(el) bootstrap.Alert.getOrCreateInstance(el).close();
@@ -776,11 +859,40 @@
         if (ck && inp) { inp.disabled = ck.checked; inp.placeholder = ck.checked ? "GENERADO" : "HEX ID"; }
     }
 
-    function updateTitles() {
+    function updateTitles(source,sourceElement) {
         ['A', 'B'].forEach(s => {
             const q = document.getElementById('queue' + s);
             const t = document.getElementById('title' + s);
             if(q && t) t.innerText = q.options[q.selectedIndex]?.text || "...";
+        });
+        if(source == undefined) return;
+        const threadInput = document.getElementById('threads'+source);
+        const btnSub = document.getElementById('form'+source).querySelector('button[type="submit"]');
+        btnSub.disabled = true;
+        let threads = parseInt(threadInput.value) || 1;
+        const payload = {
+                threads: threads,
+                nuevaCola: document.getElementById('queue'+source).value,
+                timestamp: new Date().toISOString()
+            };
+        fetch('/gui/cambiar-cola', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({nuevaCola: document.getElementById('queue'+source).value, threads: threads})
+        })
+        .then(response => {
+            if (response.ok) {
+                // El valor sigue seleccionado en el HTML y el back ya se ha enterado
+                console.log("Backend notificado correctamente.");
+            } else {
+                console.error("El backend respondió con un error");
+            }
+            btnSub.disabled = false;
+        })
+        .catch(error => {
+            console.error("Error de red al conectar con el backend:", error);
         });
     }
 
@@ -807,6 +919,7 @@
     }
     
     function toggleFirePanel(suffix) {
+        if(document.getElementById('fireCheck'+suffix)==null) return;
         const isEnabled = document.getElementById('fireCheck' + suffix).checked;
         const panel = document.getElementById('firePanel' + suffix);
         
@@ -884,6 +997,7 @@
     }
    
     function clearAll() { if(confirm("¿Desea limpiar toda la configuración local?")) { localStorage.clear(); location.reload(); } }
+    
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

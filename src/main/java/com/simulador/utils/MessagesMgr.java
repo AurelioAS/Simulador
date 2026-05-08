@@ -47,7 +47,7 @@ public class MessagesMgr {
         .forEach(m -> {
           table.put(m.getName().replace("_", "-"), () -> invoke(m));
         });
-    log.info("MessagesMgr initialized with file path: {}", filepath);
+    log.info("MessagesMgr initialized.");
   }
 
 
@@ -771,7 +771,7 @@ public class MessagesMgr {
   @Cacheable(value = "payloads", key = "#payloadKey")
   public String checkPayload(String payloadKey, SimulatorProperties props,
       Map<String, SseEmitter> emittersActivos) {
-    log.trace("*** Getting payload for key: " + payloadKey + " ***");
+    log.debug("*** Getting payload for key: " + payloadKey + " ***");
     if (payloadKey.startsWith("payload:")) {
       String customPayload = payloadKey.substring(8);
       payloadKey = createStrPayload(customPayload);
@@ -779,7 +779,7 @@ public class MessagesMgr {
         log.error("Error simulado por payload personalizado: " + customPayload);
         sender.enviarSafe(emittersActivos.get("A"),
             "Error simulado por payload personalizado: " + customPayload,
-            new AtomicBoolean(false));
+            "Error", new AtomicBoolean(false));
         throw new RuntimeException("Error simulado por payload personalizado: " + customPayload);
       }
     } else if (props.getPayloads().get(payloadKey) != null
@@ -790,7 +790,7 @@ public class MessagesMgr {
         log.error("Error simulado por payload personalizado: " + customPayload);
         sender.enviarSafe(emittersActivos.get("A"),
             "Error simulado por payload personalizado: " + customPayload,
-            new AtomicBoolean(false));
+            "Error", new AtomicBoolean(false));
         throw new RuntimeException("Error simulado por payload personalizado: " + customPayload);
       }
     } else if (props.getPayloads().get(payloadKey) != null) {

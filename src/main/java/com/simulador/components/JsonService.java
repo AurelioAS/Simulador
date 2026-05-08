@@ -20,7 +20,6 @@ public class JsonService {
    * It does not allow the serialization of dates as timestamps, only textual format.
    */
   public JsonService() {
-    log.info("Initializing JsonService with ObjectMapper: " + objectMapper);
     objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
   }
 

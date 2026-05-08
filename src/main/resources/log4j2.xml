@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Configuration strict="true" status="WARN" monitorInterval="30">
-
+    <!-- <RegexFilter regex=".*enviarSafe.*" onMatch="DENY" onMismatch="DENY"/> -->
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout disableAnsi="false">
@@ -14,31 +14,12 @@
                 <SizeBasedTriggeringPolicy size="5 MB" />
             </Policies>
             
-            <DefaultRolloverStrategy max="10"> 
+            <DefaultRolloverStrategy max="100"> 
                  <Delete basePath="./logs/bak" maxDepth="1">
                     <IfFileName glob="app-*.log.gz" />
                     <IfLastModified age="7d" />
                 </Delete>
             </DefaultRolloverStrategy>
-        </RollingFile>
-        <RollingFile name="MyLogFile" fileName="./logs/app.log" filePattern="./logs/app-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout disableAnsi="false">
-                <!-- <Pattern>${PATTERN}</Pattern> -->
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - %-5p [%-20.20t] %-40.40logger{2} - %m%n</Pattern>
-            </PatternLayout>
-            <!-- <CronTriggeringPolicy schedule="0 0/1 * 1/1 * ? *"/>  -->
-            <Policies>
-                <SizeBasedTriggeringPolicy size="5MB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="15">
-                <Delete basePath="./logs/bak" maxDepth="1">
-                    <IfAny>
-                        <IfLastModified age="3m"/>
-                        <IfAccumulatedFileSize exceeds="50MB"/>
-                    </IfAny>
-                </Delete>
-            </DefaultRolloverStrategy>
-            <ThresholdFilter level="debug"/>
         </RollingFile>
         <RollingFile name="MqLibFile" fileName="./logs/mqlib.log" filePattern="./logs/mqlib-%i.log">
             <PatternLayout>
@@ -62,23 +43,24 @@
         </RollingFile>
  	    <Async name="Async" bufferSize="1048576">
 	      <AppenderRef ref="Console"/>
+	      <LinkedTransferQueue/>
 	    </Async>
-<!--	    <Async name="AsyncFile" bufferSize="524288">
+	    <Async name="AsyncFile" bufferSize="524288">
 	      <AppenderRef ref="MyLogFile"/>
 	      <LinkedTransferQueue/>
 	    </Async>
-        <Async name="AsyncFileMq" bufferSize="524288">
+<!--        <Async name="AsyncFileMq" bufferSize="524288">
           <AppenderRef ref="MqLibFile"/>
         </Async>  -->   
     </Appenders>
     <Loggers>
         <Root level="info"  additivity="false">
-            <AppenderRef ref="Console"  />
-            <AppenderRef ref="MyLogFile"  /> 
+            <AppenderRef ref="Async"  />
+            <AppenderRef ref="AsyncFile" /> 
         </Root>    
         <Logger name="com.simulador" level="debug" additivity="false">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="MyLogFile"  /> 
+            <AppenderRef ref="Async" />
+            <AppenderRef ref="MyLogFile"  />
         </Logger>    
         <Logger name="com.github.codemonstur" level="debug" additivity="false">
             <AppenderRef ref="Async" />

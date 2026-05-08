@@ -3,12 +3,11 @@ package com.simulador.utils;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.constants.MQConstants;
 import com.simulador.config.MQConnectionBundle;
-import com.simulador.config.MQConnectionManager;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -16,16 +15,16 @@ public class Utils {
 
   public static final Random random = new Random();
 
-  public ConcurrentMap<String, MQQueue> queues = new ConcurrentHashMap<>();
-
-  protected MQConnectionManager multiConfigs;
+  public Map<String, MQQueue> queues = new LinkedHashMap<>();
 
   protected long lastTraffic = System.currentTimeMillis();
 
   @Getter
+  @Setter
   protected boolean start = false;
 
-  protected Map<String, MQConnectionBundle> connections;
+  @Setter
+  public Map<String, MQConnectionBundle> connections;
 
   public static String identificarUso(MQQueue queue) throws Exception {
     int options = queue.getOpenOptions();

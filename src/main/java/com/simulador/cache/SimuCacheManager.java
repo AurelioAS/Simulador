@@ -7,8 +7,8 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.simulador.config.SimulatorProperties;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -16,7 +16,7 @@ import org.springframework.cache.CacheManager;
 @Slf4j
 public class SimuCacheManager implements CacheManager {
 
-  private final ConcurrentMap<String, Cache> caches = new ConcurrentHashMap<>();
+  private final Map<String, Cache> caches = new LinkedHashMap<>();
   private HazelcastInstance                  hz;
   private SimulatorProperties                props;
 
