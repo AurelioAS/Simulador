@@ -49,20 +49,20 @@ public class MqSimulatorService extends Utils {
   @Getter
   private boolean isRunning = true;
 
+  @Autowired
+  private SendService sendService;
+
   private final Map<String, SseEmitter> emittersActivos = new ConcurrentHashMap<>();
-  private SendService                   sendService;
 
   private MQConnectionManager mqConnectionManager;
 
   @Autowired
   public MqSimulatorService(MQConnectionManager mqConnectionManager,
       Map<String, MQConnectionBundle> connection,
-      SimulatorProperties props,
-      JsonService jsonService, SendService sendService) {
+      SimulatorProperties props, JsonService jsonService) {
     this.mqConnectionManager = mqConnectionManager;
     this.connections = connection;
     this.props = props;
-    this.sendService = sendService;
   }
 
   /**
@@ -76,6 +76,10 @@ public class MqSimulatorService extends Utils {
   public void run() {
     log.info("Iniciando autorespuestas y consumidor en modo " + props.getRole());
     Map<String, AutoResponse> responses = props.getAutoResponses();
+    Map<String, Integer> actives =
+        sendService.activeQueues == null ? new LinkedHashMap<>() : sendService.activeQueues;
+    Map<String, Integer> activesCon =
+        sendService.activeQueuesCon == null ? new LinkedHashMap<>() : sendService.activeQueuesCon;
     if (responses != null) {
       responses.forEach((sourceKey, rule) -> {
         try {
@@ -87,9 +91,11 @@ public class MqSimulatorService extends Utils {
           for (int i = 0; i < poolSize; i++) {
             int index = i % poolSize;
             createFlux(sourceQ.getName(), (msg) -> {
-              sendService.processAndReply(msg, sourceKey, rule, bundle, 1);
+              sendService.processAndReply(msg, sourceKey, rule, bundle, 1, rule.isLast());
             }, 1).subscribe();
           }
+
+          actives.put(sourceQ.getName(), 0);
         } catch (Exception ignored) {
           log.error("Error configurando autorespuesta para {}: {}", sourceKey,
               ignored.getMessage());
@@ -124,6 +130,7 @@ public class MqSimulatorService extends Utils {
             log.error("Error configurando escucha para {}: {}", sourceQ, e.getMessage());
             e.printStackTrace();
           }
+          activesCon.put(sourceQ, 0);
         }
       });
     }

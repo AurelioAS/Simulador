@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,16 +54,17 @@ public class WebGuiController extends Utils {
   // Importante: No dejar estos como variables de clase si hay varios usuarios,
   // pero los mantenemos aquí para seguir tu lógica actual.
   private byte[][]   correls = new byte[1][1];
-  private SendService sendService;
   private boolean     error;
   private MessagesMgr messages;
 
+  @Autowired
+  SendService sendService;
+
   public WebGuiController(MqSimulatorService mqService, SimulatorProperties props,
-      Map<String, MQConnectionBundle> connections, SendService sendService, MessagesMgr messages) {
+      Map<String, MQConnectionBundle> connections, MessagesMgr messages) {
     this.mqService = mqService;
     this.props = props;
     this.myconnections = connections;
-    this.sendService = sendService;
     this.messages = messages;
   }
 
@@ -188,8 +190,12 @@ public class WebGuiController extends Utils {
         emitter.send(eventBuilder);
         sendService.setStart(true);
         sendService.setContador(iterations);
+        sendService.setContadorAuto(iterations);
         sendService.setActual(0);
+        sendService.setActualAuto(0);
         sendService.setStartTime(startTime);
+        sendService.getActiveQueues().replaceAll((key, value) -> 0);
+        sendService.getActiveQueuesCon().replaceAll((key, value) -> 0);
         for (int i = 0; i < iterations; i++) {
           final int currentIdx = i;
           if (clones.size() < threads) {
@@ -252,10 +258,12 @@ public class WebGuiController extends Utils {
 
         // MENSAJE FINAL (El JS busca la palabra "Completado")
         if (!error) {
+          String texto = successCount.get() + " mensajes enviados en "
+              + totalTime + "ms.";
           eventBuilder.id("Completado").comment("Todo completado.")
-              .data(successCount.get() + " mensajes enviados en "
-                  + totalTime + "ms.");
-          emitter.send(eventBuilder);
+              .data(texto);
+          sendService.enviarSafe(emitter, texto, "Completado", new AtomicBoolean(false));
+          // emitter.send(eventBuilder);
         }
         // emitter.complete();
 

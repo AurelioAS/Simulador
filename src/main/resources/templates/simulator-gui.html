@@ -160,6 +160,8 @@
             pointer-events: none; /* Permite interactuar con lo que hay debajo */
             z-index: 5;
         }
+        
+
     </style>
 </head>
 <body>
@@ -313,11 +315,13 @@
 						    <div class="fire-box shadow-sm mb-4 p-2 rounded" style="background-color: #f0f9ff; border: 1px solid #bae6fd;">
 						        <div class="row g-3 align-items-center">
 						            <div class="col-md-4">
+						                  <label for="fireTypeA" class="form-label small text-uppercase">Target</label>
 						                <select name="fireTarget" id="fireTargetA" class="form-select form-select-sm border-info-subtle">
-						                    <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="'Target: ' + ${q.key}"></option>
+						                    <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
 						                </select>
 						            </div>
 						            <div class="col">
+						                <label for="fireTypeA" class="form-label small text-uppercase">Payload</label>
 						                <input type="text" name="fireKey" id="fireKeyA" class="form-control form-control-sm" placeholder="Payload Key">
 						            </div>
 						            <div class="col-auto">
@@ -336,7 +340,7 @@
                             <textarea name="payload" id="payloadA" class="form-control payload-area shadow-sm" rows="4"></textarea>
 
                             <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-primary fw-bold py-3 shadow">
+                                <button title="Click to run !!" type="submit" class="btn btn-primary fw-bold py-3 shadow">
                                     <span class="spinner-border spinner-border-sm"></span>EJECUTAR ACCIÓN MASTER
                                 </button>
                             </div>
@@ -345,7 +349,7 @@
                 </div>
 
                 <!-- PANEL SECUNDARIO (B) -->
-                <div class="card dest-card border-info" th:if="${@simulatorProperties.role != 'DR_START'}">
+                <div id ="divSecundario" class="card dest-card border-info" th:classappend="${@simulatorProperties.role == 'DR_START'} ? 'd-none' : ''">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 fw-bold text-info"><i class="bi bi-hdd-network-fill me-2"></i>PANEL SECUNDARIO (B)</h5>
                         <span class="badge bg-info-subtle text-info border" id="titleB">...</span>
@@ -424,11 +428,13 @@
 							    <div class="fire-box shadow-sm mb-4 p-2 rounded" style="background-color: #f0f9ff; border: 1px solid #bae6fd;">
 							        <div class="row g-3 align-items-center">
 							            <div class="col-md-4">
+							                <label for="fireTypeB" class="form-label small text-uppercase">Target</label>
 							                <select name="fireTarget" id="fireTargetB" class="form-select form-select-sm border-info-subtle">
-							                    <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="'Target: ' + ${q.key}"></option>
+							                    <option th:each="q : ${queues.entrySet()}" th:value="${q.key}" th:text="${q.key} + ' (' + ${q.value.name} + ')'"></option>
 							                </select>
 							            </div>
 							            <div class="col">
+							                <label class="form-label small text-uppercase">Payload</label>
 							                <input type="text" name="fireKey" id="fireKeyB" class="form-control form-control-sm" placeholder="Payload Key">
 							            </div>
 							            <div class="col-auto">
@@ -447,7 +453,7 @@
                             <textarea name="payload" id="payloadB" class="form-control payload-area shadow-sm" rows="4"></textarea>
 
                             <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-info text-white fw-bold py-3 shadow">
+                                <button title="Click to run !!" type="submit" class="btn btn-info text-white fw-bold py-3 shadow">
                                     <span class="spinner-border spinner-border-sm"></span>EJECUTAR ACCIÓN SECUNDARIA
                                 </button>
                             </div>
@@ -463,22 +469,23 @@
 				        <i class="bi bi-folder-fill me-2"></i>LIBRERÍA DE PAYLOADS
 				    </span>
 				    
-				    <div class="form-check form-switch mb-0"> 
+				    <div class="form-check form-switch mb-0"  style="display: none;"> 
 				        <input class="form-check-input" type="checkbox" id="showRows" onChange="toggleRows()"/>
 				        <label class="form-check-label fw-normal small" for="showRows">Arrows</label>
 				    </div>
 				</h6>                    
                   <div class="list-group list-group-flush" id="payloadsList">
-                     <button th:each="entry : ${payloads}" type="button" class="list-group-item list-group-item-action border-0 rounded-3 mb-2 shadow-sm py-3" th:data-key="${entry.key}" onclick="insertKey(this.getAttribute('data-key'))">
+                     <button title="Click to select payload" th:each="entry : ${payloads}" type="button" class="list-group-item list-group-item-action border-0 rounded-3 mb-2 shadow-sm py-3" th:data-key="${entry.key}" 
+                           onclick="insertKey(this.getAttribute('data-key'))" onmouseover="showArrow('AC')" onmouseout="hideArrow('AC')">
                          <div class="fw-bold text-primary small" th:text="${entry.key}"></div>
                          <div class="text-muted extra-small text-truncate" style="font-size: 0.75rem;" th:text="${entry.value}"></div>
                      </button>
                  </div>
                  <div class="form-group mt-3" id="messageSelectorContainer">
-                     <label for="messageSelector"><strong>Seleccionar Payload de Método:</strong></label>
-                     <select class="form-select shadow-sm" id="messageSelector" name="selectedMessageKey" >
-                         <option value="" disabled selected>-- Elige un mensaje --</option>
-                         
+                     <label for="messageSelector"><strong>Seleccionar Payload por Método:</strong></label>
+                     <select title="Select message to build with method" class="form-select shadow-sm" id="messageSelector" name="selectedMessageKey" 
+                       onmouseover="showArrow('BC')" onmouseout="hideArrow('BC')">
+                         <option value="" disabled selected>-- Choose a method --</option>
                          <option th:each="entry : ${messages}"
                                  th:value="${entry.key}"
                                  th:text="${entry.key}">
@@ -486,7 +493,8 @@
                      </select>
                  </div>
                      <div class="d-grid gap-2 mt-4 pt-3 border-top">
-                        <button id="beauti" onclick="beautify()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-code-slash me-1"></i>Beautify JSON</button>
+                        <button id="beauti" onclick="beautify()" class="btn btn-outline-secondary btn-sm" 
+                            onmouseover="showArrow('DC')" onmouseout="hideArrow('DC')"><i class="bi bi-code-slash me-1"></i>Beautify JSON</button>
                         <button onclick="clearAll()" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3 me-1"></i>Reset System</button>
                     </div>
                 </div>
@@ -569,10 +577,10 @@
             const el = document.getElementById(id);
             if(el){
                  el.addEventListener('focus', () => {
-                	lastActiveTextarea = id
+                	lastActiveTextarea = el.id;
                 	nodeC=document.getElementById(lastActiveTextarea);
-                	initDiagram();
-                	toggleRows(); // Actualizar visibilidad de filas al cambiar de textarea
+                    initDiagram();
+                    toggleRows(); // Actualizar visibilidad de filas al cambiar de textarea
                  });
             }
         });
@@ -793,7 +801,7 @@
                 activeEventSource.close();
                 activeEventSource = null;
             }
-            showNotification("Error de flujo: Conexión cerrada o sesión interrumpida.", "danger",3000);
+            showNotification("Error de flujo: Conexión cerrada o sesión interrumpida.", "danger",1000);
             finalizar(false);
         };
 
@@ -870,6 +878,7 @@
         const btnSub = document.getElementById('form'+source).querySelector('button[type="submit"]');
         btnSub.disabled = true;
         let threads = parseInt(threadInput.value) || 1;
+        btnSub.classList.add("loading");
         const payload = {
                 threads: threads,
                 nuevaCola: document.getElementById('queue'+source).value,
@@ -890,9 +899,12 @@
                 console.error("El backend respondió con un error");
             }
             btnSub.disabled = false;
+            btnSub.classList.remove("loading");
         })
         .catch(error => {
             console.error("Error de red al conectar con el backend:", error);
+            btnSub.disabled = false;
+            btnSub.classList.remove("loading");
         });
     }
 
@@ -934,10 +946,9 @@
     
     function toggleRows() {
         const isEnabled = document.getElementById('showRows').checked;
-        
+        initDiagram();
         if (isEnabled) {
             nodeC = document.getElementById(lastActiveTextarea) ;
-            initDiagram();
             activeLines.forEach(line => {
                 line.show(); 
             });
@@ -967,25 +978,28 @@
                 dash: { animation: true }, // Opcional: línea discontinua animada
                 path: 'straight'           // Opcional: línea recta
             });
-            activeLines.push(lineAC);
+            lineAC.hide(); // Ocultar inicialmente
+            activeLines.set("AC",lineAC);
             lineBC = new LeaderLine(nodeB, nodeC, {
                 color: '#ccc',
                 size: 2,
                 dash: { animation: true }, // Opcional: línea discontinua animada
                 path: 'straight'
             });
-            activeLines.push(lineBC);
+            lineBC.hide(); // Ocultar inicialmente
+            activeLines.set("BC",lineBC);
             lineDC = new LeaderLine(nodeD, nodeC, {
                 color: '#ccc',
                 size: 2,
                 dash: { animation: true }, // Opcional: línea discontinua animada
                 path: 'straight'
             });
-            activeLines.push(lineDC);
+            lineDC.hide(); // Ocultar inicialmente
+            activeLines.set("DC",lineDC);
         }
     }
 
-    let activeLines = []; // Array global para rastrear las líneas
+    let activeLines = new Map(); // Array global para rastrear las líneas
 
     function clearLines() {
         // Recorremos el array y eliminamos cada línea del DOM
@@ -993,11 +1007,50 @@
             line.remove(); 
         });
         // Vaciamos el array
-        activeLines = [];
+        activeLines = new Map();
     }
    
     function clearAll() { if(confirm("¿Desea limpiar toda la configuración local?")) { localStorage.clear(); location.reload(); } }
     
+    function showArrow(source){
+        const arrow = activeLines.get(source);
+        if(arrow) {
+            arrow.show();
+        }
+    }
+    
+    function hideArrow(source){
+        const arrow = activeLines.get(source);
+        if(arrow) {
+            arrow.hide();
+        }
+    }
+    
+    document.addEventListener('keydown', function(event) {
+        // Verificamos si se pulsó la tecla '6' y si la tecla Ctrl estaba activa
+        if (event.ctrlKey && event.key === 'F6') {
+            event.preventDefault(); 
+            
+            // Buscamos nuestro div por el ID
+            const panel = document.getElementById('divSecundario');
+            
+            if (panel) {
+                // Comprobamos si está oculto actualmente
+                // (Miramos tanto el estilo en línea como el calculado por el navegador)
+                const estaOculto = panel.style.display === 'none' || window.getComputedStyle(panel).display === 'none';
+                
+                if (estaOculto) {
+                    // Si estaba oculto, lo mostramos (puedes usar 'block', 'flex', etc.)
+                    panel.style.setProperty('display', 'block', 'important');
+                    console.log("Panel mostrado mediante Ctrl+6");
+                } else {
+                    // Si estaba visible, lo ocultamos
+                    panel.style.setProperty('display', 'none', 'important');
+                    console.log("Panel oculto mediante Ctrl+6");
+                }
+            }
+        }
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

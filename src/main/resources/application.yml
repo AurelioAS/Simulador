@@ -25,6 +25,13 @@ simu-mq:
 logging.config: classpath:log4j2.xml
 logging.level.org.springframework.boot.context.properties: DEBUG
 logging.level.org.apache.catalina: ERROR
+
+#logs:
+#    - last
+#    - completo
+#    - completado
+#    - complete
+#    - error
 ---
 # Profile to activate to connect to cert client mq
 spring.config.activate.on-profile: mq-dev-ger
@@ -168,11 +175,13 @@ simulador:
         target-queue: "master-res"
         payload-key: "MENSAJE_MASTER"
         copy-correl: false
+        # last: true
     
       secondary-in:
         target-queue: "secondary-res"
         payload-key: "MENSAJE_SECUNDARIO"
         copy-correl: false
+        # last: true
   
   consumers:
      external-res:

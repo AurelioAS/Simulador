@@ -9,6 +9,7 @@ import com.ibm.mq.MQPutMessageOptions;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.constants.MQConstants;
 import com.simulador.aspect.LogFullDetails;
+import com.simulador.config.GeneralProperties;
 import com.simulador.config.MQConnectionBundle;
 import com.simulador.config.SimulatorProperties;
 import com.simulador.config.SimulatorProperties.AutoResponse;
@@ -17,12 +18,15 @@ import com.simulador.utils.MessagesMgr;
 import com.simulador.utils.Utils;
 import java.io.IOException;
 import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +56,13 @@ public class SendService extends Utils {
   private SimulatorProperties props;
 
   @Autowired
+  private GeneralProperties logs;
+
+  @Autowired
   @Lazy
   MessagesMgr messagesMgr;
 
+  @Autowired
   Map<String, MQConnectionBundle> connections;
 
   @Autowired
@@ -71,12 +79,13 @@ public class SendService extends Utils {
   @Setter
   private int contador;
 
-  public SendService(SimulatorProperties props, Map<String, MQConnectionBundle> connection) {
-    super();
-    this.props = props;
-    this.connections = connection;
-  }
+  @Setter
+  private int contadorAuto;
 
+  public SendService() {
+    super();
+    activeQueues = new ConcurrentHashMap<>();
+  }
   private SseEmitter emitter;
 
   @Value("${simulador.role:DEFAULT_START}")
@@ -86,7 +95,18 @@ public class SendService extends Utils {
   private int actual;
 
   @Setter
+  private int actualAuto;
+
+  @Setter
   private long startTime;
+
+  @Getter
+  @Setter
+  public Map<String, Integer> activeQueues = new LinkedHashMap<>();
+
+  @Getter
+  @Setter
+  public Map<String, Integer> activeQueuesCon = new LinkedHashMap<>();
 
   /**
    * @param queueKey
@@ -235,7 +255,11 @@ public class SendService extends Utils {
       // emitter.send(texto);
       SseEventBuilder event = SseEmitter.event();
       event.id(id);
-      if (id.toLowerCase().contains("last") || id.toLowerCase().contains("error")) {
+      List<String> valoresABuscar = logs.getLogs().stream().map(String::toLowerCase).toList();
+      boolean isEmitterLog =
+          valoresABuscar.stream().anyMatch(val -> id.toLowerCase().contains(val));
+
+      if (isEmitterLog) {
         log.debug("--- [SSE] '{}'", texto);
       }
       emitter.send(event.data(texto));
@@ -296,11 +320,12 @@ public class SendService extends Utils {
    * @param rule
    * @param bundle
    * @param actionType
+   * @param last
    * @return
    */
   @LogFullDetails(logResult = true)
-  public synchronized String processAndReply(MQMessage msg, String sourceKey, AutoResponse rule,
-      MQConnectionBundle bundle, int actionType) {
+  public String processAndReply(MQMessage msg, String sourceKey, AutoResponse rule,
+      MQConnectionBundle bundle, int actionType, boolean last) {
     SimulatorProperties.QueueConfig sourceQ = props.getQueues().get(sourceKey);
     SimulatorProperties.QueueConfig sourceQ2 = props.getQueues().get(rule.getTargetQueue());
 
@@ -327,6 +352,16 @@ public class SendService extends Utils {
               + sourceKey);
       checkFire(qConfig, msg.correlationId, msg.messageId, isCopyCorrel, "", "",
           "A");
+      activeQueues.put(sourceQ.getName(), activeQueues.getOrDefault(sourceQ.getName(), 0) + 1);
+      if (last && (activeQueues.get(sourceQ.getName()) >= contadorAuto)) {
+        enviarSafe(emittersActivos.get("A"),
+            "AutoResp " + sourceQ.getName() + ": " + activeQueues.get(sourceQ.getName())
+                + " mensajes procesados en "
+            + (System.currentTimeMillis() - startTime) + "ms.",
+            "Last",
+            isCompleted);
+        start = false;
+      }
     } catch (Exception e) {
       log.error("Error procesando mensaje en processAndReply para {}: {}", sourceKey,
           e.getMessage(), e);
@@ -362,9 +397,10 @@ public class SendService extends Utils {
       SimulatorProperties.QueueConfig qConfig = props.getQueues().get(key);
       checkFire(qConfig, msg.correlationId, msg.messageId, false, "", "",
           "A");
-      actual++;
-      if (last && actual >= contador) {
-        enviarSafe(emittersActivos.get("A"), contador + " mensajes procesados en "
+      activeQueuesCon.put(queue, activeQueuesCon.getOrDefault(queue, 0) + 1);
+      if (last && (activeQueuesCon.get(queue) >= contador)) {
+        enviarSafe(emittersActivos.get("A"),
+            "Consume " + queue + ": " + activeQueuesCon.get(queue) + " mensajes procesados en "
             + (System.currentTimeMillis() - startTime) + "ms.",
             "Last",
             isCompleted);
