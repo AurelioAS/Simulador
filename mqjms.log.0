@@ -1,0 +1,1971 @@
+12 de febrero de 2026, 17:58:02 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1709470758[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=52827,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1067, 2161, 4258, 8443, 16244, 26073]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+12 de febrero de 2026, 17:58:02 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1709470758[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=52827,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/33c99f9c][connectionId=414D51434D514C41422E514D202020205C7B8D69E6491124,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+12 de febrero de 2026, 17:58:02 CET[JMSCCThreadPoolWorker-2] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/33c99f9c][connectionId=414D51434D514C41422E514D202020205C7B8D69E6491124,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+16 de febrero de 2026, 19:34:12 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1951521026[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=54250,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1003, 2475, 4294, 8865, 17080, 26071]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+16 de febrero de 2026, 19:34:12 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1951521026[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=54250,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/c24deac][connectionId=414D51434D514C415343474331202020981E25660185D741,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+16 de febrero de 2026, 19:34:12 CET[JMSCCThreadPoolWorker-2] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/c24deac][connectionId=414D51434D514C415343474331202020981E25660185D741,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+18 de febrero de 2026, 17:10:01 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1097273795[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=62850,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1239, 2009, 4537, 8978, 17245, 25345]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+18 de febrero de 2026, 17:10:02 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1097273795[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=62850,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/763d6f5c][connectionId=414D51434D514C415343474331202020981E256601EDDB41,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+18 de febrero de 2026, 17:10:02 CET[JMSCCThreadPoolWorker-2] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/763d6f5c][connectionId=414D51434D514C415343474331202020981E256601EDDB41,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+19 de febrero de 2026, 11:58:13 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1852595987[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55055,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1230, 2072, 4727, 8343, 17207, 25566]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+19 de febrero de 2026, 11:58:13 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1852595987[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55055,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5e4db049][connectionId=414D51434D514C41422E514D2020202001B696694AD29A22,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+19 de febrero de 2026, 11:58:13 CET[JMSCCThreadPoolWorker-2] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5e4db049][connectionId=414D51434D514C41422E514D2020202001B696694AD29A22,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+19 de febrero de 2026, 13:48:34 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@498969195[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55706,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1035, 2326, 4208, 8913, 16523, 25352]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+19 de febrero de 2026, 13:48:41 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@498969195[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55706,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/312f6f88][connectionId=414D51434D514C41422E514D2020202001B696694B9D9C22,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+19 de febrero de 2026, 13:48:57 CET[JMSCCThreadPoolWorker-2] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/312f6f88][connectionId=414D51434D514C41422E514D2020202001B696694B9D9C22,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+19 de febrero de 2026, 20:35:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1097273795[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=57041,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1089, 2431, 4351, 8550, 17202, 25903]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+19 de febrero de 2026, 20:35:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1097273795[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=57041,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6618b9a7][connectionId=414D51434D514C415343474331202020981E256603A3DD41,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+19 de febrero de 2026, 20:35:08 CET[JMSCCThreadPoolWorker-2] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6618b9a7][connectionId=414D51434D514C415343474331202020981E256603A3DD41,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+23 de febrero de 2026, 17:06:21 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@850055453[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=53399,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1199, 2486, 4431, 8471, 16558, 26037]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+23 de febrero de 2026, 17:06:21 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@850055453[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=53399,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/237436fa][connectionId=414D51434D514C41422E514D20202020E1FB9B6980CED023,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+23 de febrero de 2026, 17:06:21 CET[JMSCCThreadPoolWorker-2] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/237436fa][connectionId=414D51434D514C41422E514D20202020E1FB9B6980CED023,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+24 de febrero de 2026, 16:05:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@834784145[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=53516,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1114, 2250, 4427, 8652, 16030, 25388]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 16:05:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@834784145[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=53516,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6336fbb0][connectionId=414D51434D514C41422E514D20202020744D9D694A8D5D21,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 16:05:11 CET[JMSCCThreadPoolWorker-4] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6336fbb0][connectionId=414D51434D514C41422E514D20202020744D9D694A8D5D21,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+24 de febrero de 2026, 17:46:52 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1254131382[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51904,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1094, 2433, 4067, 8228, 17233, 25972]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 17:46:52 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1254131382[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51904,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/70c64ca6][connectionId=414D51434D514C41422E514D20202020744D9D69506E6221,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 17:46:52 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@606991259[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51902,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6bd70355][connectionId=414D51434D514C41422E514D20202020744D9D69506C6221,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 17:46:52 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1796808786[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51899,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/24e3c97a][connectionId=414D51434D514C41422E514D20202020744D9D6950696221,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 17:46:52 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2123713379[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51901,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/65f53be7][connectionId=414D51434D514C41422E514D20202020744D9D69506B6221,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 17:46:52 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@853108670[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51903,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7d2385ae][connectionId=414D51434D514C41422E514D20202020744D9D69506D6221,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 17:46:52 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@321634162[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51900,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/20223476][connectionId=414D51434D514C41422E514D20202020744D9D69506A6221,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 17:46:52 CET[JMSCCThreadPoolWorker-7] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/70c64ca6][connectionId=414D51434D514C41422E514D20202020744D9D69506E6221,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+24 de febrero de 2026, 19:17:20 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2114308546[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=49920,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1051, 2231, 4322, 8804, 16140, 25960]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 19:17:20 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2114308546[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=49920,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/147fca46][connectionId=414D51434D514C41422E514D20202020744D9D693CDB6221,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 19:17:20 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1584732641[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=49923,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/118fe664][connectionId=414D51434D514C41422E514D20202020744D9D693CDE6221,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 19:17:20 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1027932988[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=49925,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/389637f4][connectionId=414D51434D514C41422E514D20202020744D9D693CE06221,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 19:17:20 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@837359504[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=49924,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7bf3823][connectionId=414D51434D514C41422E514D20202020744D9D693CDF6221,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 19:17:20 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@671133171[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=49922,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/56d7ae1b][connectionId=414D51434D514C41422E514D20202020744D9D693CDD6221,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+24 de febrero de 2026, 19:17:20 CET[JMSCCThreadPoolWorker-7] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/147fca46][connectionId=414D51434D514C41422E514D20202020744D9D693CDB6221,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+24 de febrero de 2026, 19:17:20 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1021400332[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=49921,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/731ba6db][connectionId=414D51434D514C41422E514D20202020744D9D693CDC6221,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@509662307[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=59293,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1067, 2216, 4334, 8353, 16371, 25574]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@509662307[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=59293,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/70631edd][connectionId=414D51434D514C41422E514D20202020BB36A5691A609320,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@255113377[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=59290,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/12f5ab2c][connectionId=414D51434D514C41422E514D20202020BB36A5691A5D9320,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1868359474[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=59289,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/20a61e92][connectionId=414D51434D514C41422E514D20202020BB36A5691A5C9320,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1811756634[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=59292,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2407cf6e][connectionId=414D51434D514C41422E514D20202020BB36A5691A5F9320,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1779390775[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=59296,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/25f5b03d][connectionId=414D51434D514C41422E514D20202020BB36A5691A629320,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@444320949[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=59297,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4146e2a0][connectionId=414D51434D514C41422E514D20202020BB36A5691B619320,traceIdentifier=7,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@623542584[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=59291,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6ad071d6][connectionId=414D51434D514C41422E514D20202020BB36A5691A5E9320,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+2 de marzo de 2026, 16:35:14 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/70631edd][connectionId=414D51434D514C41422E514D20202020BB36A5691A609320,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1767445039[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=61303,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1138, 2231, 4416, 8319, 16632, 25385]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1767445039[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=61303,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/43b96c7d][connectionId=414D51434D514C415343474331202020981E2566018EF641,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/43b96c7d][connectionId=414D51434D514C415343474331202020981E2566018EF641,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1808844560[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=56023,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/667a993][connectionId=414D51434D514C415343474331202020981E25660192F641,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1116654697[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=56022,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/d742073][connectionId=414D51434D514C415343474331202020981E25660191F641,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@771240042[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=56021,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/76d71fa4][connectionId=414D51434D514C415343474331202020981E25660190F641,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@632001286[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=56025,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5b713fc6][connectionId=414D51434D514C415343474331202020981E25660193F641,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@826028657[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=56026,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7ec6c01d][connectionId=414D51434D514C415343474331202020981E25660195F641,traceIdentifier=7,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+3 de marzo de 2026, 16:15:40 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1868402283[qmid=MQLASCGC1_2024-04-21_11.26.04,fap=15,channel=CLNT.JAVA_PRUEBA    ,ccsid=1208,sharecnv=10,hbint=300,peer=mqlascgc1.sgtech.corp/107.3.55.9(1417),localport=61305,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/450acf38][connectionId=414D51434D514C415343474331202020981E2566018FF641,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 14:22:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1769261521[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56898,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1232, 2199, 4110, 8481, 16779, 26140]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 14:22:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1769261521[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56898,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7affef01][connectionId=414D51434D514C41422E514D2020202052D9A76914EE9324,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 14:22:14 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7affef01][connectionId=414D51434D514C41422E514D2020202052D9A76914EE9324,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:10 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@625502994[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63469,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1048, 2343, 4394, 8821, 16557, 25157]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1738668828[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55860,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4163c953][connectionId=414D51434D514C41422E514D2020202052D9A76919D49324,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1411020604[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55859,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5add93cf][connectionId=414D51434D514C41422E514D2020202052D9A7691CD39324,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@863017462[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63467,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/3db761e8][connectionId=414D51434D514C41422E514D2020202052D9A76916F09324,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1581534348[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63470,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5083a934][connectionId=414D51434D514C41422E514D2020202052D9A76915FA9524,traceIdentifier=7,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1242109450[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55862,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7c804f2][connectionId=414D51434D514C41422E514D2020202052D9A76919D59324,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@174679816[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63468,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4593820e][connectionId=414D51434D514C41422E514D2020202052D9A76916F29324,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:11 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@625502994[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63469,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6b0f55a][connectionId=414D51434D514C41422E514D2020202052D9A76916F39324,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+4 de marzo de 2026, 16:52:11 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4163c953][connectionId=414D51434D514C41422E514D2020202052D9A76919D49324,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+5 de marzo de 2026, 14:20:52 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1309488009[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51182,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1202, 2095, 4462, 8300, 16871, 25800]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+5 de marzo de 2026, 14:20:53 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1309488009[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=51182,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/1eb6bf08][connectionId=414D51434D514C41422E514D20202020E92AA96984282A24,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+5 de marzo de 2026, 14:20:53 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@444320949[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56153,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/14bc218a][connectionId=414D51434D514C41422E514D20202020E92AA969842B2A24,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+5 de marzo de 2026, 14:20:53 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/1eb6bf08][connectionId=414D51434D514C41422E514D20202020E92AA96984282A24,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+5 de marzo de 2026, 14:20:53 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@176102510[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=57055,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4a203689][connectionId=414D51434D514C41422E514D20202020E92AA969842C2A24,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1297313977[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=58234,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1120, 2036, 4016, 8997, 16031, 26416]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1297313977[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=58234,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2cd53a62][connectionId=414D51434D514C41422E514D202020206F7CAA69E6530F24,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2cd53a62][connectionId=414D51434D514C41422E514D202020206F7CAA69E6530F24,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@15343723[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=58235,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/66c7aaab][connectionId=414D51434D514C41422E514D202020206F7CAA69E6540F24,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@244323185[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=58236,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/416ae6e8][connectionId=414D51434D514C41422E514D202020206F7CAA69E6550F24,traceIdentifier=7,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1330590276[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=58230,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5df798e3][connectionId=414D51434D514C41422E514D202020206F7CAA69E64F0F24,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1848459732[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=58232,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/45b67a54][connectionId=414D51434D514C41422E514D202020206F7CAA69E6510F24,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2118306984[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=58231,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/31b8372b][connectionId=414D51434D514C41422E514D202020206F7CAA69E6500F24,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+6 de marzo de 2026, 19:17:17 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@61392238[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=58233,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4c523150][connectionId=414D51434D514C41422E514D202020206F7CAA69E6520F24,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@883040952[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50135,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1032, 2052, 4456, 8403, 16138, 26030]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@883040952[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50135,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/52f3240e][connectionId=414D51434D514C41422E514D20202020FF70AE69FE2A6E20,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@963404539[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50721,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/55447cea][connectionId=414D51434D514C41422E514D20202020FF70AE69FE296E20,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1022568651[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50137,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/42b04edb][connectionId=414D51434D514C41422E514D20202020FF70AE69FE2C6E20,traceIdentifier=7,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1580499262[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50136,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/20154e18][connectionId=414D51434D514C41422E514D20202020FF70AE69FE276E20,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1667825988[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50134,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/111686de][connectionId=414D51434D514C41422E514D20202020FF70AE69FE2B6E20,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1556386947[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50722,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2c414010][connectionId=414D51434D514C41422E514D20202020FF70AE69FE286E20,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1137867525[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50132,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/24dedae3][connectionId=414D51434D514C41422E514D20202020FF70AE69FF246E20,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+9 de marzo de 2026, 17:50:08 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/52f3240e][connectionId=414D51434D514C41422E514D20202020FF70AE69FE2A6E20,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@553198584[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50827,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1161, 2367, 4311, 8657, 17118, 26119]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@553198584[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50827,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7de42cb6][connectionId=414D51434D514C41422E514D202020205CC2AF69C5EC4823,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1158974487[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50829,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/3b2e7b78][connectionId=414D51434D514C41422E514D202020205CC2AF69ED734923,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1677895561[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50821,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/f763741][connectionId=414D51434D514C41422E514D202020205CC2AF69C5E84823,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@618874499[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50823,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5a38abff][connectionId=414D51434D514C41422E514D202020205CC2AF69C5E94823,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@324390375[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50825,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6d392740][connectionId=414D51434D514C41422E514D202020205CC2AF69C5EA4823,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1882736535[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50826,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/e37a7b2][connectionId=414D51434D514C41422E514D202020205CC2AF69C5EB4823,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@779985196[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50830,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/1a8bfe7][connectionId=414D51434D514C41422E514D202020205CC2AF69ED744923,traceIdentifier=7,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+10 de marzo de 2026, 18:16:38 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7de42cb6][connectionId=414D51434D514C41422E514D202020205CC2AF69C5EC4823,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:06 CET[FluxThread-QNAME09-20] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1198, 2440, 4320, 8163, 16199, 25487]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[FluxThread-QNAME09-20] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/238b92c8][connectionId=414D51434D514C41422E514D202020200414B1692887CB24,traceIdentifier=36,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[JMSCCThreadPoolWorker-83] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/238b92c8][connectionId=414D51434D514C41422E514D202020200414B1692887CB24,traceIdentifier=36,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[FluxThread-QNAME08-28] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/18c377ce][connectionId=414D51434D514C41422E514D202020200414B1692A6ECB24,traceIdentifier=13,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[FluxThread-QNAME08-29] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/13f0e237][connectionId=414D51434D514C41422E514D202020200414B1692A6BCB24,traceIdentifier=10,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@371113973[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=52452,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6d23035c][connectionId=414D51434D514C41422E514D202020200414B16928A0CB24,traceIdentifier=61,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1641940399[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56602,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2e24eddf][connectionId=414D51434D514C41422E514D202020200414B16928AACB24,traceIdentifier=71,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@88890277[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62693,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4ab6af47][connectionId=414D51434D514C41422E514D202020200414B1692A67CB24,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@434008926[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56601,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5624942e][connectionId=414D51434D514C41422E514D202020200414B16928A9CB24,traceIdentifier=70,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1183896380[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63318,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/96a2fa5][connectionId=414D51434D514C41422E514D202020200414B169288FCB24,traceIdentifier=44,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1795603997[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63326,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/24fc4736][connectionId=414D51434D514C41422E514D202020200414B1692897CB24,traceIdentifier=52,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@197461672[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56599,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/443fe39b][connectionId=414D51434D514C41422E514D202020200414B16928A7CB24,traceIdentifier=68,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1316404750[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63283,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/18c538b][connectionId=414D51434D514C41422E514D202020200414B1692A7CCB24,traceIdentifier=27,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@252739113[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56596,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/40ea8b80][connectionId=414D51434D514C41422E514D202020200414B16928A4CB24,traceIdentifier=65,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1740777682[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56609,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2838c061][connectionId=414D51434D514C41422E514D202020200414B16928B1CB24,traceIdentifier=78,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@532244798[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56598,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/50439e82][connectionId=414D51434D514C41422E514D202020200414B16928A6CB24,traceIdentifier=67,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@372595335[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56594,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/59cfbc0a][connectionId=414D51434D514C41422E514D202020200414B16928A2CB24,traceIdentifier=63,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@40790993[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63281,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4d949fd7][connectionId=414D51434D514C41422E514D202020200414B1692A7ACB24,traceIdentifier=25,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1904781898[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62700,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/3e724030][connectionId=414D51434D514C41422E514D202020200414B1692A6CCB24,traceIdentifier=12,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2093922534[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63312,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/33345334][connectionId=414D51434D514C41422E514D202020200414B169288ACB24,traceIdentifier=39,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@413103336[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62703,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/576583b0][connectionId=414D51434D514C41422E514D202020200414B1692A70CB24,traceIdentifier=15,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@299055715[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56600,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5e29dc12][connectionId=414D51434D514C41422E514D202020200414B16928A8CB24,traceIdentifier=69,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@814686485[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63333,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7f75c34f][connectionId=414D51434D514C41422E514D202020200414B169289ECB24,traceIdentifier=59,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1282051236[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63320,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/3907162][connectionId=414D51434D514C41422E514D202020200414B1692891CB24,traceIdentifier=46,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1940870501[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63324,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/3c55af5b][connectionId=414D51434D514C41422E514D202020200414B1692895CB24,traceIdentifier=50,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1517252[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63323,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4fedd28d][connectionId=414D51434D514C41422E514D202020200414B1692894CB24,traceIdentifier=49,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1511405680[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56595,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/15ecd779][connectionId=414D51434D514C41422E514D202020200414B16928A3CB24,traceIdentifier=64,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1744169208[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56605,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/280f004d][connectionId=414D51434D514C41422E514D202020200414B16928ADCB24,traceIdentifier=74,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@481258890[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62699,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/34717e89][connectionId=414D51434D514C41422E514D202020200414B1692A6DCB24,traceIdentifier=11,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1712355885[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62706,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/29ea82a4][connectionId=414D51434D514C41422E514D202020200414B1692A73CB24,traceIdentifier=18,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2030354237[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62696,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/36fe5456][connectionId=414D51434D514C41422E514D202020200414B1692A69CB24,traceIdentifier=8,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@914515786[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63330,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/797885d1][connectionId=414D51434D514C41422E514D202020200414B169289BCB24,traceIdentifier=56,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@141456644[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63322,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/47948042][connectionId=414D51434D514C41422E514D202020200414B1692893CB24,traceIdentifier=48,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@766953317[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62709,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/624c3698][connectionId=414D51434D514C41422E514D202020200414B1692A76CB24,traceIdentifier=21,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@11736016[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63329,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4f49e78d][connectionId=414D51434D514C41422E514D202020200414B169289ACB24,traceIdentifier=55,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1025092489[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=60476,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/72e35861][connectionId=414D51434D514C41422E514D202020200414B1692A62CB24,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@868160226[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63287,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7c45e0de][connectionId=414D51434D514C41422E514D202020200414B1692A80CB24,traceIdentifier=31,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@115943937[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63289,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4913ce97][connectionId=414D51434D514C41422E514D202020200414B1692982CB24,traceIdentifier=33,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1800931686[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56606,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/24a2e046][connectionId=414D51434D514C41422E514D202020200414B16928AECB24,traceIdentifier=75,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1589291998[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56603,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/11405442][connectionId=414D51434D514C41422E514D202020200414B16928ABCB24,traceIdentifier=72,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1150216191[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56607,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/b740b25][connectionId=414D51434D514C41422E514D202020200414B16928AFCB24,traceIdentifier=76,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@394293375[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63308,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/587a96c4][connectionId=414D51434D514C41422E514D202020200414B1692886CB24,traceIdentifier=35,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@821289274[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63282,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7f09136f][connectionId=414D51434D514C41422E514D202020200414B1692A7BCB24,traceIdentifier=26,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1696505072[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56597,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2ae47418][connectionId=414D51434D514C41422E514D202020200414B16928A5CB24,traceIdentifier=66,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1896018536[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62705,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/3ef80803][connectionId=414D51434D514C41422E514D202020200414B1692A72CB24,traceIdentifier=17,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@16606016[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63332,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4f078714][connectionId=414D51434D514C41422E514D202020200414B169289DCB24,traceIdentifier=58,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1872390861[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=49442,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/20608375][connectionId=414D51434D514C41422E514D202020200414B1692A77CB24,traceIdentifier=22,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1445609016[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62704,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/380d3cc3][connectionId=414D51434D514C41422E514D202020200414B1692A71CB24,traceIdentifier=16,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1032650996[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63313,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7277f30e][connectionId=414D51434D514C41422E514D202020200414B169288BCB24,traceIdentifier=40,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@468895044[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63334,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/54082271][connectionId=414D51434D514C41422E514D202020200414B169289FCB24,traceIdentifier=60,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@491453307[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63327,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/52b00c99][connectionId=414D51434D514C41422E514D202020200414B1692898CB24,traceIdentifier=53,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@842400219[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63315,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7dcce3d6][connectionId=414D51434D514C41422E514D202020200414B169288DCB24,traceIdentifier=42,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1392569371[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62697,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/1cfa0230][connectionId=414D51434D514C41422E514D202020200414B1692A6ACB24,traceIdentifier=9,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1062899090[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63328,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/419ad9f3][connectionId=414D51434D514C41422E514D202020200414B1692899CB24,traceIdentifier=54,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1419751951[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62702,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/1b655cd7][connectionId=414D51434D514C41422E514D202020200414B1692A6FCB24,traceIdentifier=14,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1356258144[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63311,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/1f8e2cd][connectionId=414D51434D514C41422E514D202020200414B1692889CB24,traceIdentifier=38,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@214953247[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56593,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/433518cd][connectionId=414D51434D514C41422E514D202020200414B16928A1CB24,traceIdentifier=62,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@413405198[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63314,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/575ee751][connectionId=414D51434D514C41422E514D202020200414B169288CCB24,traceIdentifier=41,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2089156527[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56612,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/337f1474][connectionId=414D51434D514C41422E514D202020200414B16928B4CB24,traceIdentifier=81,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2005941602[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63310,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/386ac7db][connectionId=414D51434D514C41422E514D202020200414B1692888CB24,traceIdentifier=37,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@184779135[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62707,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/75f7a6d8][connectionId=414D51434D514C41422E514D202020200414B1692A74CB24,traceIdentifier=19,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2126506846[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56611,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/314510c2][connectionId=414D51434D514C41422E514D202020200414B16928B3CB24,traceIdentifier=80,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1139722594[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62692,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/c142554][connectionId=414D51434D514C41422E514D202020200414B1692A66CB24,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1663867411[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62691,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2bad89b6][connectionId=414D51434D514C41422E514D202020200414B1692A65CB24,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1657239215[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63280,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/2d3d8ebc][connectionId=414D51434D514C41422E514D202020200414B1692A79CB24,traceIdentifier=24,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1217147271[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63285,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/776dcdd][connectionId=414D51434D514C41422E514D202020200414B1692A7ECB24,traceIdentifier=29,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@687545108[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62695,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6701ea40][connectionId=414D51434D514C41422E514D202020200414B1692A68CB24,traceIdentifier=7,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@645748648[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63319,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6987a72c][connectionId=414D51434D514C41422E514D202020200414B1692890CB24,traceIdentifier=45,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1204019549[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63293,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/397b43c2][connectionId=414D51434D514C41422E514D202020200414B1692885CB24,traceIdentifier=34,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1532395758[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=60475,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/25f2b807][connectionId=414D51434D514C41422E514D202020200414B1692A60CB24,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@650092156[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56613,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/69457ee0][connectionId=414D51434D514C41422E514D202020200414B16928B5CB24,traceIdentifier=82,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1020429973[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63286,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/73286544][connectionId=414D51434D514C41422E514D202020200414B1692A7FCB24,traceIdentifier=30,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1168085140[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63316,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/a657c6c][connectionId=414D51434D514C41422E514D202020200414B169288ECB24,traceIdentifier=43,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@353697464[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62690,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/5aee0851][connectionId=414D51434D514C41422E514D202020200414B1692A64CB24,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2142207335[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63321,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/305586d9][connectionId=414D51434D514C41422E514D202020200414B1692892CB24,traceIdentifier=47,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1034319794[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63288,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/725c844d][connectionId=414D51434D514C41422E514D202020200414B1692A81CB24,traceIdentifier=32,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1221183681[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63331,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/7332593][connectionId=414D51434D514C41422E514D202020200414B169289CCB24,traceIdentifier=57,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1107319647[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56608,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/dfab754][connectionId=414D51434D514C41422E514D202020200414B16928B0CB24,traceIdentifier=77,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@17843978[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56610,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4eeaa363][connectionId=414D51434D514C41422E514D202020200414B16928B2CB24,traceIdentifier=79,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@568740451[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63325,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6e1caa14][connectionId=414D51434D514C41422E514D202020200414B1692896CB24,traceIdentifier=51,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@22550705[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63279,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4ea2ecd1][connectionId=414D51434D514C41422E514D202020200414B1692A78CB24,traceIdentifier=23,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:08 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@392153635[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=63284,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/58a53c83][connectionId=414D51434D514C41422E514D202020200414B1692A7DCB24,traceIdentifier=28,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:09 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1966700298[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=62708,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/3ac38de6][connectionId=414D51434D514C41422E514D202020200414B1692A75CB24,traceIdentifier=20,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+11 de marzo de 2026, 18:15:09 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@57534697[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=56604,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/4c971ccf][connectionId=414D51434D514C41422E514D202020200414B16928ACCB24,traceIdentifier=73,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 9:20:39 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1063, 2333, 4588, 8103, 16987, 25809]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 9:37:53 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1150, 2134, 4331, 8660, 16403, 25250]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 9:48:03 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1051, 2005, 4669, 8065, 16541, 25182]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 9:57:08 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1127, 2149, 4345, 8151, 16623, 25671]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 10:03:45 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1152, 2239, 4069, 8206, 16219, 25619]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 10:56:59 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1083, 2303, 4610, 8440, 16797, 25843]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 11:04:45 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1047, 2366, 4501, 8614, 16886, 26250]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 11:29:13 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1035, 2268, 4070, 8804, 16201, 25436]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 11:39:08 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1008, 2382, 4244, 8343, 17108, 25392]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 11:52:14 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1066, 2243, 4693, 8676, 16591, 25673]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 12:08:21 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1157, 2418, 4441, 8850, 17229, 25790]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 12:32:37 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1060, 2334, 4201, 8718, 16474, 26175]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 12:40:26 CET[PoolScavenger0] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1233, 2282, 4389, 8740, 16788, 25703]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[FluxThread-QNAME12-23] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1081, 2462, 4703, 8982, 16282, 25140]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[FluxThread-QNAME12-23] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/457d5d4e][connectionId=414D51434D514C41422E514D20202020CCB6B369AFDE1824,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[JMSCCThreadPoolWorker-8] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/457d5d4e][connectionId=414D51434D514C41422E514D20202020CCB6B369AFDE1824,traceIdentifier=5,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@206011089[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50482,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/72b41e21][connectionId=414D51434D514C41422E514D20202020CCB6B369AFDD1824,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@2007670043[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55540,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6329b665][connectionId=414D51434D514C41422E514D20202020CCB6B369AFDF1824,traceIdentifier=6,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@569288982[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55541,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/616d8182][connectionId=414D51434D514C41422E514D20202020CCB6B369AFE01824,traceIdentifier=7,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@692327757[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=50433,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6910b61][connectionId=414D51434D514C41422E514D20202020CCB6B369FFDA1824,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1071091036[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=57035,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/b43dc21][connectionId=414D51434D514C41422E514D20202020CCB6B369AFDC1824,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+13 de marzo de 2026, 18:23:05 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1755465754[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=55356,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/42fe30d8][connectionId=414D51434D514C41422E514D20202020CCB6B369B0DB1824,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+16 de marzo de 2026, 19:17:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1201568315[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=57929,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1077, 2323, 4012, 8194, 16499, 25388]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+16 de marzo de 2026, 19:17:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@1201568315[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=57929,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6c8e8c0b][connectionId=414D51434D514C41422E514D2020202075ABB7694B811520,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+16 de marzo de 2026, 19:17:14 CET[JMSCCThreadPoolWorker-5] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Iniciando la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/6c8e8c0b][connectionId=414D51434D514C41422E514D2020202075ABB7694B811520,traceIdentifier=4,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+Se ha iniciado una reconexión, ya sea debido a una solicitud de un clúster uniforme (nombre de gestor de colas no nulo) o como resultado de un error de conexión.
+
+ACCIÓN:
+No se requiere llevar a cabo ninguna acción.
+--------------------------------------------------------------------
+16 de marzo de 2026, 19:17:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@616089759[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=57927,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/55ddcbf5][connectionId=414D51434D514C41422E514D2020202075ABB769497F1520,traceIdentifier=2,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+16 de marzo de 2026, 19:17:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@133374714[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=57872,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/790be880][connectionId=414D51434D514C41422E514D2020202075ABB7694B7E1520,traceIdentifier=1,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+16 de marzo de 2026, 19:17:14 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@353165303[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=57928,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Poniendo en cola la reconexión del hconn padre 'com.ibm.mq.jmqi.remote.impl.RemoteSession[:/3ad9c652][connectionId=414D51434D514C41422E514D2020202075ABB7694B801520,traceIdentifier=3,remoteTraceIdentifier=-1]' al gestor de colas 'null'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+17 de marzo de 2026, 11:47:43 CET[main] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1059, 2061, 4001, 8985, 16444, 25681]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+17 de marzo de 2026, 11:49:32 CET[main] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1037, 2080, 4059, 8523, 16374, 25237]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+17 de marzo de 2026, 11:53:13 CET[main] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1064, 2371, 4632, 8019, 16757, 25772]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+17 de marzo de 2026, 12:47:46 CET[main] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1043, 2089, 4172, 8821, 16218, 25785]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
+17 de marzo de 2026, 16:34:38 CET[RcvThread: com.ibm.mq.jmqi.remote.impl.RemoteTCPConnection@773543936[qmid=MQLAB.QM_2020-04-28_21.21.41,fap=13,channel=MQLAB.CH            ,ccsid=1208,sharecnv=10,hbint=300,peer=isblccfserd0004.scisb.isban.corp/107.104.192.7(1414),localport=52697,ssl=no]] com.ibm.mq.jmqi.remote.impl.RemoteReconnectThread
+Tiempos de reconexión (milisegundos) : '[1127, 2423, 4154, 8430, 16111, 25482]'
+
+EXPLICACIÓN:
+null
+
+ACCIÓN:
+null
+--------------------------------------------------------------------
