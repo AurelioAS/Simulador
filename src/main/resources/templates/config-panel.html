@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Configuración del Simulador MQ</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<style>
+.status-pill {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	display: inline-block;
+	margin-right: 5px;
+}
+
+.bg-online {
+	background-color: #28a745;
+	box-shadow: 0 0 8px #28a745;
+}
+
+.config-card {
+	border-left: 4px solid #ffc107;
+}
+
+pre {
+	background: #f8f9fa;
+	padding: 15px;
+	border-radius: 8px;
+	border: 1px solid #dee2e6;
+}
+</style>
+</head>
+<body class="bg-light">
+
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+		<div class="container">
+			<a class="navbar-brand" href="#">MQ Admin Console</a>
+			<div class="navbar-nav">
+				<a class="nav-link" href="/gui">🚀 Enviar Mensajes</a> <a
+					class="nav-link active" href="/config-panel">⚙️ Configuración</a>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="card shadow-sm mb-4">
+					<div class="card-header fw-bold">Estado de Conexión</div>
+					<div class="card-body">
+						<p class="mb-2">
+							<span class="status-pill bg-online"></span> <strong>Queue
+								Manager:</strong> <span th:text="${@mqQueueManager.name}">QM1</span>
+						</p>
+						<p class="mb-0 text-muted small">
+							Host: <span th:text="${@environment.getProperty('ibm.mq.host')}">localhost</span>
+						</p>
+					</div>
+				</div>
+
+				<div class="card shadow-sm config-card">
+					<div class="card-header fw-bold text-warning">Cambiar Perfil
+						Activo</div>
+					<div class="card-body">
+						<form th:action="@{/config-panel/update-profile}" method="post">
+							<div class="mb-3">
+								<label class="form-label">Seleccionar Perfil Detectado:</label>
+								<select name="newProfile" class="form-select">
+									<option th:each="profile : ${availableProfiles}"
+										th:value="${profile}" th:text="${profile}"
+										th:selected="${profile == activeProfile}"></option>
+								</select>
+							</div>
+							<div class="d-grid">
+								<button type="submit" class="btn btn-warning fw-bold">💾
+									Guardar Perfil en YML</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-8">
+				<div class="card shadow-sm">
+					<div
+						class="card-header d-flex justify-content-between align-items-center">
+						<span class="fw-bold">Vista Previa de Colas (YAML)</span> <span
+							class="badge bg-secondary"
+							th:text="${'CCSID Activo: ' + @simulatorProperties.queues.get('master-in').ccsid}"></span>
+					</div>
+					<div class="card-body">
+						<h6>Estructura de Colas Configurada:</h6>
+						<pre th:text="${queuesYaml}"></pre>
+
+						<h6 class="mt-4">Respuestas Automáticas:</h6>
+						<table class="table table-sm table-hover">
+							<thead>
+								<tr>
+									<th>Origen (Detecta)</th>
+									<th>Destino (Responde)</th>
+									<th>Payload Key</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="entry : ${@simulatorProperties.autoResponses}">
+									<td th:text="${entry.key}" class="text-primary fw-bold"></td>
+									<td th:text="${entry.value.targetQueue}"></td>
+									<td><span class="badge bg-light text-dark"
+										th:text="${entry.value.payloadKey}"></span></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

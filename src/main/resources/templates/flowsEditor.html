@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MQ Studio Pro - FIX Conexiones</title>
+    <script src="https://cdn.jsdelivr.net/npm/leader-line-new/heart.min.js"></script>
+    <style>
+        :root { --side: 240px; --bottom: 180px; }
+        body { margin: 0; font-family: sans-serif; display: grid; 
+               grid-template-columns: var(--side) 1fr var(--side);
+               grid-template-rows: 1fr var(--bottom); height: 100vh; overflow: hidden; }
+
+        #sidebar { grid-row: 1 / 3; background: #2c3e50; color: white; padding: 15px; z-index: 100; }
+        #canvas { background: #f8f9fa; position: relative; overflow: auto; 
+                  background-image: radial-gradient(#d7d7d7 1px, transparent 1px); background-size: 20px 20px; }
+        #properties { background: #ecf0f1; border-left: 1px solid #bdc3c7; padding: 15px; }
+        #code-area { grid-column: 2; background: #1e1e1e; color: #d4d4d4; padding: 10px; font-family: monospace; overflow-y: auto; }
+
+        .node { position: absolute; min-width: 120px; padding: 15px; background: white; border: 2px solid #3498db; 
+                border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; 
+                font-weight: bold; z-index: 50; user-select: none; }
+        
+        /* Estado cuando estamos conectando */
+        .node.selected-origin { border-color: #e67e22; box-shadow: 0 0 15px #e67e22; background: #fff5e6; }
+
+        button { width: 100%; padding: 10px; margin-bottom: 10px; cursor: pointer; border-radius: 4px; border: none; font-weight: bold; }
+        .btn-add { background: #3498db; color: white; }
+        .btn-conn { background: #e67e22; color: white; }
+        .status { padding: 10px; background: #fff3cd; color: #856404; border-radius: 4px; margin-bottom: 10px; font-size: 13px; display: none;}
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h3>MQ Studio</h3>
+        <button class="btn-add" onclick="addNodePrompt()">➕ Nuevo Nodo</button>
+        <button style="background:#27ae60; color:white" onclick="save()">💾 Guardar</button>
+        <button style="background:#e74c3c; color:white" onclick="location.reload()">🔄 Reset / Recargar</button>
+    </div>
+
+    <div id="canvas" onscroll="refresh()"></div>
+
+    <div id="properties">
+        <h4>Acciones</h4>
+        <div id="status-bar" class="status"></div>
+        <button id="conn-btn" class="btn-conn" onclick="startConnecting()">🔗 Conectar Nodos</button>
+        
+        <label style="font-size:11px">Estilo:</label>
+        <select id="pathStyle" onchange="syncLast()">
+            <option value="grid">Grid</option>
+            <option value="fluid" selected>Fluid</option>
+            <option value="straight">Straight</option>
+        </select>
+        <input type="text" id="lineLabel" placeholder="Etiqueta..." oninput="syncLast()" style="width:100%; margin-top:10px; padding:5px;">
+    </div>
+
+    <div id="code-area"><pre id="js-output">// Código generado...</pre></div>
+
+    <script>
+        let nodes = [];
+        let connections = [];
+        let isConnecting = false;
+        let originNodeId = null;
+
+        function addNodePrompt() {
+            const name = prompt("Nombre:", "Nodo " + (nodes.length + 1));
+            if (name) createNode(name);
+        }
+
+        function createNode(text, x = 100, y = 100, id = null) {
+            const node = { id: id || 'n' + Date.now(), text, x, y };
+            nodes.push(node);
+            
+            const div = document.createElement('div');
+            div.id = node.id;
+            div.className = 'node';
+            div.innerText = text;
+            div.style.left = x + 'px';
+            div.style.top = y + 'px';
+
+            // --- Lógica de Arrastre ---
+            let isDragging = false;
+            div.onmousedown = (e) => {
+                if (isConnecting) return;
+                isDragging = false;
+                let startX = e.clientX - div.offsetLeft;
+                let startY = e.clientY - div.offsetTop;
+
+                document.onmousemove = (me) => {
+                    isDragging = true;
+                    node.x = me.clientX - startX;
+                    node.y = me.clientY - startY;
+                    div.style.left = node.x + 'px';
+                    div.style.top = node.y + 'px';
+                    refresh();
+                };
+                document.onmouseup = () => {
+                    document.onmousemove = null;
+                    if (isDragging) updateCode();
+                };
+            };
+
+            // --- Lógica de Conexión (Modificada para ser Robusta) ---
+            div.onclick = () => {
+                if (!isConnecting) return;
+
+                if (!originNodeId) {
+                    // Seleccionamos el primer nodo
+                    originNodeId = node.id;
+                    div.classList.add('selected-origin');
+                    showStatus("Origen fijado: " + text + ". Haz clic en el DESTINO.");
+                } else {
+                    // Seleccionamos el segundo nodo
+                    if (originNodeId === node.id) {
+                        alert("No puedes conectar un nodo consigo mismo.");
+                        return;
+                    }
+                    finalizeConnection(originNodeId, node.id);
+                }
+            };
+
+            document.getElementById('canvas').appendChild(div);
+            updateCode();
+        }
+
+        function startConnecting() {
+            isConnecting = true;
+            originNodeId = null;
+            showStatus("Haz clic en el nodo de ORIGEN.");
+            document.getElementById('conn-btn').innerText = "❌ Cancelar Selección";
+            document.getElementById('conn-btn').onclick = cancelConnecting;
+        }
+
+        function cancelConnecting() {
+            isConnecting = false;
+            originNodeId = null;
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected-origin'));
+            hideStatus();
+            document.getElementById('conn-btn').innerText = "🔗 Conectar Nodos";
+            document.getElementById('conn-btn').onclick = startConnecting;
+        }
+
+        function finalizeConnection(start, end) {
+            const config = {
+                path: document.getElementById('pathStyle').value,
+                color: '#3498db',
+                label: document.getElementById('lineLabel').value || "",
+                endPlug: 'arrow3'
+            };
+
+            const line = new LeaderLine(document.getElementById(start), document.getElementById(end), config);
+            
+            const connObj = { start, end, line, config };
+            connections.push(connObj);
+
+            // Permitir borrar línea
+            setTimeout(() => {
+                const svgs = document.querySelectorAll('.leader-line');
+                const thisLine = svgs[svgs.length - 1];
+                thisLine.ondblclick = () => {
+                    line.remove();
+                    connections = connections.filter(c => c !== connObj);
+                    updateCode();
+                };
+            }, 100);
+
+            cancelConnecting(); // Limpia el estado y los colores naranja
+            updateCode();
+        }
+
+        function refresh() { connections.forEach(c => c.line.position()); }
+
+        function syncLast() {
+            if (connections.length > 0) {
+                const last = connections[connections.length - 1];
+                last.config.path = document.getElementById('pathStyle').value;
+                last.config.label = document.getElementById('lineLabel').value;
+                last.line.setOptions(last.config);
+                updateCode();
+            }
+        }
+
+        function updateCode() {
+            let txt = `// --- MQ DIAGRAM JS ---\n\n`;
+            connections.forEach(c => {
+                txt += `new LeaderLine(document.getElementById('${c.start}'), document.getElementById('${c.end}'), \n`;
+                txt += `  { path: '${c.config.path}', label: '${c.config.label}' });\n\n`;
+            });
+            document.getElementById('js-output').innerText = txt;
+        }
+
+        function showStatus(m) { 
+            const s = document.getElementById('status-bar');
+            s.style.display = 'block';
+            s.innerText = m;
+        }
+        function hideStatus() { document.getElementById('status-bar').style.display = 'none'; }
+
+        function save() {
+            const data = { nodes, conns: connections.map(c => ({s: c.start, e: c.end, conf: c.config})) };
+            localStorage.setItem('mq_fix_save', JSON.stringify(data));
+            alert("Guardado en LocalStorage");
+        }
+
+        window.onload = () => {
+            const saved = JSON.parse(localStorage.getItem('mq_fix_save'));
+            if (saved) {
+                saved.nodes.forEach(n => createNode(n.text, n.x, n.y, n.id));
+                setTimeout(() => {
+                    saved.conns.forEach(c => finalizeConnection(c.s, c.e));
+                }, 500);
+            }
+        };
+    </script>
+</body>
+</html>

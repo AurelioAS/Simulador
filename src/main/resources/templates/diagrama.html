@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Diagramas MQLauncher</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
+        <script src="/javascript/diagrams.js"></script>
+        <script src="/javascript/flows.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
+	    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+        <style>
+            body {
+                background-color: var(--bg-gray); 
+                font-family: 'Urbanist', sans-serif; 
+                color: #1e293b;
+            }
+            #canvas {
+	            width: 100%;
+	            height: 90vh;
+	            background-color: #f8f9fa;
+	            border: 2px dashed #ccc;
+	            position: relative;
+	            overflow: hidden;
+            }
+            #canvas2 {
+                width: 100%;
+                height: 90vh;
+                background-color: #f8f9fa;
+                border: 2px dashed #ccc;
+                overflow: hidden;
+            }
+            .node {
+	            width: 120px;
+	            height: 60px;
+	            background-color: #007bff;
+	            color: white;
+	            padding: 10px;
+	            position: relative;
+	            cursor: hand;
+	            border-radius: 8px;
+	            display: flex;
+	            align-items: center;
+	            justify-content: center;
+	            text-align: center;
+	            font-family: Arial, sans-serif;
+            }
+            .nodo {
+	            background-color: #007bff;
+	            color: white;
+	            padding: 10px;
+	            position: relative;
+	            cursor: hand;
+	            border-radius: 8px;
+	            display: flex;
+	            align-items: center;
+	            justify-content: center;
+	            text-align: center;
+	            font-family: Arial, sans-serif;
+	            z-index: 100;
+            }
+            .controls {
+	            padding: 10px;
+	            background: #343a40;
+	            color: white;
+            }
+            button {
+	            padding: 8px 12px;
+	            cursor: pointer;
+            }
+            
+            .nodo i.fa-star {
+	            color: #f1c40f; /* Amarillo brillante */
+	            margin-right: 8px; /* Separación con el texto */
+	            font-size: 1.2em; /* Un poco más grande que el texto */
+            }
+            text {
+	            font-family: 'Arial', Consoles, sans-serif;
+	            font-size: 0.7em;
+	            color: rgb(0, 128, 255);
+	            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            }
+            .leader-line-label {
+	            transform: rotate(-90deg);
+	            transform-origin: center; /* Asegura que rote sobre su propio eje */
+	            white-space: nowrap;      /* Evita que el texto se parta en varias líneas */
+            }
+            h3 {
+	            font-family: 'Arial', Consoles, sans-serif;
+	            color: rgb(0, 128, 255);
+	            text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+            }
+            .navbar {
+	            position: fixed;
+	            top: 0;
+	            left: 0;
+	            z-index: 9999;
+	            width: 100%;
+                background-color: #343a40;
+                color: white;
+            }
+            .dos-colores {
+			    border: 3px solid #0d6efd;    /* Borde interno */
+			    outline: 3px solid #0dcaf0;   /* Borde externo */
+			    outline-offset: 0px;          /* Pegado al borde real */
+			    padding: 20px;
+			}
+			.bordes-infinitos {
+			    border: 3px solid #0d6efd; /* Primer borde */
+			    box-shadow: 0 0 0 4px #1e293b, /* Segundo borde (gris oscuro) */
+			                0 0 0 8px #00ff41; /* Tercer borde (verde terminal) */
+			    margin: 10px; /* Necesario para que la sombra no se corte */
+			    width: 100px;
+                height: 180px;
+			}
+        </style>
+    </head>
+    <body>
+    
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg mb-0">
+    <div class="container-fluid px-4">
+        <div class="d-flex align-items-center flex-wrap">
+            <div class="btn-group me-3 shadow-sm">
+                <button onclick="addNode()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nodo</button>
+                <button onclick="startConnection()" class="btn btn-outline-light btn-sm">🔗 Conectar</button>
+            </div>
+
+            <div class="btn-group me-3 shadow-sm">
+                <button onclick="saveDiagram(activeLines, activeLines2)" class="btn btn-success btn-sm">💾 Guardar</button>
+                <button onclick="loadDiagram()" class="btn btn-warning btn-sm">📂 Cargar</button>
+                <button onclick="clearAll(false)" class="btn btn-danger btn-sm">🗑️ Borrar</button>
+            </div>
+
+            <small class="text-light opacity-75 d-none d-xl-inline-block">
+                (Selecciona dos nodos para conectar)
+            </small>
+        </div>
+
+        <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+            <div class="btn-group me-4 border border-secondary rounded overflow-hidden shadow-sm">
+                <button onclick="changeFontSize(-1)" class="btn btn-dark btn-sm"><i class="bi bi-dash-lg"></i></button>
+                <button onclick="resetFontSize()" class="btn btn-dark btn-sm"><i class="bi bi-type"></i></button>
+                <button onclick="changeFontSize(1)" class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i></button>
+            </div>
+            
+            <a class="nav-link active py-0" href="/gui">
+                <i class="bi bi-cpu-fill me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+</nav>
+        <div id="canvas" style="position: relative; top: 30px; width: 100%; height: 500px; background: #f4f4f4;">
+            <h3 style="position: relative; top: 20px; left: 50%; transform: translateX(-50%); margin: 15px;">
+                Diagrama Dual run
+            </h3>
+        </div>
+        <div id="canvas2" style="position: relative; width: 100%; height: 500px; background: #f4f4f4;">
+            <h3 style="position: relative; top: 20px; left: 50%; transform: translateX(-50%); margin: 15px;">
+                Diagrama Single Output Hub
+            </h3>
+        </div>
+        <div id="canvas3" style="position: relative; width: 100%; height: 500px; background: #f4f4f4;">
+            <h3 style="position: relative; top: 20px; left: 50%; transform: translateX(-50%); margin: 15px;">
+                Diagrama t3270
+            </h3>
+        </div>
+        <script>
+            // Ejecutar al cargar la página
+            window.addEventListener('load', init);
+        </script>
+    </body>
+</html>
